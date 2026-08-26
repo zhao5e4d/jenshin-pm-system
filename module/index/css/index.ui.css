@@ -1,27 +1,30 @@
 :root
 {
-    --zt-apps-bar-height: 36px;
+    --zt-apps-bar-height: 0;
     --zt-apps-bar-bg: var(--color-canvas);
     --zt-menu-width: 120px!important;
     --zt-menu-fold-width: 64px;
     --zt-menu-space: 8px;
+    --zt-menu-bg: #0b1020;
+    --zt-menu-hover-bg: rgba(255, 255, 255, .08);
     --zt-menu-active-bg: var(--color-primary-500);
-    --zt-menu-hover-bg: rgba(var(--color-primary-500-rgb), .4);
-    --zt-menu-text-color: rgba(var(--color-canvas-rgb), 1);
+    --zt-menu-text-color: rgba(var(--color-canvas-rgb), .72);
     --zt-menu-text-active: var(--color-canvas);
-    --zt-menu-bg: var(--color-primary-600);
 }
 [lang^='en'] {--zt-menu-width: 132px!important;}
 
-#menu {position: fixed; left: 0; top: 0; bottom: 0; background: var(--zt-menu-bg); width: var(--zt-menu-width); color: var(--zt-menu-text-color); transition: width .1s; user-select: none; z-index: 1120;}
+#menu {position: fixed; left: 0; top: 0; bottom: 0; width: var(--zt-menu-width); color: var(--zt-menu-text-color); transition: width .22s cubic-bezier(.22, 1, .36, 1); user-select: none; z-index: 1120; background:
+    radial-gradient(900px 280px at 0% -8%, rgba(var(--color-primary-500-rgb), .28), transparent 58%),
+    radial-gradient(520px 360px at 120% 100%, rgba(99, 102, 241, .18), transparent 60%),
+    linear-gradient(180deg, #141c32 0%, var(--zt-menu-bg) 42%, #070a14 100%);}
 #menu.waiting-workspace > * {visibility: hidden;}
 #menu .nav {flex-direction: column; align-items: stretch;}
 #menu .nav > li {display: block; height: var(--zt-menu-height, 38px); padding: 4px 8px; transition: padding .2s;}
 #menu .nav > .divider, #menuMoreList > .divider {background: var(--color-canvas); opacity: .12; height: 1px; padding: 6px 8px; align-self: stretch; background-clip: content-box; box-sizing: content-box; border: none; margin: 0 4px}
-#menu .nav > li > a {color: inherit; display: flex; align-items: center; gap: 4px; padding: 0 6px; height: calc(var(--zt-menu-height, 38px) - 8px); transition: color .2s, background-color .2s; border-radius: var(--radius-md); overflow: hidden;}
+#menu .nav > li > a {color: inherit; display: flex; align-items: center; gap: 4px; padding: 0 6px; height: calc(var(--zt-menu-height, 38px) - 8px); transition: color .18s, background-color .18s, box-shadow .18s; border-radius: 10px; overflow: hidden;}
 #menu .nav > li > a.active,
 #menu .nav > li > a:hover {background: var(--zt-menu-hover-bg); color: var(--zt-menu-text-active)}
-#menu .nav > li > a.active {background: var(--zt-menu-active-bg); color: var(--zt-menu-text-active)}
+#menu .nav > li > a.active {background: linear-gradient(135deg, var(--color-primary-500), var(--color-primary-600)); color: var(--zt-menu-text-active); box-shadow: 0 10px 22px rgba(var(--color-primary-500-rgb), .32);}
 #menu .nav > li > a > .text {white-space: nowrap;}
 #menu .nav > li > a > .icon {font-size: 18px; display: inline-flex; align-items: center; justify-content: center; margin-right: 2px;}
 @supports not (gap: 1px) {#menu .nav > li > a > .icon {margin-right: 4px;}}
@@ -68,7 +71,7 @@ body.hide-menu {--zt-menu-width: var(--zt-menu-fold-width)!important;}
 #apps {position: fixed; left: var(--zt-menu-width); top: 0; bottom: var(--zt-apps-bar-height); right: 0; background-color: var(--zt-page-bg); transition: left .1s;}
 .hide-menu #apps {left: var(--zt-menu-fold-width)!important;}
 
-#appsBar {display: flex; flex-wrap: nowrap; align-items: center; position: fixed; left: var(--zt-menu-width); bottom: 0; right: 0; height: var(--zt-apps-bar-height); padding: 0 4px; background: var(--zt-apps-bar-bg); box-shadow: 0 -2px 12px rgba(0,0,0,.02); transition: left .1s; border-top-width: 1px;}
+#appsBar {display: none !important;}
 .hide-menu #appsBar {left: var(--zt-menu-fold-width)!important;}
 #appTabs {flex: auto; user-select: none; --nav-active-color: currentColor}
 #appTabs > li > a {border-radius: var(--radius-md); opacity: .6;}

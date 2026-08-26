@@ -47,7 +47,7 @@ function ioncube_event_handler($err_code, $params)
         <div style='text-align:center; margin: 13px 0px;'>
             <a href='https://www.zentao.net/extension-browse.html' target='_blank' class='btn btn-wide primary' style='margin-right: 20px;'>下载更新</a>
             {$deleteBtnZh}
-            <a href='{$homePageLink}' target='_blank' class='btn btn-wide primary' style='margin-left: 20px;'>我的地盘</a>
+            <a href='{$homePageLink}' target='_blank' class='btn btn-wide primary' style='margin-left: 20px;'>我的工作台</a>
         </div>
         <br /> <br /> <br />
         <h2 style='color:red;text-align:center'>This version is not licensed</h2>

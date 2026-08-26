@@ -22,7 +22,7 @@ formPanel
     ),
     set::actions(array('submit')),
     on::change('#originalPassword,#password1,#password2', 'changePassword'),
-    on::click('button[type=submit]', 'clickSubmit'),
+    on::click('button[type=submit]', 'encryptPassword'),
     h::import($config->webRoot . 'js/md5.js', 'js'),
     formGroup
     (

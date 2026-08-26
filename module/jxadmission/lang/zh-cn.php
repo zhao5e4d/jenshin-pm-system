@@ -1,0 +1,46 @@
+<?php
+global $app;
+if(empty($lang->jxcore->statusList ?? null)) $app->loadLang('jxcore');
+$lang->jxadmission = new stdclass();
+$lang->jxadmission->common        = '推广入院';
+$lang->jxadmission->browse        = '入院事项';
+$lang->jxadmission->create        = '新建入院事项';
+$lang->jxadmission->edit          = '编辑入院事项';
+$lang->jxadmission->view          = '入院详情';
+$lang->jxadmission->hospital      = '医院档案';
+$lang->jxadmission->product       = '产品';
+$lang->jxadmission->name          = '事项名称';
+$lang->jxadmission->code          = '事项编码';
+$lang->jxadmission->path          = '入院路径';
+$lang->jxadmission->department    = '科室';
+$lang->jxadmission->pharmacyDate  = '药事备案日期';
+$lang->jxadmission->firstOrderDate= '首单日期';
+$lang->jxadmission->volume        = '用量';
+$lang->jxadmission->repurchase    = '复购';
+$lang->jxadmission->status        = '状态';
+$lang->jxadmission->owner         = '负责人';
+$lang->jxadmission->leadDept      = '主责部门';
+$lang->jxadmission->supportDepts  = '协作部门';
+$lang->jxadmission->begin         = '开始日期';
+$lang->jxadmission->end           = '计划完成';
+$lang->jxadmission->budget        = '预算(万元)';
+$lang->jxadmission->desc          = '说明';
+$lang->jxadmission->all           = '全部';
+$lang->jxadmission->doing         = '进行中';
+$lang->jxadmission->stages        = '阶段门';
+$lang->jxadmission->costs         = '经费台账';
+$lang->jxadmission->level         = '医院等级';
+$lang->jxadmission->province      = '省份';
+$lang->jxadmission->city          = '城市';
+
+$lang->jxadmission->repurchaseList['']       = '';
+$lang->jxadmission->repurchaseList['none']   = '未开始';
+$lang->jxadmission->repurchaseList['active'] = '在用';
+$lang->jxadmission->repurchaseList['grow']   = '爬坡';
+$lang->jxadmission->repurchaseList['lost']   = '流失';
+
+$lang->jxadmission->browseAction   = '浏览入院事项';
+$lang->jxadmission->createAction   = '新建入院事项';
+$lang->jxadmission->editAction     = '编辑入院事项';
+$lang->jxadmission->viewAction     = '查看入院事项';
+$lang->jxadmission->hospitalAction = '维护医院';

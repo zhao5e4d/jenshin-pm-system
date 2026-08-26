@@ -90,7 +90,7 @@ $lang->admin->setModule->optional       = '可选功能';
 $lang->admin->setModule->opened         = '已开启';
 $lang->admin->setModule->closed         = '已关闭';
 
-$lang->admin->setModule->my             = '地盘';
+$lang->admin->setModule->my             = '工作台';
 $lang->admin->setModule->product        = $lang->productCommon;
 $lang->admin->setModule->project        = $lang->projectCommon;
 $lang->admin->setModule->qa             = '测试';

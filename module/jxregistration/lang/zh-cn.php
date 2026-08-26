@@ -1,0 +1,41 @@
+<?php
+global $app;
+if(empty($lang->jxcore->statusList ?? null)) $app->loadLang('jxcore');
+$lang->jxregistration = new stdclass();
+$lang->jxregistration->common         = '产品注册';
+$lang->jxregistration->browse         = '注册事项';
+$lang->jxregistration->create         = '新建注册事项';
+$lang->jxregistration->edit           = '编辑注册事项';
+$lang->jxregistration->view           = '注册详情';
+$lang->jxregistration->product        = '产品';
+$lang->jxregistration->name           = '事项名称';
+$lang->jxregistration->code           = '事项编码';
+$lang->jxregistration->type           = '注册类型';
+$lang->jxregistration->category       = '管理类别';
+$lang->jxregistration->path           = '法规路径';
+$lang->jxregistration->acceptNo       = '受理号';
+$lang->jxregistration->applyDate      = '申报日期';
+$lang->jxregistration->supplementDate = '发补日期';
+$lang->jxregistration->certDate       = '取证日期';
+$lang->jxregistration->certNo         = '注册证号';
+$lang->jxregistration->certValidTo    = '有效期至';
+$lang->jxregistration->status         = '状态';
+$lang->jxregistration->owner          = '负责人';
+$lang->jxregistration->leadDept       = '主责部门';
+$lang->jxregistration->supportDepts   = '协作部门';
+$lang->jxregistration->begin          = '开始日期';
+$lang->jxregistration->end            = '计划完成';
+$lang->jxregistration->budget         = '预算(万元)';
+$lang->jxregistration->desc           = '说明';
+$lang->jxregistration->all            = '全部';
+$lang->jxregistration->stages         = '阶段门';
+$lang->jxregistration->costs          = '经费台账';
+
+$lang->jxregistration->typeList['first']  = '首次注册';
+$lang->jxregistration->typeList['renew']  = '延续注册';
+$lang->jxregistration->typeList['change'] = '许可事项变更';
+
+$lang->jxregistration->browseAction = '浏览注册事项';
+$lang->jxregistration->createAction = '新建注册事项';
+$lang->jxregistration->editAction   = '编辑注册事项';
+$lang->jxregistration->viewAction   = '查看注册事项';

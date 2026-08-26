@@ -11,7 +11,7 @@ title=测试 devModel::getOriginalLang();
 cid=16009
 pid=1
 
-错误的类型返回数据                         >> 地盘
+错误的类型返回数据                         >> 工作台
 正确的类型返回数据                         >> 项目
 正确的类型，错误的模块返回数据             >> 0
 正确的类型，正确的模块返回数据             >> 人员
@@ -30,7 +30,7 @@ $failMethod = 'method';
 $realMethod = 'browse';
 
 $devTester = new devModelTest();
-r($devTester->getOriginalLangTest('test'))   && p('my')            && e("地盘"); // 错误的类型返回数据
+r($devTester->getOriginalLangTest('test'))   && p('my')            && e("工作台"); // 错误的类型返回数据
 r($devTester->getOriginalLangTest('common')) && p('projectCommon') && e("项目"); // 正确的类型返回数据
 
 r($devTester->getOriginalLangTest('second', $failModule)) && p()                 && e("0");    // 正确的类型，错误的模块返回数据

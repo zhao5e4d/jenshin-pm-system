@@ -73,20 +73,23 @@ if(!empty($projectStats))
             $actionItems[] = $actionItem;
         }
 
+        $isWaterfall = in_array($project->model, array('waterfall', 'waterfallplus'));
+
         $projectCards[] = div
         (
             setClass('col'),
             set('data-id', $project->id),
             div
             (
-                setClass('panel'),
+                setClass('panel project-card'),
+                setClass("project-card-{$status}"),
                 div
                 (
                     setClass('panel-heading'),
                     span
                     (
                         setClass('label project-type-label'),
-                        setClass(in_array($project->model, array('waterfall', 'waterfallplus')) ? 'warning-pale ring-warning' : 'secondary-pale ring-secondary'),
+                        setClass($isWaterfall ? 'warning-pale ring-warning' : 'secondary-pale ring-secondary'),
                         icon($project->model == 'scrum' ? 'sprint' : $project->model)
                     ),
                     a
@@ -108,90 +111,97 @@ if(!empty($projectStats))
                     div
                     (
                         setClass('project-infos'),
-                        span
+                        !empty($project->budget) ? span
                         (
                             set::title($project->budget),
-                            setClass('label gray-100'),
+                            setClass('info-item project-budget'),
                             $project->budget
-                        ),
+                        ) : null,
                         span
                         (
                             set::title($project->date),
-                            setClass('label gray-100 mr-2'),
-                            setStyle('color', $status == 'delay' ? 'var(--color-danger-500)' : 'inherit'),
-                            $project->date
+                            setClass('info-item project-date'),
+                            $status == 'delay' ? setClass('is-delay') : null,
+                            icon('calendar'),
+                            span($project->date)
                         )
                     ),
                     div
                     (
-                        setClass('project-detail pl-8 pt-2'),
+                        setClass('project-detail'),
                         div
                         (
-                            setClass('row'),
+                            setClass('stat-item'),
                             div
                             (
-                                setClass($app->getClientLang() == 'en' ? 'w-1/3' : 'w-1/4'),
+                                setClass('stat-value'),
                                 div
                                 (
-                                    span
-                                    (
-                                        setClass('statistics-title'),
-                                        $lang->projectCommon . $lang->project->progress
-                                    )
-                                ),
-                                div
-                                (
-                                    setClass('pl-4'),
                                     set('data-zui', 'ProgressCircle'),
                                     set('data-percent', $project->progress),
-                                    set('data-size', 24),
+                                    set('data-size', 40),
+                                    set('data-circle-width', 4),
                                     set('data-circle-color', 'var(--color-success-500)')
                                 )
                             ),
+                            span
+                            (
+                                setClass('statistics-title'),
+                                $lang->projectCommon . $lang->project->progress
+                            )
+                        ),
+                        div
+                        (
+                            setClass('stat-item'),
                             div
                             (
-                                setClass('w-1/3 text-center'),
-                                span
-                                (
-                                    setClass('statistics-title'),
-                                    $lang->project->leftTasks
-                                ),
+                                setClass('stat-value'),
                                 span
                                 (
                                     setClass('leftTasks'),
-                                    set::title($project->leftTasks),
+                                    set::title((string)$project->leftTasks),
                                     $project->leftTasks
                                 )
                             ),
+                            span
+                            (
+                                setClass('statistics-title'),
+                                $lang->project->leftTasks
+                            )
+                        ),
+                        div
+                        (
+                            setClass('stat-item'),
                             div
                             (
-                                setClass('w-1/3 text-center'),
-                                span
-                                (
-                                    setClass('statistics-title'),
-                                    $lang->project->leftHours
-                                ),
+                                setClass('stat-value'),
                                 span
                                 (
                                     setClass('totalLeft'),
-                                    set::title(empty($project->left) ? '— ' : $project->left . 'h'),
-                                    empty($project->left) ? '— ' : $project->left . 'h'
+                                    set::title(empty($project->left) ? '—' : $project->left . 'h'),
+                                    empty($project->left) ? '—' : $project->left . 'h'
                                 )
+                            ),
+                            span
+                            (
+                                setClass('statistics-title'),
+                                $lang->project->leftHours
                             )
                         )
                     ),
                     div
                     (
-                        setClass('project-footer pt-2'),
+                        setClass('project-footer'),
                         div
                         (
                             setClass('project-team'),
                             div
                             (
-                                setClass('project-members avatar-group gap-4'),
+                                setClass('project-members avatar-group'),
                                 $memberAvatars,
                                 $project->teamCount > 4 ? span
                                 (
+                                    setClass('members-ellipsis'),
                                     '…'
                                 ) : null,
                                 $project->teamCount > 3 ? div
@@ -204,13 +214,13 @@ if(!empty($projectStats))
                                         set::text($users[$lastMember]),
                                         set::src(zget($usersAvatar, $lastMember, ''))
                                     )
-                                ) : null,
-                                a
-                                (
-                                    setClass('project-members-total pl-2 mt-1'),
-                                    set::href(createLink('project', 'team', "projectID={$project->id}")),
-                                    sprintf($lang->project->teamSumCount, $project->teamCount)
-                                )
+                                ) : null
+                            ),
+                            a
+                            (
+                                setClass('project-members-total'),
+                                set::href(createLink('project', 'team', "projectID={$project->id}")),
+                                sprintf($lang->project->teamSumCount, $project->teamCount)
                             )
                         ),
                         div

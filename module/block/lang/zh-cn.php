@@ -95,7 +95,7 @@ $lang->block->confirmRemoveBlock = '确定隐藏区块吗？';
 $lang->block->noticeNewBlock     = '10.0版本以后各个视图主页提供了全新的视图，您要启用新的视图布局吗？';
 $lang->block->confirmReset       = '是否恢复默认布局？';
 $lang->block->closeForever       = '永久关闭';
-$lang->block->confirmClose       = '确定永久关闭该区块吗？关闭后所有人都将无法使用该区块，可以在[后台-功能配置-地盘-区块]中打开。';
+$lang->block->confirmClose       = '确定永久关闭该区块吗？关闭后所有人都将无法使用该区块，可以在[后台-功能配置-工作台-区块]中打开。';
 $lang->block->remove             = '移除';
 $lang->block->refresh            = '刷新';
 $lang->block->nbsp               = '';
@@ -129,7 +129,7 @@ $lang->block->summary->finishTask = '完成了<a href="' .  helper::createLink('
 $lang->block->summary->fixBug     = '解决了<a href="' . helper::createLink('my', 'contribute', 'mode=bug&browseType=resolvedBy') . '" class="text-success">%s</a>个Bug';
 
 $lang->block->dashboard['default'] = '仪表盘';
-$lang->block->dashboard['my']      = '地盘';
+$lang->block->dashboard['my']      = '工作台';
 
 $lang->block->titleList['flowchart']      = '流程图';
 $lang->block->titleList['guide']          = '使用帮助';

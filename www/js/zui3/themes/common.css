@@ -1,15 +1,16 @@
 :root
 {
-    --zt-apps-bar-height: 36px;
+    --zt-apps-bar-height: 0;
     --zt-apps-bar-bg: var(--color-canvas);
     --zt-menu-width: 120px!important;
     --zt-menu-fold-width: 64px;
     --zt-menu-space: 8px;
     --zt-menu-active-bg: var(--color-primary-500);
-    --zt-menu-hover-bg: rgba(var(--color-primary-500-rgb), .4);
-    --zt-menu-text-color: rgba(var(--color-canvas-rgb), .8);
+    --zt-menu-hover-bg: rgba(255, 255, 255, .08);
+    --zt-menu-text-color: rgba(var(--color-canvas-rgb), .72);
     --zt-menu-text-active: var(--color-canvas);
-    --zt-menu-bg: var(--color-primary-600);
+    --zt-page-bg: #f5f6fb;
+    --zt-menu-bg: #0b1020;
 }
 
 #navbar  {--state-active-color: transparent!important}

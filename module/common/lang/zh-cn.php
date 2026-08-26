@@ -230,7 +230,7 @@ $lang->userSelector->emptyText     = '暂无可选用户';
 $lang->common->common       = '公有模块';
 $lang->common->story        = '需求';
 $lang->cache->common        = '缓存';
-$lang->my->common           = '地盘';
+$lang->my->common           = '工作台';
 $lang->todo->common         = '待办';
 $lang->block->common        = '区块';
 $lang->program->common      = '项目集';
@@ -357,7 +357,7 @@ $lang->release->common     = '发布';
 $lang->message->common     = '系统通知';
 $lang->mail->common        = '邮件';
 
-$lang->my->shortCommon          = '地盘';
+$lang->my->shortCommon          = '工作台';
 $lang->testcase->shortCommon    = '用例';
 $lang->productplan->shortCommon = '计划';
 $lang->score->shortCommon       = '积分';

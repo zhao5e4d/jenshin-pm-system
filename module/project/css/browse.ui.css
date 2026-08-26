@@ -2,31 +2,57 @@ input[name="realEnd"] {width: 150px;}
 
 .table-empty-tip {padding: 80px 10px; text-align: center; background: #fff;}
 .table-empty-tip .btn {background-color: rgba(var(--color-primary-50-rgb),var(--tw-bg-opacity)); color: var(--nav-active-color); --tw-ring-color: rgba(var(--color-primary-50-rgb),var(--tw-bg-opacity));}
-#cards {flex-wrap: wrap; padding: 10px; background: #FFF;}
-#cards > .col {width: 25%; padding-left: 10px; padding-right: 10px;}
-@media screen and (max-width: 1500px) {#cards > .col {width: 33.3333333%;}}
-#cards .panel {margin: 10px 0; border: 1px solid rgb(var(--color-gray-300-rgb)); border-radius: 4px; box-shadow: none; height: 175px; background: #FFF;}
-#cards .panel:hover {border-color: rgb(var(--color-primary-500-rgb)); box-shadow: 0 0 10px 0 rgba(0,0,100,.25);}
-#cards .panel .panel-heading {justify-content: start; padding: 12px 24px 10px 16px;}
-#cards .panel .panel-heading .project-name {margin: 0 -8px; overflow: hidden; white-space: nowrap;}
-#cards .panel .panel-heading .project-status {min-width: 45px;}
-#cards .panel .panel-heading .label.wait {background: rgba(var(--color-gray-200-rgb),var(--tw-bg-opacity));}
-#cards .panel-body {padding: 0 16px 16px;}
+#cards {flex-wrap: wrap; padding: 12px 8px; background: #FFF;}
+#cards > .col {width: 100%; padding: 8px;}
+@media screen and (min-width: 768px)  {#cards > .col {width: 50%;}}
+@media screen and (min-width: 1280px) {#cards > .col {width: 33.3333333%;}}
+@media screen and (min-width: 1920px) {#cards > .col {width: 25%;}}
 
-#cards .project-infos {font-size: 12px;}
-#cards .project-infos > span + span {margin-left: 15px;}
-#cards .project-infos > .budget {max-width: 75px; overflow: hidden; white-space: nowrap;}
+#cards .project-card {position: relative; overflow: hidden; margin: 0; padding: 0; min-height: 228px; border: 1px solid rgb(var(--color-gray-200-rgb)); border-radius: 10px; background: #FFF; box-shadow: 0 1px 2px 0 rgba(16, 24, 40, .04); transition: box-shadow .2s ease, border-color .2s ease, transform .2s ease;}
+#cards .project-card::before {content: ''; position: absolute; top: 0; left: 0; width: 3px; height: 100%; background: rgb(var(--color-primary-500-rgb)); opacity: 0; transition: opacity .2s ease;}
+#cards .project-card:hover {transform: translateY(-2px); border-color: rgba(var(--color-primary-500-rgb), .5); box-shadow: 0 8px 24px -6px rgba(16, 24, 40, .18);}
+#cards .project-card:hover::before {opacity: 1;}
+#cards .project-card-delay::before,
+#cards .project-card-delay:hover::before {background: rgb(var(--color-danger-500-rgb)); opacity: 1;}
+#cards .project-card-closed {background: rgb(var(--color-gray-50-rgb));}
 
-#cards .project-detail {margin-top: 10px;}
-#cards .project-detail .statistics-title {color: #5B606E; display: block;}
-#cards .project-detail .leftTasks, .totalLeft {display:block; font-size: 18px; font-weight: bold; color: #3C4353;}
-#cards .project-team {display:inline-block;}
-#cards .project-actions {display:inline-block; float: right; margin-bottom: 8px;}
+#cards .project-card .panel-heading {align-items: center; justify-content: start; gap: 8px; padding: 18px 18px 0 18px; border: none; background: none;}
+#cards .project-card .panel-heading .project-type-label {flex: none; width: 24px; height: 24px; padding: 0; display: inline-flex; align-items: center; justify-content: center; border-radius: 6px; font-size: 13px;}
+#cards .project-card .panel-heading .project-name {flex: auto; min-width: 0; margin: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; color: rgb(var(--color-gray-900-rgb));}
+#cards .project-card .panel-heading .project-name > strong {font-size: 15px; font-weight: 600; line-height: 22px;}
+#cards .project-card .panel-heading .project-name:hover {color: rgb(var(--color-primary-600-rgb));}
+#cards .project-card .panel-heading .project-status {flex: none; min-width: 45px; height: 22px; padding: 0 8px; font-size: 12px; line-height: 22px;}
+#cards .project-card .panel-heading .label.wait {background: rgba(var(--color-gray-200-rgb), var(--tw-bg-opacity));}
+#cards .project-card .panel-body {display: flex; flex-direction: column; margin-top: 0; padding: 0 18px 14px; overflow: visible;}
+
+#cards .project-infos {display: flex; align-items: center; flex-wrap: wrap; gap: 6px 10px; margin: 10px 0 0 32px; font-size: 12px; line-height: 18px; color: rgb(var(--color-gray-600-rgb));}
+#cards .project-infos .info-item {display: inline-flex; align-items: center; gap: 4px; max-width: 100%; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;}
+#cards .project-infos .info-item > .icon {font-size: 12px; opacity: .7;}
+#cards .project-infos .project-budget {padding: 1px 8px; border-radius: 10px; background: rgb(var(--color-gray-100-rgb)); font-weight: 600; color: rgb(var(--color-gray-700-rgb));}
+#cards .project-infos .project-date.is-delay {color: rgb(var(--color-danger-500-rgb));}
+
+#cards .project-detail {display: flex; align-items: stretch; margin-top: 14px; padding: 12px 4px; border-radius: 8px; background: linear-gradient(180deg, rgba(var(--color-gray-50-rgb), .9), rgba(var(--color-gray-100-rgb), .6));}
+#cards .project-detail .stat-item {position: relative; flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 0 6px; text-align: center;}
+#cards .project-detail .stat-item + .stat-item::before {content: ''; position: absolute; top: 6px; bottom: 6px; left: 0; width: 1px; background: rgb(var(--color-gray-200-rgb));}
+#cards .project-detail .stat-value {display: flex; align-items: center; justify-content: center; height: 40px;}
+#cards .project-detail .statistics-title {display: block; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; max-width: 100%; font-size: 12px; line-height: 18px; color: rgb(var(--color-gray-500-rgb));}
+#cards .project-detail .leftTasks, #cards .project-detail .totalLeft {display: block; font-size: 22px; font-weight: 600; line-height: 1; color: rgb(var(--color-gray-900-rgb));}
+
+#cards .project-footer {display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: auto; padding-top: 12px;}
+#cards .project-team {display: flex; align-items: center; gap: 8px; min-width: 0;}
+#cards .project-team .project-members {gap: 8px;}
+#cards .project-team .project-members .avatar {box-shadow: 0 0 0 2px #FFF;}
+#cards .project-team .members-ellipsis {margin-left: 0; align-self: flex-end; line-height: 1; color: rgb(var(--color-gray-400-rgb));}
+#cards .project-team .project-members-total {overflow: hidden; white-space: nowrap; text-overflow: ellipsis; font-size: 12px; color: rgb(var(--color-gray-500-rgb));}
+#cards .project-team .project-members-total:hover {color: rgb(var(--color-primary-600-rgb));}
+#cards .project-actions {flex: none; opacity: 0; transition: opacity .2s ease;}
+#cards .project-card:hover .project-actions, #cards .project-actions:focus-within {opacity: 1;}
+@media (hover: none) {#cards .project-actions {opacity: 1;}}
 
 .m-project-browse .project-menu-actions {display: flex;}
 .m-project-browse .project-menu-actions > .menu-item > a:hover {background: none; color: var(--menu-hover-bg);}
 .m-project-browse .project-menu-actions > .menu-item > a > .item-icon {opacity: 1;}
 
-#cards #cardsFooter {width: 100%; display: flex; justify-content: end;}
+#cards #cardsFooter {width: 100%; display: flex; justify-content: end; padding: 8px;}
 
 #moduleMenu > menu > li:last-child {margin-bottom: 10px;}

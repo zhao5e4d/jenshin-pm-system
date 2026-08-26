@@ -59,7 +59,7 @@ $lang->my->manageSelf      = '仅可维护自己创建的联系人';
 $lang->my->adminView       = '系统管理员具备删除公共联系人权限';
 $lang->my->projectReview   = '项目评审';
 
-$lang->my->indexAction      = '地盘仪表盘';
+$lang->my->indexAction      = '工作台仪表盘';
 $lang->my->calendarAction   = '我的日程';
 $lang->my->workAction       = '我的待处理';
 $lang->my->contributeAction = '我的贡献';

@@ -68,6 +68,7 @@ class pageBase extends wg
         $zinMode                 = isset($config->zin->mode) ? $config->zin->mode : '';
         $jsConfig->zin           = !empty($zinMode) ? $zinMode : true;
         $jsConfig->maxUploadSize = ini_get('upload_max_filesize');
+        $extraCSS                = isset($config->zin->extraCSS) ? $config->zin->extraCSS : '';
 
         $headImports = array();
         $headImports[] = h::favicon($webRoot . 'favicon.ico');
@@ -79,8 +80,6 @@ class pageBase extends wg
             $headImports[] = h::importJs($zuiPath . 'zui.zentao.js', setID('zuiJS'));
             $headImports[] = h::jsCall('$.setLibRoot', $zuiPath);
 
-            $extraCSS = isset($config->zin->extraCSS) ? $config->zin->extraCSS : '';
-            if(!empty($extraCSS)) $headImports[] = h::importCss($webRoot . 'js/zui3/' . $extraCSS);
         }
 
         if($config->debug)
@@ -136,6 +135,7 @@ class pageBase extends wg
                 $setXuanClass,
                 empty($imports) ? null : h::import($imports),
                 h::css($css, setClass('zin-page-css'), setData('id', $pageID)),
+                ($zui && !empty($extraCSS)) ? h::importCss($webRoot . 'js/zui3/' . $extraCSS . '?v=' . (@filemtime($app->getWwwRoot() . 'js/zui3/' . $extraCSS) ?: time()), setID('zuiExtraCSSLate')) : null,
                 $body,
                 $rawContent ? rawContent() : null,
                 $hookContent ? hookContent() : null,

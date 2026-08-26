@@ -143,7 +143,7 @@ $lang->dataview->fieldTypeList['string'] = '文本';
 $lang->dataview->fieldTypeList['option'] = '选项';
 $lang->dataview->fieldTypeList['date']   = '日期';
 
-$lang->dataview->groupList['my']        = '我的地盘';
+$lang->dataview->groupList['my']        = '我的工作台';
 $lang->dataview->groupList['program']   = '项目集';
 $lang->dataview->groupList['product']   = $lang->productCommon;
 $lang->dataview->groupList['project']   = '项目';

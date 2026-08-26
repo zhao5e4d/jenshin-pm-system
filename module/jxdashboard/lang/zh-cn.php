@@ -1,0 +1,40 @@
+<?php
+global $app;
+if(empty($lang->jxcore->statusList ?? null)) $app->loadLang('jxcore');
+$lang->jxdashboard = new stdclass();
+$lang->jxdashboard->common    = '数据看板';
+$lang->jxdashboard->index     = '看板';
+$lang->jxdashboard->overview  = '经营总览';
+$lang->jxdashboard->dept      = '部门经营';
+$lang->jxdashboard->portfolio = '项目组合';
+$lang->jxdashboard->meeting   = '会议视图';
+$lang->jxdashboard->board     = '看板';
+$lang->jxdashboard->filter    = '筛选';
+$lang->jxdashboard->bizType   = '业务类型';
+$lang->jxdashboard->deptName  = '部门';
+$lang->jxdashboard->status    = '状态';
+$lang->jxdashboard->total     = '项目总数';
+$lang->jxdashboard->green     = '正常';
+$lang->jxdashboard->yellow    = '预警';
+$lang->jxdashboard->red       = '风险';
+$lang->jxdashboard->budget    = '预算合计';
+$lang->jxdashboard->actual    = '实际支出';
+$lang->jxdashboard->delta     = '经费偏差';
+$lang->jxdashboard->overdue   = '逾期里程碑';
+$lang->jxdashboard->certs     = '证照临期';
+$lang->jxdashboard->windows   = '投标窗口';
+$lang->jxdashboard->funnel    = '入院漏斗';
+$lang->jxdashboard->blockers  = '跨项目阻塞';
+$lang->jxdashboard->load      = '部门负荷';
+$lang->jxdashboard->all       = '全部';
+
+$lang->jxdashboard->bizTypeList['']             = '全部类型';
+$lang->jxdashboard->bizTypeList['registration'] = '产品注册';
+$lang->jxdashboard->bizTypeList['marketaccess'] = '市场准入';
+$lang->jxdashboard->bizTypeList['admission']    = '推广入院';
+
+$lang->jxdashboard->indexAction    = '查看看板';
+$lang->jxdashboard->overviewAction = '经营总览';
+$lang->jxdashboard->deptAction     = '部门经营';
+$lang->jxdashboard->portfolioAction= '项目组合';
+$lang->jxdashboard->meetingAction  = '会议视图';

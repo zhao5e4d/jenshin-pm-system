@@ -149,9 +149,13 @@ class userTao extends userModel
      */
     public function deleteImUserDevice(int $userID): void
     {
+        $table = trim(TABLE_IM_USERDEVICE, '`');
+        if(!$this->dao->query("SHOW TABLES LIKE '{$table}'")->fetch()) return;
+
         try
         {
             $this->dao->delete()->from(TABLE_IM_USERDEVICE)->where('user')->eq($userID)->exec();
-        } catch (Exception $e) {}
+        }
+        catch(Exception $e) {}
     }
 }

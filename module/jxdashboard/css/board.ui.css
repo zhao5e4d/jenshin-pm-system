@@ -1,0 +1,31 @@
+.jx-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 12px;
+}
+.jx-kpi-card {
+  background: var(--jx-glass-bg, #fff);
+  border: 1px solid var(--jx-hairline, #e5e7eb);
+  border-radius: 12px;
+  padding: 14px 16px;
+  box-shadow: var(--shadow-sm, 0 1px 2px rgba(15,23,42,.04));
+}
+.jx-kpi-label { color: #64748b; font-size: 12px; }
+.jx-kpi-value { font-size: 24px; font-weight: 650; margin-top: 4px; }
+.jx-kpi-card.is-green .jx-kpi-value { color: #059669; }
+.jx-kpi-card.is-yellow .jx-kpi-value { color: #d97706; }
+.jx-kpi-card.is-red .jx-kpi-value { color: #dc2626; }
+.jx-dash-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 12px;
+}
+.jx-dash-panel {
+  background: #fff;
+  border-radius: 12px;
+  padding: 16px;
+  border: 1px solid rgba(15,23,42,.06);
+}
+.jx-health-green { background: #d1fae5; color: #065f46; }
+.jx-health-yellow { background: #fef3c7; color: #92400e; }
+.jx-health-red { background: #fee2e2; color: #991b1b; }

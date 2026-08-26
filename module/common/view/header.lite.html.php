@@ -58,6 +58,7 @@ $commonLang   = array('zh-cn', 'zh-tw', 'en', 'fr', 'de');
   }
 
   if(isset($pageCSS)) css::internal($pageCSS);
+  css::import($jsRoot . 'zui3/jenshin.css?v=' . (@filemtime($this->app->getWwwRoot() . 'js/zui3/jenshin.css') ?: time()));
 
   echo html::favicon($webRoot . 'favicon.ico');
   ?>

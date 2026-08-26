@@ -1,0 +1,49 @@
+<?php
+$lang->jxcore = new stdclass();
+$lang->jxcore->common        = '医疗项目引擎';
+$lang->jxcore->index         = '引擎';
+$lang->jxcore->togglecheck   = '完成检查项';
+$lang->jxcore->submitstage   = '提交阶段门';
+$lang->jxcore->approvestage  = '审批阶段门';
+$lang->jxcore->addcost       = '登记费用';
+$lang->jxcore->addCost       = $lang->jxcore->addcost;
+$lang->jxcore->dept          = '部门';
+$lang->jxcore->category      = '费用类别';
+$lang->jxcore->amount        = '金额';
+$lang->jxcore->occurDate     = '发生日期';
+$lang->jxcore->desc          = '说明';
+$lang->jxcore->checks        = '检查项';
+$lang->jxcore->stage         = '阶段门';
+$lang->jxcore->submit        = '提交阶段';
+$lang->jxcore->approve       = '批准';
+$lang->jxcore->reject        = '驳回';
+$lang->jxcore->comment       = '意见';
+$lang->jxcore->budget        = '预算';
+$lang->jxcore->actual        = '实际';
+$lang->jxcore->delta         = '偏差';
+$lang->jxcore->health        = '健康度';
+$lang->jxcore->progress      = '进度';
+$lang->jxcore->blocker       = '阻塞';
+$lang->jxcore->openProject   = '打开项目';
+$lang->jxcore->openTask      = '打开任务';
+$lang->jxcore->openDoc       = '文档空间';
+
+$lang->jxcore->healthList['green']  = '正常';
+$lang->jxcore->healthList['yellow'] = '预警';
+$lang->jxcore->healthList['red']    = '风险';
+
+$lang->jxcore->statusList['wait']      = '未开始';
+$lang->jxcore->statusList['doing']     = '进行中';
+$lang->jxcore->statusList['submitted'] = '待审批';
+$lang->jxcore->statusList['approved']  = '已批准';
+$lang->jxcore->statusList['rejected']  = '已驳回';
+$lang->jxcore->statusList['done']      = '已完成';
+$lang->jxcore->statusList['blocked']   = '阻塞';
+
+$lang->jxcore->costCategoryList['检验检测'] = '检验检测';
+$lang->jxcore->costCategoryList['临床评价'] = '临床评价';
+$lang->jxcore->costCategoryList['注册申报'] = '注册申报';
+$lang->jxcore->costCategoryList['招标投标'] = '招标投标';
+$lang->jxcore->costCategoryList['入院推广'] = '入院推广';
+$lang->jxcore->costCategoryList['差旅会议'] = '差旅会议';
+$lang->jxcore->costCategoryList['其他']     = '其他';
