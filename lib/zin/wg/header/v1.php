@@ -159,48 +159,6 @@ class header extends wg
             if(!empty($config->sanplexVersion) && $app->user->admin) $items[] = array('text' => $lang->site, 'url' => createLink('admin', 'subscription'), 'icon' => 'sitemap');
 
             $items[] = array('type' => 'divider');
-
-            if($app->config->vision === 'rnd' && !commonModel::isTutorialMode())
-            {
-                $items[] = array
-                (
-                    'url'             => createLink('tutorial', 'start'),
-                    'icon'            => 'guide',
-                    'text'            => $lang->tutorialAB,
-                    'class'           => '800',
-                    'outerClass'      => 'user-tutorial',
-                    'data-width'      => 700,
-                    'data-class-name' => 'modal-inverse tutorial-start',
-                    'data-headerless' => true,
-                    'data-backdrop'   => true,
-                    'data-keyboard'   => true,
-                    'innerClass'      => $modalClass,
-                    'data-toggle'     => 'modal'
-                );
-            }
-        }
-
-        $helpItems = array();
-        $manualUrl = ((!empty($config->isINT)) ? $config->manualUrl['int'] : $config->manualUrl['home']) . '&theme=' . $_COOKIE['theme'];
-        $helpItems[] = array('text' => $lang->manual, 'url' => $manualUrl, 'attrs' => array('data-app' => 'help'));
-        $helpItems[] = array('text' => $lang->changeLog, 'url' => createLink('misc', 'changeLog'), 'data-toggle' => 'modal', 'innerClass' => $modalClass);
-
-        /* 禅道国际版隐藏帮助。 */
-        if(empty($config->sanplexVersion)) $items[] = array('text' => $lang->manual, 'icon' => 'help', 'url' => $manualUrl, 'attrs' => array('data-app' => 'help'));
-
-        $items[] = array('type' => 'divider');
-
-        if(!$isGuest && $app->config->vision === 'rnd')
-        {
-            $items[] = array
-            (
-                'url'         => createLink('my', 'preference', 'showTip=false', '', true),
-                'icon'        => 'controls',
-                'text'        => $lang->preference,
-                'data-width'  => 700,
-                'innerClass'  => $modalClass,
-                'data-toggle' => 'modal'
-            );
         }
 
         $themeItems = array();
@@ -220,7 +178,6 @@ class header extends wg
         $langItems = array();
         foreach($app->config->langs as $key => $value) $langItems[] = array('text' => $value, 'data-value' => $key, 'url' => "javascript:selectLang(\"$key\")", 'active' => $app->cookie->lang == $key);
         $items[] = array('text' => $lang->lang, 'icon' => 'lang', 'items' => $langItems);
-        $items[] = array('type' => 'divider');
 
         /* Zentao desktop client menu. */
         if(isset($config->xxserver->installed) && $config->xuanxuan->turnon)
@@ -231,16 +188,7 @@ class header extends wg
             $items[] = array('text' => $lang->clientName, 'icon' => 'desktop', 'items' => $clientSubMenu);
         }
 
-        $mobileSubMenu[] = array('content' => array('html' => "<img src='{$config->webRoot}static/images/app-qrcode.png' />", 'style' => 'width: 100px; heigth: 100px;'));
-
-        /* 禅道国际版隐藏该内容。 */
-        if(empty($config->sanplexVersion))
-        {
-            $items[] = array('icon' => 'mobile', 'text' => $lang->downloadMobile, 'items' => $mobileSubMenu);
-            $items[] = array('text' => $lang->aboutZenTao, 'icon' => 'about', 'url' => createLink('misc', 'about'), 'data-toggle' => 'modal', 'innerClass' => $modalClass);
-            $items[] = array('type' => 'html', 'className' => 'menu-item', 'html' => $lang->designedByAIUX);
-            $items[] = array('type' => 'divider');
-        }
+        $items[] = array('type' => 'divider');
 
         if($isGuest)
         {

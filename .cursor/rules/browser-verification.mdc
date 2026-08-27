@@ -1,0 +1,24 @@
+---
+description: 改 UI 时用 Playwright 验收；禁止 Browser MCP 和现场装 Chrome
+alwaysApply: true
+---
+
+# 浏览器验收（Jenshin / WSL）
+
+改界面、样式、列表、表单后必须按下面做，不要重新探测 Chrome 路径或手写登录。
+
+## 工具
+
+- 只用 MCP **`user-playwright`**。浏览器已固定为 `~/.cursor/browsers/chromium`。
+- 不要用 `user-browsermcp`（要 Windows 扩展点 Connect，WSL 下通常没连上）。
+- 不要用 `cursor-ide-browser` 验禅道列表：进不了工作台 iframe。
+- 不要找 `/opt/google/chrome/chrome`，也不要 `playwright install chrome`。
+
+## 固定步骤
+
+1. `node ~/.cursor/bin/jenshin-seed-login.mjs`（账号在 `~/.cursor/jenshin-qa.env`）
+2. Playwright 打开目标页。带操作列的列表默认：`http://127.0.0.1:8080/project-browse.html`
+3. 点、填、提交，再看相关页；不要只截一张静态图。
+4. 若报找不到 Chrome：先跑 `~/.cursor/bin/jenshin-browser-health.sh`，再请用户重载 MCP。不要改去搜业务代码。
+
+会话文件：`~/.cursor/browser-profiles/jenshin/storage-state.json`。过期就重新跑第 1 步。

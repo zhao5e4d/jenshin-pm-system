@@ -88,22 +88,15 @@ div
         (
             h::th($lang->user->mobile),
             h::td($user->mobile),
-            h::th($lang->user->weixin),
-            h::td($user->weixin)
-        ),
-        h::tr
-        (
             h::th($lang->user->phone),
-            h::td($user->phone),
-            h::th($lang->user->qq),
-            h::td($user->qq)
+            h::td($user->phone)
         ),
         h::tr
         (
-            h::th($lang->user->zipcode),
-            h::td($user->zipcode),
             h::th($lang->user->abbr->address),
-            h::td(set::title($user->address), $user->address)
+            h::td(set::title($user->address), $user->address),
+            h::th($lang->user->zipcode),
+            h::td($user->zipcode)
         )
     ),
     isInModal() ? null : h::hr(),
@@ -113,29 +106,15 @@ div
         (
             h::th($lang->user->commiter),
             h::td($user->commiter),
-            h::th($lang->user->skype),
-            h::td($user->skype ? a(set::href("callto://{$user->skype}"), $user->skype) : null)
-        ),
-        h::tr
-        (
             h::th($lang->user->visits),
-            h::td($user->visits),
-            h::th($lang->user->whatsapp),
-            h::td($user->whatsapp)
+            h::td($user->visits)
         ),
         h::tr
         (
             h::th($lang->user->last),
             h::td($user->last),
-            h::th($lang->user->slack),
-            h::td($user->slack)
-        ),
-        h::tr
-        (
             h::th($lang->user->ip),
-            h::td($user->ip),
-            h::th($lang->user->dingding),
-            h::td($user->dingding)
+            h::td($user->ip)
         )
     )
 );

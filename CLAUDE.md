@@ -5,6 +5,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Interactive
 Always reply in Chinese.
 
+## Browser verification
+UI changes must be checked in a browser. Follow `.cursor/rules/browser-verification.mdc`: use Playwright MCP only, seed login with `node ~/.cursor/bin/jenshin-seed-login.mjs`, default list URL `http://127.0.0.1:8080/project-browse.html`. Do not use Browser MCP or look for `/opt/google/chrome/chrome`.
+
 ## Project Overview
 
 ZenTao is a comprehensive, open-source project management software written in PHP that covers the main PM process from product and project management to quality management, documentation management, organization management, and office management. It follows a modular MVC architecture pattern.

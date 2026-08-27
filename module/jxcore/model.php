@@ -599,37 +599,65 @@ class jxcoreModel extends model
         $this->dao->insert(TABLE_JX_APPROVAL)->data($row)->exec();
     }
 
-    public function refreshProgress(int $projectID): void
+    /**
+     * Compute progress / health / blocker from stage gates.
+     *
+     * @param  int         $projectID
+     * @param  array|null  $stages
+     * @param  string      $today
+     * @access public
+     * @return object
+     */
+    public function computeHealth(int $projectID, ?array $stages = null, string $today = ''): object
     {
-        $stages = $this->dao->select('*')->from(TABLE_JX_STAGE)->where('project')->eq($projectID)->fetchAll();
-        $total  = count($stages);
-        $done   = 0;
-        $today  = date('Y-m-d');
-        $health = 'green';
-        $blocker = '';
+        if($today === '') $today = date('Y-m-d');
+        if($stages === null)
+        {
+            $this->ensureSchema();
+            $stages = $this->dao->select('*')->from(TABLE_JX_STAGE)->where('project')->eq($projectID)->fetchAll();
+        }
+
+        $stat = new stdclass();
+        $stat->total    = count($stages);
+        $stat->done     = 0;
+        $stat->health   = 'green';
+        $stat->blocker  = '';
+        $stat->progress = 0;
+        $warnDay        = date('Y-m-d', strtotime('+7 days'));
+
         foreach($stages as $stage)
         {
-            if(in_array($stage->status, array('done', 'approved'))) $done++;
-            if($stage->status == 'rejected') { $health = 'red'; $blocker = $stage->name . '被驳回'; }
+            if(in_array($stage->status, array('done', 'approved'))) $stat->done++;
+            if($stage->status == 'rejected')
+            {
+                $stat->health  = 'red';
+                $stat->blocker = $stage->name . '被驳回';
+            }
             if(!in_array($stage->status, array('done', 'approved')) && $stage->end && $stage->end < $today)
             {
-                $health = 'red';
-                $blocker = $blocker ?: ($stage->name . '逾期');
+                $stat->health  = 'red';
+                $stat->blocker = $stat->blocker ?: ($stage->name . '逾期');
             }
-            elseif($health != 'red' && !in_array($stage->status, array('done', 'approved')) && $stage->end && $stage->end <= date('Y-m-d', strtotime('+7 days')))
+            elseif($stat->health != 'red' && !in_array($stage->status, array('done', 'approved')) && $stage->end && $stage->end <= $warnDay)
             {
-                $health = 'yellow';
+                $stat->health = 'yellow';
             }
         }
-        $progress = $total ? round($done * 100 / $total, 2) : 0;
+        $stat->progress = $stat->total ? round($stat->done * 100 / $stat->total, 2) : 0;
+        return $stat;
+    }
+
+    public function refreshProgress(int $projectID): void
+    {
+        $stat = $this->computeHealth($projectID);
         $this->dao->update(TABLE_JX_PROJECT)
-            ->set('progress')->eq($progress)
-            ->set('health')->eq($health)
-            ->set('blocker')->eq($blocker)
+            ->set('progress')->eq($stat->progress)
+            ->set('health')->eq($stat->health)
+            ->set('blocker')->eq($stat->blocker)
             ->where('project')->eq($projectID)->exec();
-        $this->dao->update(TABLE_PROJECT)->set('progress')->eq($progress)->where('id')->eq($projectID)->exec();
-        if($progress >= 100) $this->dao->update(TABLE_PROJECT)->set('status')->eq('closed')->where('id')->eq($projectID)->andWhere('status')->ne('closed')->exec();
-        elseif($done > 0) $this->dao->update(TABLE_PROJECT)->set('status')->eq('doing')->where('id')->eq($projectID)->andWhere('status')->eq('wait')->exec();
+        $this->dao->update(TABLE_PROJECT)->set('progress')->eq($stat->progress)->where('id')->eq($projectID)->exec();
+        if($stat->progress >= 100) $this->dao->update(TABLE_PROJECT)->set('status')->eq('closed')->where('id')->eq($projectID)->andWhere('status')->ne('closed')->exec();
+        elseif($stat->done > 0) $this->dao->update(TABLE_PROJECT)->set('status')->eq('doing')->where('id')->eq($projectID)->andWhere('status')->eq('wait')->exec();
     }
 
     public function getCosts(int $projectID): array
@@ -701,6 +729,10 @@ class jxcoreModel extends model
         $data = new stdclass();
         $data->filters = $filters;
 
+        $today      = date('Y-m-d');
+        $certDays   = (int)($this->config->jenshin->certWarnDays ?? 90);
+        $windowDays = (int)($this->config->jenshin->windowWarnDays ?? 14);
+
         $extras = $this->dao->select('t1.*, t2.name, t2.status AS projectStatus, t2.begin, t2.end, t2.budget, t2.PM, t2.deleted')
             ->from(TABLE_JX_PROJECT)->alias('t1')
             ->leftJoin(TABLE_PROJECT)->alias('t2')->on('t1.project = t2.id')
@@ -711,26 +743,55 @@ class jxcoreModel extends model
             ->beginIF(!empty($filters['status']))->andWhere('t2.status')->eq($filters['status'])->fi()
             ->fetchAll();
 
-        $today = date('Y-m-d');
-        $data->total     = count($extras);
-        $data->byHealth  = array('green' => 0, 'yellow' => 0, 'red' => 0);
-        $data->byBiz     = array();
-        $data->byStatus  = array();
-        $data->byDept    = array();
-        $data->overdue   = array();
-        $data->budget    = 0;
-        $data->actual    = 0;
-        $data->projects  = $extras;
-
         $projectIDs = array();
+        foreach($extras as $row) $projectIDs[] = (int)$row->project;
+
+        $stagesByProject = array();
+        if($projectIDs)
+        {
+            $allStages = $this->dao->select('*')->from(TABLE_JX_STAGE)->where('project')->in($projectIDs)->orderBy('`order`')->fetchAll();
+            foreach($allStages as $stage) $stagesByProject[(int)$stage->project][] = $stage;
+        }
+
+        $data->total         = count($extras);
+        $data->isEmpty       = count($extras) === 0;
+        $data->filteredEmpty = $data->isEmpty && (!empty($filters['bizType']) || !empty($filters['dept']) || !empty($filters['status']));
+        $data->byHealth      = array('green' => 0, 'yellow' => 0, 'red' => 0);
+        $data->byBiz         = array('registration' => 0, 'marketaccess' => 0, 'admission' => 0);
+        $data->byStatus      = array();
+        $data->byDept        = array();
+        $data->overdue       = array();
+        $data->overdueStages = array();
+        $data->budget        = 0;
+        $data->actual        = 0;
+        $data->blockers      = array();
+        $data->projects      = $extras;
+
         foreach($extras as $row)
         {
-            $projectIDs[] = $row->project;
+            $stat = $this->computeHealth((int)$row->project, $stagesByProject[(int)$row->project] ?? array(), $today);
+            $origHealth   = $row->health;
+            $origProgress = $row->progress;
+            $origBlocker  = $row->blocker;
+            $row->health   = $stat->health;
+            $row->progress = $stat->progress;
+            if($stat->blocker !== '') $row->blocker = $stat->blocker;
+            $row->actual   = 0;
+            if($origHealth != $stat->health || (float)$origProgress != $stat->progress || (string)$origBlocker != (string)$row->blocker)
+            {
+                $this->dao->update(TABLE_JX_PROJECT)
+                    ->set('health')->eq($stat->health)
+                    ->set('progress')->eq($stat->progress)
+                    ->set('blocker')->eq($row->blocker)
+                    ->where('project')->eq((int)$row->project)->exec();
+            }
+
             $health = $row->health ?: 'green';
             if(!isset($data->byHealth[$health])) $data->byHealth[$health] = 0;
             $data->byHealth[$health]++;
             $biz = $row->bizType ?: 'other';
-            $data->byBiz[$biz] = ($data->byBiz[$biz] ?? 0) + 1;
+            if(!isset($data->byBiz[$biz])) $data->byBiz[$biz] = 0;
+            $data->byBiz[$biz]++;
             $st = $row->projectStatus ?: 'wait';
             $data->byStatus[$st] = ($data->byStatus[$st] ?? 0) + 1;
             $dept = $row->leadDept ?: '未分配';
@@ -739,8 +800,39 @@ class jxcoreModel extends model
             $data->byDept[$dept]['budget'] += (float)$row->budget;
             if($health == 'red') $data->byDept[$dept]['red']++;
             $data->budget += (float)$row->budget;
-            if($row->end && $row->end < $today && !in_array($row->projectStatus, array('closed', 'done'))) $data->overdue[] = $row;
+            if($row->end && $row->end < $today && !in_array($row->projectStatus, array('closed', 'done')))
+            {
+                $row->overdueDays = (int)round((strtotime($today) - strtotime($row->end)) / 86400);
+                $data->overdue[] = $row;
+            }
+            if($health == 'red' || !empty($row->blocker)) $data->blockers[] = $row;
         }
+
+        foreach($stagesByProject as $projectID => $stages)
+        {
+            $projectName = '';
+            foreach($extras as $row)
+            {
+                if((int)$row->project === (int)$projectID)
+                {
+                    $projectName = $row->name;
+                    break;
+                }
+            }
+            foreach($stages as $stage)
+            {
+                if(in_array($stage->status, array('done', 'approved')) || empty($stage->end) || $stage->end >= $today) continue;
+                $item = new stdclass();
+                $item->project    = $projectID;
+                $item->name       = $projectName;
+                $item->stageName  = $stage->name;
+                $item->end        = $stage->end;
+                $item->status     = $stage->status;
+                $item->overdueDays = (int)round((strtotime($today) - strtotime($stage->end)) / 86400);
+                $data->overdueStages[] = $item;
+            }
+        }
+        usort($data->overdueStages, function($a, $b) { return $b->overdueDays <=> $a->overdueDays; });
 
         if($projectIDs)
         {
@@ -756,31 +848,76 @@ class jxcoreModel extends model
         }
         $data->delta = $data->budget - $data->actual;
 
-        $data->certExpiring = $this->dao->select('t1.*, t2.name')
+        $certFrom = date('Y-m-d', strtotime('-30 days'));
+        $certTo   = date('Y-m-d', strtotime("+{$certDays} days"));
+        $certs = $this->dao->select('t1.*, t2.name')
             ->from(TABLE_JX_PRODUCT)->alias('t1')
             ->leftJoin(TABLE_PRODUCT)->alias('t2')->on('t1.product = t2.id')
             ->where('t1.deleted')->eq(0)
             ->andWhere('t1.certValidTo')->ne('')
-            ->andWhere('t1.certValidTo')->le(date('Y-m-d', strtotime('+90 days')))
-            ->andWhere('t1.certValidTo')->ge($today)
+            ->andWhere('t1.certValidTo')->ne('0000-00-00')
+            ->andWhere('t1.certValidTo')->ge($certFrom)
+            ->andWhere('t1.certValidTo')->le($certTo)
+            ->orderBy('t1.certValidTo')
             ->fetchAll();
+        foreach($certs as $cert)
+        {
+            $cert->daysLeft = (int)round((strtotime((string)$cert->certValidTo) - strtotime($today)) / 86400);
+        }
+        $data->certExpiring = $certs;
 
-        $data->windows = $this->dao->select('*')->from(TABLE_JX_MARKETACCESS)
-            ->where('deleted')->eq(0)
-            ->andWhere('windowEnd')->ne('')
-            ->andWhere('windowEnd')->le(date('Y-m-d', strtotime('+14 days')))
-            ->andWhere('windowEnd')->ge($today)
-            ->fetchAll();
+        $accessRows = $this->dao->select('*')->from(TABLE_JX_MARKETACCESS)->where('deleted')->eq(0)->fetchAll();
+        $windows = array();
+        foreach($accessRows as $item)
+        {
+            $deadline = $this->validDate($item->windowEnd ?? '') ?: $this->validDate($item->end ?? '');
+            if(!$deadline) continue;
+            $item->windowEnd = $deadline;
+            $item->daysLeft  = (int)round((strtotime($deadline) - strtotime($today)) / 86400);
+            $windows[] = $item;
+        }
+        usort($windows, function($a, $b) { return $a->daysLeft <=> $b->daysLeft; });
+        $urgent = array();
+        $upcoming = array();
+        foreach($windows as $item)
+        {
+            if($item->daysLeft >= -7 && $item->daysLeft <= $windowDays) $urgent[] = $item;
+            elseif($item->daysLeft > $windowDays) $upcoming[] = $item;
+        }
+        $data->windows = $urgent ?: array_slice($upcoming, 0, 5);
 
-        $data->funnel = array();
-        $admits = $this->dao->select('status, COUNT(*) AS total')->from(TABLE_JX_ADMISSION)->where('deleted')->eq(0)->groupBy('status')->fetchPairs();
-        $data->funnel = $admits;
-
-        $data->blockers = array();
+        $funnelOrder = array(
+            '目标医院遴选与入院路径锁定',
+            '药事备案与院内准入',
+            '科室推广与临床带教',
+            '首单入院与跟台放行',
+            '用量爬坡与复购维护'
+        );
+        $funnel = array();
+        foreach($funnelOrder as $name) $funnel[$name] = 0;
+        $admissionCount = 0;
         foreach($extras as $row)
         {
-            if($row->health == 'red' || !empty($row->blocker)) $data->blockers[] = $row;
+            if($row->bizType !== 'admission') continue;
+            $admissionCount++;
+            $currentOrder = 0;
+            foreach($stagesByProject[(int)$row->project] ?? array() as $stage)
+            {
+                if(in_array($stage->status, array('doing', 'submitted', 'approved', 'done', 'rejected', 'blocked')))
+                {
+                    $currentOrder = max($currentOrder, (int)$stage->order);
+                }
+            }
+            if($currentOrder === 0) $currentOrder = 1;
+            $i = 1;
+            foreach($funnelOrder as $name)
+            {
+                if($i <= $currentOrder) $funnel[$name]++;
+                $i++;
+            }
         }
+        $data->funnel = $funnel;
+        $data->admissionCount = $admissionCount;
 
         $data->stages = array();
         if($projectIDs)
@@ -790,5 +927,87 @@ class jxcoreModel extends model
         }
 
         return $data;
+    }
+
+    /**
+     * Normalize empty / zero dates to null.
+     *
+     * @param  string $value
+     * @access protected
+     * @return string
+     */
+    protected function validDate(string $value): string
+    {
+        $value = trim($value);
+        if($value === '' || $value === '0000-00-00' || $value === '0000-00-00 00:00:00') return '';
+        return $value;
+    }
+
+    /**
+     * Welcome-block alerts scoped to the current user.
+     * pendingStage: submitted stage gates on projects I PM.
+     * overdue/blocker: medical matters I own or PM.
+     * task: open tasks assigned to me.
+     *
+     * @param  string $account
+     * @access public
+     * @return array
+     */
+    public function getWelcomeAlerts(string $account): array
+    {
+        $this->ensureSchema();
+        $alerts = array('pendingStage' => 0, 'overdue' => 0, 'blocker' => 0, 'task' => 0);
+        if($account === '') return $alerts;
+
+        $today = helper::today();
+
+        $ownerProjects = array();
+        foreach(array(TABLE_JX_REGISTRATION, TABLE_JX_MARKETACCESS, TABLE_JX_ADMISSION) as $table)
+        {
+            $pairs = $this->dao->select('project')->from($table)
+                ->where('deleted')->eq(0)
+                ->andWhere('owner')->eq($account)
+                ->andWhere('project')->ne(0)
+                ->fetchPairs('project', 'project');
+            if($pairs) $ownerProjects += $pairs;
+        }
+
+        $pmProjects = $this->dao->select('id')->from(TABLE_PROJECT)
+            ->where('deleted')->eq(0)
+            ->andWhere('type')->eq('project')
+            ->andWhere('PM')->eq($account)
+            ->fetchPairs('id', 'id');
+        $myProjects = $ownerProjects + (array)$pmProjects;
+
+        $alerts['pendingStage'] = (int)$this->dao->select('t1.id')->from(TABLE_JX_STAGE)->alias('t1')
+            ->leftJoin(TABLE_PROJECT)->alias('t2')->on('t1.project = t2.id')
+            ->where('t1.status')->eq('submitted')
+            ->andWhere('t2.deleted')->eq(0)
+            ->andWhere('t2.PM')->eq($account)
+            ->count();
+
+        if($myProjects)
+        {
+            $rows = $this->dao->select('t1.health, t1.blocker, t2.end, t2.status AS projectStatus')
+                ->from(TABLE_JX_PROJECT)->alias('t1')
+                ->leftJoin(TABLE_PROJECT)->alias('t2')->on('t1.project = t2.id')
+                ->where('t1.deleted')->eq(0)
+                ->andWhere('t2.deleted')->eq(0)
+                ->andWhere('t1.project')->in($myProjects)
+                ->fetchAll();
+            foreach($rows as $row)
+            {
+                if($row->end && $row->end < $today && !in_array($row->projectStatus, array('closed', 'done'))) $alerts['overdue']++;
+                if($row->health == 'red' || !empty($row->blocker)) $alerts['blocker']++;
+            }
+        }
+
+        $alerts['task'] = (int)$this->dao->select('id')->from(TABLE_TASK)
+            ->where('deleted')->eq(0)
+            ->andWhere('assignedTo')->eq($account)
+            ->andWhere('status')->in(array('wait', 'doing'))
+            ->count();
+
+        return $alerts;
     }
 }

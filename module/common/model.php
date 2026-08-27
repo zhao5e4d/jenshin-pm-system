@@ -1447,7 +1447,8 @@ eof;
         if(in_array("$module.$method", $app->config->logonMethods)) return true;
 
         /* If is the program/project/product/execution admin, have all program privileges. */
-        if($app->config->vision != 'lite' && commonTao::isProjectAdmin($module, $object)) return true;
+        $jxNeedGroup = function_exists('jxNeedGroupPrivForProjectSettings') && jxNeedGroupPrivForProjectSettings($module, $method);
+        if(!$jxNeedGroup && $app->config->vision != 'lite' && commonTao::isProjectAdmin($module, $object)) return true;
 
         /* If not super admin, check the rights. */
         $rights = $app->user->rights['rights'];

@@ -15,10 +15,40 @@ $config->jenshin->blockedModules = array(
     'repo', 'git', 'gitlab', 'gogs', 'gitea', 'gitfox', 'jenkins', 'pipeline', 'codescan',
     'ppm', 'ci', 'compile', 'sonarqube', 'zahost', 'zanode', 'space', 'artifact',
     'build', 'release', 'projectrelease', 'projectbuild', 'branch', 'repobranchtype',
-    'repobranchrule', 'reporeviewflow'
+    'repobranchrule', 'reporeviewflow', 'design'
 );
 
 $config->jenshin->blockedFeatures = 'otherDevOps,qaTestsuite,qaAutomated,qaCaselib,otherAI,productRoadmap,productTrack,productUR,productER,myScore';
+
+/* 项目设置：团队 / 白名单 / 干系人 / 项目权限。不受项目管理员身份放行。 */
+$config->jenshin->projectSettingsPrivs = array(
+    'stakeholder' => true,
+    'project'     => array(
+        'team' => 1, 'managemembers' => 1, 'unlinkmember' => 1,
+        'group' => 1, 'creategroup' => 1, 'managepriv' => 1, 'managegroupmember' => 1, 'copygroup' => 1, 'editgroup' => 1,
+        'whitelist' => 1, 'addwhitelist' => 1, 'unbindwhitelist' => 1
+    )
+);
+
+if(!function_exists('jxNeedGroupPrivForProjectSettings'))
+{
+    /**
+     * 这些方法只认权限分组勾选，项目管理员 / 项目负责人不能绕过。
+     */
+    function jxNeedGroupPrivForProjectSettings($module, $method): bool
+    {
+        global $config;
+        if(empty($config->jenshin->projectSettingsPrivs)) return false;
+        $map    = $config->jenshin->projectSettingsPrivs;
+        $module = strtolower((string)$module);
+        $method = strtolower((string)$method);
+        if($module === 'stakeholder' && !empty($map['stakeholder'])) return true;
+        return $module === 'project' && !empty($map['project'][$method]);
+    }
+}
+
+/* 工作台「SSH密钥」。false 隐藏菜单并拦截入口，改 true 即可恢复。 */
+$config->jenshin->enableSSH = false;
 
 $config->jenshin->bizTypes = array('registration', 'marketaccess', 'admission', 'quality', 'ip', 'supply', 'brand', 'it');
 $config->jenshin->healthList = array('green', 'yellow', 'red');
@@ -50,3 +80,4 @@ $config->objectTables['jxhospital']     = TABLE_JX_HOSPITAL;
 $config->objectTables['jxstage']        = TABLE_JX_STAGE;
 $config->objectTables['jxcost']         = TABLE_JX_COST;
 $config->objectTables['jxdashboard']    = TABLE_JX_PROJECT;
+$config->objectTables['jxboard']        = TABLE_PROJECT;

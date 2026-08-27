@@ -89,24 +89,18 @@ div
     (
         set::className('py-2 flex flex-wrap contact-info'),
         $getItems(array('mobile'  => array('label' => $lang->user->mobile,        'value' => $user->mobile))),
-        $getItems(array('weixin'  => array('label' => $lang->user->weixin,        'value' => $user->weixin))),
         $getItems(array('phone'   => array('label' => $lang->user->phone,         'value' => $user->phone))),
-        $getItems(array('qq'      => array('label' => $lang->user->qq,            'value' => $user->qq))),
-        $getItems(array('zipcode' => array('label' => $lang->user->zipcode,       'value' => $user->zipcode))),
-        $getItems(array('address' => array('label' => $lang->user->abbr->address, 'value' => $user->address)))
+        $getItems(array('address' => array('label' => $lang->user->abbr->address, 'value' => $user->address))),
+        $getItems(array('zipcode' => array('label' => $lang->user->zipcode,       'value' => $user->zipcode)))
     ),
     formRowGroup(set::title($lang->my->form->lblAccount)),
     div
     (
         set::className('py-2 flex flex-wrap account-info'),
         $getItems(array('commiter' => array('label' => $lang->user->commiter, 'value' => $user->commiter))),
-        $getItems(array('skype'    => array('label' => $lang->user->skype,    'value' => $user->skype ? a(set::href("callto://{$user->skype}"), $user->skype) : ''))),
         $getItems(array('visits'   => array('label' => $lang->user->visits,   'value' => $user->visits))),
-        $getItems(array('whatsapp' => array('label' => $lang->user->whatsapp, 'value' => $user->whatsapp))),
         $getItems(array('last'     => array('label' => $lang->user->last,     'value' => $user->last))),
-        $getItems(array('slack'    => array('label' => $lang->user->slack,    'value' => $user->slack))),
-        $getItems(array('ip'       => array('label' => $lang->user->ip,       'value' => $user->ip))),
-        $getItems(array('dingding' => array('label' => $lang->user->dingding, 'value' => $user->dingding)))
+        $getItems(array('ip'       => array('label' => $lang->user->ip,       'value' => $user->ip)))
     ),
     center
     (
