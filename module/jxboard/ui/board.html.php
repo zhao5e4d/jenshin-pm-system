@@ -41,7 +41,7 @@ $donutPanel = function($title, $items, $colors, $emptyText, $emptyLink = '', $em
     {
         $total += is_array($row) ? (int)($row['count'] ?? 0) : (int)$row;
     }
-    if($total <= 0) return div(setClass('pm-dash-panel'), h::h4($title), $emptyBox($emptyText, $emptyLink, $emptyLinkText));
+    if($total <= 0) return div(setClass('pm-dash-panel is-chart'), h::h4($title), $emptyBox($emptyText, $emptyLink, $emptyLinkText));
 
     $acc = 0;
     $stops = array();
@@ -78,7 +78,7 @@ $donutPanel = function($title, $items, $colors, $emptyText, $emptyLink = '', $em
 
     return div
     (
-        setClass('pm-dash-panel'),
+        setClass('pm-dash-panel is-chart'),
         h::h4($title),
         div
         (
@@ -87,6 +87,13 @@ $donutPanel = function($title, $items, $colors, $emptyText, $emptyLink = '', $em
             div(setClass('pm-donut-legend'), $legend)
         )
     );
+};
+
+$panelCount = function($count, $alert = false)
+{
+    $count = (int)$count;
+    if($count <= 0) return null;
+    return span(setClass('pm-panel-count' . ($alert ? ' is-alert' : '')), $count);
 };
 
 div
@@ -165,7 +172,7 @@ if($needCharts)
     }
     $funnelPanel = div
     (
-        setClass('pm-dash-panel'),
+        setClass('pm-dash-panel is-chart'),
         h::h4($lang->jxboard->taskFunnel),
         $funnelTotal > 0 ? div(setClass('pm-funnel'), $funnelRows) : $emptyBox($lang->jxboard->emptyFunnel, createLink('project', 'browse'), $lang->jxboard->createProject)
     );
@@ -191,8 +198,8 @@ if($needLists)
     }
     $overduePanel = div
     (
-        setClass('pm-dash-panel'),
-        h::h4($lang->jxboard->overdueTasks),
+        setClass('pm-dash-panel is-list'),
+        h::h4($lang->jxboard->overdueTasks, $panelCount($board->overdueTaskCount, true)),
         $overdueItems ? div(setClass('pm-dash-list'), $overdueItems) : $emptyBox($lang->jxboard->emptyOverdue)
     );
 
@@ -215,8 +222,8 @@ if($needLists)
     }
     $duePanel = div
     (
-        setClass('pm-dash-panel'),
-        h::h4($lang->jxboard->dueExecutions),
+        setClass('pm-dash-panel is-list'),
+        h::h4($lang->jxboard->dueExecutions, $panelCount(count($dueItems))),
         $dueItems ? div(setClass('pm-dash-list'), $dueItems) : $emptyBox(sprintf($lang->jxboard->emptyDueExec, $warnDays))
     );
 
@@ -225,7 +232,8 @@ if($needLists)
 if($needRisk)
 {
     $riskItems = array();
-    foreach($board->riskProjects as $item)
+    $riskTotal = count($board->riskProjects);
+    foreach(array_slice($board->riskProjects, 0, 8) as $item)
     {
         $health = $item->health ?: 'green';
         $riskItems[] = a
@@ -243,9 +251,9 @@ if($needRisk)
     }
     $riskPanel = div
     (
-        setClass('pm-dash-panel'),
-        h::h4($lang->jxboard->riskProjects),
-        $riskItems ? div(setClass('pm-dash-list'), array_slice($riskItems, 0, 8)) : $emptyBox($lang->jxboard->emptyRisks)
+        setClass('pm-dash-panel is-list'),
+        h::h4($lang->jxboard->riskProjects, $panelCount($riskTotal, true)),
+        $riskItems ? div(setClass('pm-dash-list'), $riskItems) : $emptyBox($lang->jxboard->emptyRisks)
     );
 }
 
@@ -356,15 +364,20 @@ if($needDeptView)
 
 if($viewName == 'overview' && !$isEmpty)
 {
-    $midGrid = div(setClass('pm-dash-grid mt-4'), $statusPanel, $productPanel, $overduePanel, $duePanel, $funnelPanel, $riskPanel);
+    $midGrid = div
+    (
+        setClass('pm-dash-mid mt-4'),
+        div(setClass('pm-dash-grid is-charts'), $statusPanel, $productPanel, $funnelPanel),
+        div(setClass('pm-dash-grid is-lists'), $overduePanel, $duePanel, $riskPanel)
+    );
 }
 elseif($viewName == 'meeting' && !$isEmpty)
 {
-    $midGrid = div(setClass('pm-dash-grid mt-4'), $riskPanel, $overduePanel, $duePanel);
+    $midGrid = div(setClass('pm-dash-grid is-lists mt-4'), $riskPanel, $overduePanel, $duePanel);
 }
 elseif($viewName == 'dept' && !$isEmpty)
 {
-    $midGrid = div(setClass('pm-dash-grid mt-4'), $riskPanel);
+    $midGrid = div(setClass('pm-dash-grid is-lists is-single mt-4'), $riskPanel);
 }
 
 div

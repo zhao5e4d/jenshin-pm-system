@@ -1660,22 +1660,51 @@
     }
 
     /**
+     * Apply a theme class + stylesheet to one document.
+     * @param {Document} doc
+     * @param {string} theme
+     */
+    function applyThemeToDocument(doc, theme)
+    {
+        if(!doc || !doc.documentElement) return;
+        const html = doc.documentElement;
+        const classList = String(html.getAttribute('class') || '').split(/\s+/).filter(x => x.length && !x.startsWith('theme-'));
+        classList.push('theme-' + theme);
+        html.setAttribute('class', classList.join(' '));
+        const themeLink = doc.getElementById('zuiTheme');
+        if(!themeLink) return;
+        const href = themeLink.getAttribute('href');
+        if(!href) return;
+        const oldPath = href.split('/');
+        oldPath.pop();
+        oldPath.push(theme + '.css');
+        themeLink.setAttribute('href', oldPath.join('/'));
+    }
+
+    /**
      * Change current app theme.
-     * @param {string} lang
+     * @param {string} theme
      */
     function changeAppTheme(theme)
     {
-        const classList = $('html').attr('class').split(' ').filter(x => x.length && !x.startsWith('theme-'));
-        classList.push('theme-' + theme);
-        $('html').attr('class', classList.join(' '));
-        const $theme = $('#zuiTheme');
-        const oldPath = $theme.attr('href').split('/');
-        oldPath.pop();
-        oldPath.push(theme + '.css');
-        $theme.attr('href', oldPath.join('/'));
+        applyThemeToDocument(document, theme);
+        try
+        {
+            const topWin = window.top || window;
+            if(topWin.$ && topWin.$.apps) topWin.$.apps.theme = theme;
+            if(topWin !== window) applyThemeToDocument(topWin.document, theme);
+            const frames = topWin.frames || [];
+            for(let i = 0; i < frames.length; i++)
+            {
+                try { applyThemeToDocument(frames[i].document, theme); } catch (e) {}
+            }
+        }
+        catch (e) {}
+
         const userMenu = $('#userMenu-toggle').zui();
         if(!userMenu) return;
         const themeItem = userMenu.options.menu.items.find(x => x.key === 'theme');
+        if(!themeItem || !themeItem.items) return;
         themeItem.items.forEach(item => {item.active = item['data-value'] === theme;});
         userMenu.render({menu: userMenu.options.menu});
     }

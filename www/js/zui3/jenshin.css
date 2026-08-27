@@ -1,14 +1,11 @@
 /**
  * Jenshin PM — studio visual language.
- * Inspired by 智能招聘 (glass, ambient light, refined radius) but with a cooler
- * indigo-slate palette suited to project management. Loaded last so it can
- * refine ZUI + theme + page CSS without replacing theme colors.
+ * Glass surfaces + ambient light. Hue comes from html.theme-* so the
+ * avatar theme menu can retune the whole product without a reload.
  */
 
-/* ---------- Palette: indigo-violet ink + aurora accent ----------
-   Overrides the theme scale (jenshin.css loads last). Swap the primary
-   ramp and --jx-ink-* to retune the whole product hue. */
-:root {
+/* ---------- Theme palettes (html.theme-* wins over themes/*.css :root) ---------- */
+html.theme-purple {
   --color-primary-50: #f4f3ff;
   --color-primary-100: #eae7ff;
   --color-primary-200: #d7d0ff;
@@ -31,16 +28,173 @@
   --color-primary-800-rgb: 60, 47, 147;
   --color-primary-900-rgb: 50, 40, 119;
   --color-primary-950-rgb: 30, 24, 80;
-
-  /* Aurora accent used for the second stop of ambient glows. */
   --jx-accent: #2dd4bf;
   --jx-accent-rgb: 45, 212, 191;
-
-  /* Dark chrome (sidebar, header, dark glass popovers). */
   --jx-ink-900: #0e0b23;
   --jx-ink-800: #171338;
   --jx-ink-700: #221c4f;
   --jx-ink-glass: 26, 21, 60;
+  --jx-ink-deep: 14, 11, 35;
+}
+
+html.theme-default {
+  --color-primary-50: #eef6ff;
+  --color-primary-100: #d9eaff;
+  --color-primary-200: #bcdcff;
+  --color-primary-300: #8ec6ff;
+  --color-primary-400: #59a5ff;
+  --color-primary-500: #3883fa;
+  --color-primary-600: #2b67e5;
+  --color-primary-700: #144ce1;
+  --color-primary-800: #173db6;
+  --color-primary-900: #19388f;
+  --color-primary-950: #142457;
+  --color-primary-50-rgb: 238, 246, 255;
+  --color-primary-100-rgb: 217, 234, 255;
+  --color-primary-200-rgb: 188, 220, 255;
+  --color-primary-300-rgb: 142, 198, 255;
+  --color-primary-400-rgb: 89, 165, 255;
+  --color-primary-500-rgb: 56, 131, 250;
+  --color-primary-600-rgb: 43, 103, 229;
+  --color-primary-700-rgb: 20, 76, 225;
+  --color-primary-800-rgb: 23, 61, 182;
+  --color-primary-900-rgb: 25, 56, 143;
+  --color-primary-950-rgb: 20, 36, 87;
+  --jx-accent: #38bdf8;
+  --jx-accent-rgb: 56, 189, 248;
+  --jx-ink-900: #07101f;
+  --jx-ink-800: #0d1830;
+  --jx-ink-700: #152544;
+  --jx-ink-glass: 13, 24, 48;
+  --jx-ink-deep: 7, 16, 31;
+}
+
+html.theme-blue {
+  --color-primary-50: #eff6ff;
+  --color-primary-100: #dbebff;
+  --color-primary-200: #bfdaff;
+  --color-primary-300: #93c2ff;
+  --color-primary-400: #5aa3ff;
+  --color-primary-500: #2b80ff;
+  --color-primary-600: #1b65f0;
+  --color-primary-700: #1450d6;
+  --color-primary-800: #1642ad;
+  --color-primary-900: #183a88;
+  --color-primary-950: #122454;
+  --color-primary-50-rgb: 239, 246, 255;
+  --color-primary-100-rgb: 219, 235, 255;
+  --color-primary-200-rgb: 191, 218, 255;
+  --color-primary-300-rgb: 147, 194, 255;
+  --color-primary-400-rgb: 90, 163, 255;
+  --color-primary-500-rgb: 43, 128, 255;
+  --color-primary-600-rgb: 27, 101, 240;
+  --color-primary-700-rgb: 20, 80, 214;
+  --color-primary-800-rgb: 22, 66, 173;
+  --color-primary-900-rgb: 24, 58, 136;
+  --color-primary-950-rgb: 18, 36, 84;
+  --jx-accent: #22d3ee;
+  --jx-accent-rgb: 34, 211, 238;
+  --jx-ink-900: #061525;
+  --jx-ink-800: #0c1f38;
+  --jx-ink-700: #123054;
+  --jx-ink-glass: 12, 31, 56;
+  --jx-ink-deep: 6, 21, 37;
+}
+
+html.theme-green {
+  --color-primary-50: #F2FBF8;
+  --color-primary-100: #D2F5EC;
+  --color-primary-200: #A4EBD8;
+  --color-primary-300: #6FD9C2;
+  --color-primary-400: #41C0A7;
+  --color-primary-500: #29AA93;
+  --color-primary-600: #248F83;
+  --color-primary-700: #1B6A5F;
+  --color-primary-800: #1A554D;
+  --color-primary-900: #1A4741;
+  --color-primary-950: #092A27;
+  --color-primary-50-rgb: 242, 251, 248;
+  --color-primary-100-rgb: 210, 245, 236;
+  --color-primary-200-rgb: 164, 235, 216;
+  --color-primary-300-rgb: 111, 217, 194;
+  --color-primary-400-rgb: 65, 192, 167;
+  --color-primary-500-rgb: 41, 170, 147;
+  --color-primary-600-rgb: 36, 143, 131;
+  --color-primary-700-rgb: 27, 106, 95;
+  --color-primary-800-rgb: 26, 85, 77;
+  --color-primary-900-rgb: 26, 71, 65;
+  --color-primary-950-rgb: 9, 42, 39;
+  --jx-accent: #fbbf24;
+  --jx-accent-rgb: 251, 191, 36;
+  --jx-ink-900: #061614;
+  --jx-ink-800: #0c2420;
+  --jx-ink-700: #123832;
+  --jx-ink-glass: 9, 42, 39;
+  --jx-ink-deep: 6, 22, 20;
+}
+
+html.theme-red {
+  --color-primary-50: #FDF4F3;
+  --color-primary-100: #FCE7E7;
+  --color-primary-200: #F8D3D4;
+  --color-primary-300: #F2AFB2;
+  --color-primary-400: #EB8189;
+  --color-primary-500: #DB4352;
+  --color-primary-600: #C43B4F;
+  --color-primary-700: #A9273E;
+  --color-primary-800: #8E2339;
+  --color-primary-900: #7A2136;
+  --color-primary-950: #440D19;
+  --color-primary-50-rgb: 253, 244, 243;
+  --color-primary-100-rgb: 252, 231, 231;
+  --color-primary-200-rgb: 248, 211, 212;
+  --color-primary-300-rgb: 242, 175, 178;
+  --color-primary-400-rgb: 235, 129, 137;
+  --color-primary-500-rgb: 219, 67, 82;
+  --color-primary-600-rgb: 196, 59, 79;
+  --color-primary-700-rgb: 169, 39, 62;
+  --color-primary-800-rgb: 142, 35, 57;
+  --color-primary-900-rgb: 122, 33, 54;
+  --color-primary-950-rgb: 68, 13, 25;
+  --jx-accent: #f59e0b;
+  --jx-accent-rgb: 245, 158, 11;
+  --jx-ink-900: #1a0a10;
+  --jx-ink-800: #2a1218;
+  --jx-ink-700: #3d1a24;
+  --jx-ink-glass: 68, 13, 25;
+  --jx-ink-deep: 26, 10, 16;
+}
+
+html.theme-blackberry {
+  --color-primary-50: #ecf0ff;
+  --color-primary-100: #dae2ff;
+  --color-primary-200: #b6c8fe;
+  --color-primary-300: #8cacfe;
+  --color-primary-400: #5990fd;
+  --color-primary-500: #1078f3;
+  --color-primary-600: #0a5ec1;
+  --color-primary-700: #064794;
+  --color-primary-800: #03316a;
+  --color-primary-900: #011a3f;
+  --color-primary-950: #00102c;
+  --color-primary-50-rgb: 236, 240, 255;
+  --color-primary-100-rgb: 218, 226, 255;
+  --color-primary-200-rgb: 182, 200, 254;
+  --color-primary-300-rgb: 140, 172, 254;
+  --color-primary-400-rgb: 89, 144, 253;
+  --color-primary-500-rgb: 16, 120, 243;
+  --color-primary-600-rgb: 10, 94, 193;
+  --color-primary-700-rgb: 6, 71, 148;
+  --color-primary-800-rgb: 3, 49, 106;
+  --color-primary-900-rgb: 1, 26, 63;
+  --color-primary-950-rgb: 0, 16, 44;
+  --jx-accent: #818cf8;
+  --jx-accent-rgb: 129, 140, 248;
+  --jx-ink-900: #0a0d14;
+  --jx-ink-800: #121826;
+  --jx-ink-700: #1b2438;
+  --jx-ink-glass: 0, 16, 44;
+  --jx-ink-deep: 10, 13, 20;
 }
 
 :root {
@@ -49,6 +203,15 @@
   --jx-ease: cubic-bezier(.22, 1, .36, 1);
   --jx-grad-primary: linear-gradient(135deg, var(--color-primary-400) -20%, var(--color-primary-500) 45%, var(--color-primary-600) 100%);
   --jx-grad-primary-strong: linear-gradient(135deg, var(--color-primary-500) 0%, var(--color-primary-700) 100%);
+
+  /* Fallback chrome (overridden by html.theme-* above). */
+  --jx-accent: var(--color-secondary-400);
+  --jx-accent-rgb: var(--color-secondary-400-rgb);
+  --jx-ink-900: color-mix(in srgb, var(--color-primary-950) 78%, #050508);
+  --jx-ink-800: color-mix(in srgb, var(--color-primary-900) 62%, #0a0a12);
+  --jx-ink-700: color-mix(in srgb, var(--color-primary-800) 55%, #14141e);
+  --jx-ink-glass: var(--color-primary-950-rgb);
+  --jx-ink-deep: var(--color-primary-950-rgb);
 
   /* Light glass: translucent surface + white rim + hairline ring. */
   --jx-glass-bg: linear-gradient(180deg, rgba(255, 255, 255, .78) 0%, rgba(255, 255, 255, .58) 100%);
@@ -92,8 +255,11 @@
   --color-link: var(--color-primary-600);
   --color-link-hover: var(--color-primary-700);
 
-  --zt-page-bg: #edebf8;
+  --zt-page-bg: color-mix(in srgb, var(--color-primary-100) 62%, #f7f6fb) !important;
   --zt-header-height: 3.25rem;
+  --zt-header-bg: var(--jx-ink-800);
+  --zt-header-color: #fff;
+  --zt-navbar-active-color: #fff;
   --zt-menu-bg: var(--jx-ink-900) !important;
   --zt-menu-hover-bg: rgba(255, 255, 255, .08);
   --zt-menu-active-bg: var(--color-primary-500);
@@ -101,16 +267,15 @@
   --zt-menu-text-active: #fff;
   --zt-menu-space: 10px;
 
-  --dtable-header-bg: #f6f5fd;
   --dtable-header-bg: color-mix(in srgb, var(--color-primary-500) 5%, var(--color-canvas));
   --dtable-hover-bg: rgba(var(--color-primary-500-rgb), .06);
   --dtable-striped-bg: rgba(var(--color-primary-500-rgb), .025);
   --dtable-border-color: rgba(var(--color-primary-900-rgb), .06);
 
-  --form-control-border: #ded9ee;
+  --form-control-border: color-mix(in srgb, var(--color-primary-400) 22%, #e6e6ee);
   --form-control-focus: var(--color-primary-500);
-  --form-label-color: #3b3557;
-  --btn-border-color: #dcd7ee;
+  --form-label-color: color-mix(in srgb, var(--color-primary-950) 52%, #3f4658);
+  --btn-border-color: color-mix(in srgb, var(--color-primary-400) 18%, #e4e4ec);
   --btn-bg: #fff;
   --menu-selected-bg: rgba(var(--color-primary-500-rgb), .08);
   --scrollbar-size: 8px;
@@ -230,7 +395,7 @@ a {
 }
 
 #menuMoreList {
-  background: linear-gradient(180deg, rgba(var(--jx-ink-glass), .92), rgba(14, 11, 35, .94)) !important;
+  background: linear-gradient(180deg, rgba(var(--jx-ink-glass), .92), rgba(var(--jx-ink-deep), .94)) !important;
   border: 1px solid rgba(255, 255, 255, .12);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-lg);
@@ -256,7 +421,7 @@ a {
   z-index: 40;
 }
 
-.theme-default #header,
+#header,
 .in-workspace #header {
   background:
     linear-gradient(90deg, rgba(var(--color-primary-400-rgb), .26), transparent 44%),
@@ -264,20 +429,32 @@ a {
     linear-gradient(180deg, var(--jx-ink-700) 0%, var(--jx-ink-800) 100%) !important;
 }
 
+#header,
+.in-workspace #header {
+  color: #fff !important;
+}
+
+#navbar {
+  --nav-active-color: #fff;
+}
+
 #navbar > .nav > .nav-item > a {
   position: relative;
   border-radius: 999px;
   font-weight: 500;
   letter-spacing: .02em;
+  color: rgba(255, 255, 255, .78) !important;
   transition: background-color .16s var(--jx-ease), color .16s var(--jx-ease);
 }
 
 #navbar > .nav > .nav-item > a:hover {
   background: rgba(255, 255, 255, .08) !important;
+  color: #fff !important;
 }
 
 #navbar > .nav > .nav-item > a.active {
   background: rgba(255, 255, 255, .1) !important;
+  color: #fff !important;
 }
 
 #navbar > .nav > .nav-item > a.active > .text {
@@ -440,7 +617,7 @@ a {
   --jx-glass-pop-muted: rgba(255, 255, 255, .58);
   color: var(--jx-glass-pop-fg) !important;
   background:
-    linear-gradient(180deg, rgba(var(--jx-ink-glass), .8) 0%, rgba(14, 11, 35, .86) 100%) !important;
+    linear-gradient(180deg, rgba(var(--jx-ink-glass), .8) 0%, rgba(var(--jx-ink-deep), .86) 100%) !important;
   border: 1px solid rgba(255, 255, 255, .18) !important;
   border-radius: 16px !important;
   box-shadow:
@@ -576,7 +753,7 @@ a {
 #navbar .menu.popup {
   color: rgba(255, 255, 255, .88) !important;
   background:
-    linear-gradient(180deg, rgba(var(--jx-ink-glass), .9) 0%, rgba(14, 11, 35, .94) 100%) !important;
+    linear-gradient(180deg, rgba(var(--jx-ink-glass), .9) 0%, rgba(var(--jx-ink-deep), .94) 100%) !important;
   border: 1px solid rgba(255, 255, 255, .16) !important;
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, .14),
@@ -1246,19 +1423,18 @@ body.m-user-login,
 
 /* ---------- Dark mode ---------- */
 .dark {
-  --zt-page-bg: #0b0820;
-  --color-border: #2c2551;
-  --color-border-rgb: 44, 37, 81;
-  --form-control-border: #362e60;
-  --form-label-color: #cfc9e8;
-  --btn-border-color: #392f66;
-  --btn-bg: #1a1540;
-  --dtable-header-bg: #171338;
+  --zt-page-bg: color-mix(in srgb, var(--color-primary-950) 72%, #050508);
+  --color-border: color-mix(in srgb, var(--color-primary-800) 42%, #1c2030);
+  --form-control-border: color-mix(in srgb, var(--color-primary-700) 40%, #222838);
+  --form-label-color: color-mix(in srgb, var(--color-primary-100) 55%, #c9d0dc);
+  --btn-border-color: color-mix(in srgb, var(--color-primary-700) 36%, #262c3c);
+  --btn-bg: color-mix(in srgb, var(--color-primary-950) 55%, #12141c);
+  --dtable-header-bg: color-mix(in srgb, var(--color-primary-900) 40%, #12141c);
   --dtable-hover-bg: rgba(var(--color-primary-500-rgb), .12);
-  --dtable-striped-bg: #14102f;
-  --dtable-border-color: #272052;
-  --jx-glass-bg: linear-gradient(180deg, rgba(var(--jx-ink-glass), .76) 0%, rgba(14, 11, 35, .84) 100%);
-  --jx-glass-bg-strong: linear-gradient(180deg, rgba(var(--jx-ink-glass), .9) 0%, rgba(14, 11, 35, .94) 100%);
+  --dtable-striped-bg: color-mix(in srgb, var(--color-primary-950) 45%, #101218);
+  --dtable-border-color: color-mix(in srgb, var(--color-primary-800) 36%, #1a2030);
+  --jx-glass-bg: linear-gradient(180deg, rgba(var(--jx-ink-glass), .76) 0%, rgba(var(--jx-ink-deep), .84) 100%);
+  --jx-glass-bg-strong: linear-gradient(180deg, rgba(var(--jx-ink-glass), .9) 0%, rgba(var(--jx-ink-deep), .94) 100%);
   --jx-glass-border: rgba(255, 255, 255, .1);
   --jx-glass-ring:
     inset 0 1px 0 rgba(255, 255, 255, .07),
@@ -1268,7 +1444,7 @@ body.m-user-login,
     inset 0 1px 0 rgba(255, 255, 255, .1),
     0 20px 44px -22px rgba(0, 0, 0, .6),
     0 0 0 1px rgba(255, 255, 255, .05);
-  --jx-hairline: rgba(184, 172, 254, .12);
+  --jx-hairline: rgba(var(--color-primary-300-rgb), .12);
 }
 
 .dark body,
@@ -1705,3 +1881,7 @@ hr {
 .jx-health-green { background: var(--color-success-50); color: var(--color-success-700); }
 .jx-health-yellow { background: var(--color-warning-50); color: var(--color-warning-700); }
 .jx-health-red { background: var(--color-danger-50); color: var(--color-danger-700); }
+
+.guide-block .theme-switch div.theme-purple { background-color: #6c5ce7; }
+.guide-block .theme-switch div.theme-default { background-color: #3883fa; }
+.guide-block .theme-switch div.theme-blue { background-color: #2b80ff; }

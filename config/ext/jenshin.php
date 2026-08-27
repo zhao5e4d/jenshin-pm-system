@@ -10,6 +10,9 @@ $config->jenshin = new stdclass();
 $config->jenshin->version = '1.0.0';
 $config->jenshin->edition = 'medical-pm';
 
+/* 默认萱萱紫：与当前靛紫玻璃语言同一套色阶。 */
+if(isset($config->default)) $config->default->theme = 'purple';
+
 $config->jenshin->blockedModules = array(
     'qa', 'bug', 'testcase', 'testtask', 'testsuite', 'testreport', 'caselib', 'automation',
     'repo', 'git', 'gitlab', 'gogs', 'gitea', 'gitfox', 'jenkins', 'pipeline', 'codescan',
