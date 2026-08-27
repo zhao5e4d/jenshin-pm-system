@@ -21,7 +21,6 @@ $fieldItems = array(
     $lang->jxproduct->line         => $product->line,
     $lang->jxproduct->certNo       => $product->certNo,
     $lang->jxproduct->certValidTo  => $product->certValidTo,
-    $lang->jxproduct->udi          => $product->udi,
     $lang->jxproduct->tenderCode   => $product->tenderCode,
     $lang->jxproduct->manufacturer => $product->manufacturer,
     $lang->jxproduct->specs        => $product->specs,

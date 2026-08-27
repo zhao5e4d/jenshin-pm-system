@@ -38,3 +38,13 @@ $lang->jxdashboard->overviewAction = '经营总览';
 $lang->jxdashboard->deptAction     = '部门经营';
 $lang->jxdashboard->portfolioAction= '项目组合';
 $lang->jxdashboard->meetingAction  = '会议视图';
+
+$lang->jxdashboard->menu = new stdclass();
+$lang->jxdashboard->menu->overview  = array('link' => "{$lang->jxdashboard->overview}|jxdashboard|overview|");
+$lang->jxdashboard->menu->dept      = array('link' => "{$lang->jxdashboard->dept}|jxdashboard|dept|");
+$lang->jxdashboard->menu->portfolio = array('link' => "{$lang->jxdashboard->portfolio}|jxdashboard|portfolio|");
+$lang->jxdashboard->menu->meeting   = array('link' => "{$lang->jxdashboard->meeting}|jxdashboard|meeting|");
+$lang->jxdashboard->menuOrder[5]  = 'overview';
+$lang->jxdashboard->menuOrder[10] = 'dept';
+$lang->jxdashboard->menuOrder[15] = 'portfolio';
+$lang->jxdashboard->menuOrder[20] = 'meeting';

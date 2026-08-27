@@ -1,6 +1,3 @@
--- Jenshin medical PM schema v1.0.0
--- Idempotent: CREATE TABLE IF NOT EXISTS + INSERT IGNORE for templates.
-
 CREATE TABLE IF NOT EXISTS `zt_jx_schema` (
   `id` int unsigned NOT NULL AUTO_INCREMENT,
   `code` varchar(60) NOT NULL DEFAULT '',

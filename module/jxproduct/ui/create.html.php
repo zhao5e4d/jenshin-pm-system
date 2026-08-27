@@ -25,12 +25,11 @@ formPanel
     ),
     formRow
     (
-        formGroup(set::width('1/2'), set::label($lang->jxproduct->udi), set::name('udi'), set::value($isEdit ? $product->udi : '')),
+        formGroup(set::width('1/2'), set::label($lang->jxproduct->manufacturer), set::name('manufacturer'), set::value($isEdit ? $product->manufacturer : '')),
         formGroup(set::width('1/2'), set::label($lang->jxproduct->tenderCode), set::name('tenderCode'), set::value($isEdit ? $product->tenderCode : ''))
     ),
     formRow
     (
-        formGroup(set::width('1/2'), set::label($lang->jxproduct->manufacturer), set::name('manufacturer'), set::value($isEdit ? $product->manufacturer : '')),
         formGroup(set::width('1/2'), set::label($lang->jxproduct->specs), set::name('specs'), set::value($isEdit ? $product->specs : ''))
     ),
     formRow(formGroup(set::label($lang->jxproduct->patents), set::name('patents'), set::value($isEdit ? $product->patents : ''))),

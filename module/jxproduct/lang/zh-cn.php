@@ -30,3 +30,13 @@ $lang->jxproduct->browseAction = '浏览产品档案';
 $lang->jxproduct->createAction = '新建产品档案';
 $lang->jxproduct->editAction   = '编辑产品档案';
 $lang->jxproduct->viewAction   = '查看产品档案';
+
+$lang->jxproduct->menu = new stdclass();
+$lang->jxproduct->menu->browse = array('link' => "{$lang->jxproduct->browse}|jxproduct|browse|", 'alias' => 'view,edit');
+$lang->jxproduct->menu->create = array('link' => "{$lang->jxproduct->create}|jxproduct|create|");
+$lang->jxproduct->menuOrder[5]  = 'browse';
+$lang->jxproduct->menuOrder[10] = 'create';
+
+$lang->jxproduct->featureBar = array();
+$lang->jxproduct->featureBar['browse']['all']      = $lang->jxproduct->all;
+$lang->jxproduct->featureBar['browse']['expiring'] = $lang->jxproduct->expiring;

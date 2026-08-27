@@ -48,3 +48,13 @@ $lang->jxmarketaccess->browseAction = '浏览准入事项';
 $lang->jxmarketaccess->createAction = '新建准入事项';
 $lang->jxmarketaccess->editAction   = '编辑准入事项';
 $lang->jxmarketaccess->viewAction   = '查看准入事项';
+
+$lang->jxmarketaccess->menu = new stdclass();
+$lang->jxmarketaccess->menu->browse = array('link' => "{$lang->jxmarketaccess->browse}|jxmarketaccess|browse|", 'alias' => 'view,edit');
+$lang->jxmarketaccess->menu->create = array('link' => "{$lang->jxmarketaccess->create}|jxmarketaccess|create|");
+$lang->jxmarketaccess->menuOrder[5]  = 'browse';
+$lang->jxmarketaccess->menuOrder[10] = 'create';
+
+$lang->jxmarketaccess->featureBar = array();
+$lang->jxmarketaccess->featureBar['browse']['all'] = $lang->jxmarketaccess->all;
+foreach($lang->jxmarketaccess->typeList as $key => $text) $lang->jxmarketaccess->featureBar['browse'][$key] = $text;

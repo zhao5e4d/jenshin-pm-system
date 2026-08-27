@@ -18,18 +18,118 @@ class jxcoreModel extends model
 
         try
         {
-            $exists = $this->dao->query("SHOW TABLES LIKE 'zt_jx_schema'")->fetch();
-            if(empty($exists))
-            {
-                $this->runInstallSql();
-            }
+            if(!$this->dbh->tableExist(TABLE_JX_SCHEMA)) $this->runInstallSql();
         }
         catch(Throwable $e)
         {
             try { $this->runInstallSql(); } catch(Throwable $ignored) { return false; }
         }
+        $this->enableExecutionOnLinkedProjects();
+        $this->syncArchiveLinesToProduct();
         $done = true;
         return true;
+    }
+
+    /**
+     * Enable execution list for medical matter projects created as no-sprint kanban.
+     *
+     * @access protected
+     * @return void
+     */
+    protected function enableExecutionOnLinkedProjects(): void
+    {
+        try
+        {
+            if(!$this->dbh->tableExist(TABLE_JX_SCHEMA) || !$this->dbh->tableExist(TABLE_JX_PROJECT)) return;
+            $applied = $this->dao->select('id')->from(TABLE_JX_SCHEMA)->where('code')->eq('enable-execution')->fetch();
+            if($applied) return;
+
+            $projectIDs = $this->dao->select('project')->from(TABLE_JX_PROJECT)->where('project')->ne(0)->fetchPairs('project', 'project');
+            if($projectIDs)
+            {
+                $this->dao->update(TABLE_PROJECT)
+                    ->set('model')->eq('scrum')
+                    ->set('multiple')->eq('1')
+                    ->where('id')->in($projectIDs)
+                    ->andWhere('type')->eq('project')
+                    ->exec();
+                $this->dao->update(TABLE_PROJECT)
+                    ->set('multiple')->eq('1')
+                    ->set('type')->eq('sprint')
+                    ->where('project')->in($projectIDs)
+                    ->andWhere('type')->in('kanban,sprint')
+                    ->exec();
+            }
+
+            $row = new stdclass();
+            $row->code        = 'enable-execution';
+            $row->version     = '1.0.1';
+            $row->appliedDate = helper::now();
+            $this->dao->insert(TABLE_JX_SCHEMA)->data($row)->exec();
+        }
+        catch(Throwable $e) { }
+    }
+
+    /**
+     * Copy medical-archive line names onto original product lines so the list column 所属产品线 has values.
+     *
+     * @access protected
+     * @return void
+     */
+    protected function syncArchiveLinesToProduct(): void
+    {
+        try
+        {
+            if(!$this->dbh->tableExist(TABLE_JX_SCHEMA) || !$this->dbh->tableExist(TABLE_JX_PRODUCT)) return;
+            $applied = $this->dao->select('id')->from(TABLE_JX_SCHEMA)->where('code')->eq('sync-product-line')->fetch();
+            if($applied) return;
+
+            $rows = $this->dao->select('product, line')->from(TABLE_JX_PRODUCT)->where('line')->ne('')->fetchAll();
+            $lineIDs = array();
+            foreach($rows as $row)
+            {
+                $name = trim((string)$row->line);
+                if($name === '') continue;
+                if(!isset($lineIDs[$name]))
+                {
+                    $existed = (int)$this->dao->select('id')->from(TABLE_MODULE)
+                        ->where('type')->eq('line')
+                        ->andWhere('deleted')->eq('0')
+                        ->andWhere('name')->eq($name)
+                        ->fetch('id');
+                    if($existed)
+                    {
+                        $lineIDs[$name] = $existed;
+                    }
+                    else
+                    {
+                        $line = new stdclass();
+                        $line->type   = 'line';
+                        $line->parent = 0;
+                        $line->grade  = 1;
+                        $line->name   = $name;
+                        $line->root   = 0;
+                        $this->dao->insert(TABLE_MODULE)->data($line)->exec();
+                        $id = (int)$this->dao->lastInsertID();
+                        $this->dao->update(TABLE_MODULE)->set('path')->eq(",{$id},")->set('`order`')->eq($id)->where('id')->eq($id)->exec();
+                        $lineIDs[$name] = $id;
+                    }
+                }
+
+                $this->dao->update(TABLE_PRODUCT)
+                    ->set('line')->eq($lineIDs[$name])
+                    ->where('id')->eq((int)$row->product)
+                    ->andWhere('line')->eq(0)
+                    ->exec();
+            }
+
+            $mark = new stdclass();
+            $mark->code        = 'sync-product-line';
+            $mark->version     = '1.0.2';
+            $mark->appliedDate = helper::now();
+            $this->dao->insert(TABLE_JX_SCHEMA)->data($mark)->exec();
+        }
+        catch(Throwable $e) { }
     }
 
     /**
@@ -42,12 +142,11 @@ class jxcoreModel extends model
     {
         $file = $this->app->getBasePath() . 'db/jenshin/install.sql';
         if(!is_file($file)) return;
-        $raw = file_get_contents($file);
-        $sqls = array_filter(array_map('trim', explode(';', $raw)));
-        foreach($sqls as $sql)
+        $raw = preg_replace('/^\s*--.*$/m', '', (string)file_get_contents($file));
+        foreach(array_filter(array_map('trim', explode(';', $raw))) as $sql)
         {
-            if($sql === '' || str_starts_with($sql, '--')) continue;
-            try { $this->dao->exec($sql); } catch(Throwable $e) { }
+            if($sql === '') continue;
+            try { $this->dbh->rawQuery($sql); } catch(Throwable $e) { }
         }
     }
 
@@ -96,7 +195,7 @@ class jxcoreModel extends model
         {
             foreach($extra as $key => $value)
             {
-                if($key == 'id' || $key == 'product') continue;
+                if($key == 'id' || $key == 'product' || $key == 'line') continue;
                 $product->$key = $value;
             }
             $product->archiveID = $extra->id;
@@ -105,7 +204,6 @@ class jxcoreModel extends model
         {
             $product->model = $product->code;
             $product->category = '';
-            $product->line = '';
             $product->certNo = '';
             $product->certValidTo = '';
             $product->specs = '';
@@ -134,6 +232,64 @@ class jxcoreModel extends model
         $row->product = $productID;
         $this->dao->insert(TABLE_JX_PRODUCT)->data($row)->exec();
         return (int)$this->dao->lastInsertID();
+    }
+
+    /**
+     * Persist medical archive fields from the current request without touching zt_product columns.
+     */
+    public function saveProductArchiveFromPost(int $productID): int
+    {
+        $map = array(
+            'jxModel'        => 'model',
+            'jxCategory'     => 'category',
+            'jxLine'         => 'line',
+            'jxCertNo'       => 'certNo',
+            'jxCertValidTo'  => 'certValidTo',
+            'jxSpecs'        => 'specs',
+            'jxUdi'          => 'udi',
+            'jxManufacturer' => 'manufacturer',
+            'jxPatents'      => 'patents',
+            'jxTenderCode'   => 'tenderCode',
+            'model'          => 'model',
+            'category'       => 'category',
+            'certNo'         => 'certNo',
+            'certValidTo'    => 'certValidTo',
+            'specs'          => 'specs',
+            'udi'            => 'udi',
+            'manufacturer'   => 'manufacturer',
+            'patents'        => 'patents',
+            'tenderCode'     => 'tenderCode'
+        );
+
+        $existing = $this->getProductArchive($productID);
+        $extra    = $this->dao->select('*')->from(TABLE_JX_PRODUCT)->where('product')->eq($productID)->fetch();
+        $data     = new stdclass();
+        foreach(array('model', 'category', 'line', 'certNo', 'certValidTo', 'specs', 'udi', 'manufacturer', 'patents', 'tenderCode') as $field)
+        {
+            if($field === 'line')
+            {
+                $data->line = ($extra && isset($extra->line)) ? $extra->line : '';
+                continue;
+            }
+            $data->$field = ($existing && isset($existing->$field)) ? $existing->$field : '';
+        }
+        foreach($map as $postKey => $field)
+        {
+            $value = $this->post->$postKey;
+            if($value !== false && $value !== null) $data->$field = $value;
+        }
+
+        $productLine = $this->dao->select('line')->from(TABLE_PRODUCT)->where('id')->eq($productID)->fetch('line');
+        if(!empty($productLine))
+        {
+            $lineName = $this->dao->select('name')->from(TABLE_MODULE)
+                ->where('id')->eq((int)$productLine)
+                ->andWhere('type')->eq('line')
+                ->fetch('name');
+            if($lineName) $data->line = $lineName;
+        }
+
+        return $this->saveProductArchive($productID, $data);
     }
 
     public function getProjectExtra(int $projectID): ?object
@@ -196,8 +352,8 @@ class jxcoreModel extends model
 
         $project = new stdclass();
         $project->type          = 'project';
-        $project->model         = 'kanban';
-        $project->multiple      = 0;
+        $project->model         = 'scrum';
+        $project->multiple      = 1;
         $project->hasProduct    = empty($matter->product) ? 0 : 1;
         $project->name          = $matter->name;
         $project->code          = $matter->code ?? '';
@@ -230,11 +386,11 @@ class jxcoreModel extends model
             ->where('id')->eq($projectID)->exec();
 
         $execution = clone $project;
-        $execution->type     = 'kanban';
+        $execution->type     = 'sprint';
         $execution->project  = $projectID;
         $execution->parent   = $projectID;
         $execution->grade    = 1;
-        $execution->multiple = 0;
+        $execution->multiple = 1;
         $execution->acl      = 'open';
         unset($execution->model);
         $this->dao->insert(TABLE_PROJECT)->data($execution)->exec();

@@ -9,10 +9,12 @@ $bizLink   = function($method, $biz = '', $dept = '', $status = '') { return cre
 featureBar
 (
     set::current($viewName),
-    item(set::id('overview'),  set::text($lang->jxdashboard->overview),  set::url($bizLink('overview', $filters['bizType'], $filters['dept'], $filters['status']))),
-    item(set::id('dept'),      set::text($lang->jxdashboard->dept),      set::url($bizLink('dept', $filters['bizType'], $filters['dept'], $filters['status']))),
-    item(set::id('portfolio'), set::text($lang->jxdashboard->portfolio), set::url($bizLink('portfolio', $filters['bizType'], $filters['dept'], $filters['status']))),
-    item(set::id('meeting'),   set::text($lang->jxdashboard->meeting),   set::url($bizLink('meeting', $filters['bizType'], $filters['dept'], $filters['status'])))
+    set::items(array(
+        array('id' => 'overview',  'text' => $lang->jxdashboard->overview,  'url' => $bizLink('overview',  $filters['bizType'], $filters['dept'], $filters['status']), 'active' => $viewName == 'overview'),
+        array('id' => 'dept',      'text' => $lang->jxdashboard->dept,      'url' => $bizLink('dept',      $filters['bizType'], $filters['dept'], $filters['status']), 'active' => $viewName == 'dept'),
+        array('id' => 'portfolio', 'text' => $lang->jxdashboard->portfolio, 'url' => $bizLink('portfolio', $filters['bizType'], $filters['dept'], $filters['status']), 'active' => $viewName == 'portfolio'),
+        array('id' => 'meeting',   'text' => $lang->jxdashboard->meeting,   'url' => $bizLink('meeting',   $filters['bizType'], $filters['dept'], $filters['status']), 'active' => $viewName == 'meeting')
+    ))
 );
 
 div
@@ -71,7 +73,7 @@ foreach($board->projects as $project)
 $overdueItems = array();
 foreach($board->overdue as $item) $overdueItems[] = li(a(set::href(createLink('project', 'view', "projectID={$item->project}")), $item->name . ' · ' . $item->end));
 $certItems = array();
-foreach($board->certExpiring as $item) $certItems[] = li(a(set::href(createLink('jxproduct', 'view', "id={$item->product}")), $item->name . ' · ' . $item->certValidTo));
+foreach($board->certExpiring as $item) $certItems[] = li(a(set::href(createLink('product', 'view', "productID={$item->product}")), $item->name . ' · ' . $item->certValidTo));
 $windowItems = array();
 foreach($board->windows as $item) $windowItems[] = li(a(set::href(createLink('jxmarketaccess', 'view', "id={$item->id}")), $item->name . ' · ' . $item->windowEnd));
 $blockerItems = array();
@@ -79,7 +81,7 @@ foreach($board->blockers as $item) $blockerItems[] = li(a(set::href(createLink('
 $funnelItems = array();
 foreach($board->funnel as $st => $count) $funnelItems[] = li(zget($lang->jxcore->statusList, $st, $st) . '：' . $count);
 
-panel
+div
 (
     setClass('jx-dashboard'),
     $cards,

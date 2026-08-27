@@ -31,7 +31,3 @@ $config->jxproduct->dtable->fieldList['certNo']['type']  = 'text';
 $config->jxproduct->dtable->fieldList['certValidTo']['name']  = 'certValidTo';
 $config->jxproduct->dtable->fieldList['certValidTo']['title'] = $lang->jxproduct->certValidTo;
 $config->jxproduct->dtable->fieldList['certValidTo']['type']  = 'date';
-
-$config->jxproduct->dtable->fieldList['udi']['name']  = 'udi';
-$config->jxproduct->dtable->fieldList['udi']['title'] = $lang->jxproduct->udi;
-$config->jxproduct->dtable->fieldList['udi']['type']  = 'text';

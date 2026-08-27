@@ -44,3 +44,15 @@ $lang->jxadmission->createAction   = '新建入院事项';
 $lang->jxadmission->editAction     = '编辑入院事项';
 $lang->jxadmission->viewAction     = '查看入院事项';
 $lang->jxadmission->hospitalAction = '维护医院';
+
+$lang->jxadmission->menu = new stdclass();
+$lang->jxadmission->menu->browse   = array('link' => "{$lang->jxadmission->browse}|jxadmission|browse|", 'alias' => 'view,edit');
+$lang->jxadmission->menu->create   = array('link' => "{$lang->jxadmission->create}|jxadmission|create|");
+$lang->jxadmission->menu->hospital = array('link' => "{$lang->jxadmission->hospital}|jxadmission|hospital|");
+$lang->jxadmission->menuOrder[5]  = 'browse';
+$lang->jxadmission->menuOrder[10] = 'create';
+$lang->jxadmission->menuOrder[15] = 'hospital';
+
+$lang->jxadmission->featureBar = array();
+$lang->jxadmission->featureBar['browse']['all']   = $lang->jxadmission->all;
+$lang->jxadmission->featureBar['browse']['doing'] = $lang->jxadmission->doing;

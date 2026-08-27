@@ -39,3 +39,13 @@ $lang->jxregistration->browseAction = '浏览注册事项';
 $lang->jxregistration->createAction = '新建注册事项';
 $lang->jxregistration->editAction   = '编辑注册事项';
 $lang->jxregistration->viewAction   = '查看注册事项';
+
+$lang->jxregistration->menu = new stdclass();
+$lang->jxregistration->menu->browse = array('link' => "{$lang->jxregistration->browse}|jxregistration|browse|", 'alias' => 'view,edit');
+$lang->jxregistration->menu->create = array('link' => "{$lang->jxregistration->create}|jxregistration|create|");
+$lang->jxregistration->menuOrder[5]  = 'browse';
+$lang->jxregistration->menuOrder[10] = 'create';
+
+$lang->jxregistration->featureBar = array();
+$lang->jxregistration->featureBar['browse']['all'] = $lang->jxregistration->all;
+foreach($lang->jxregistration->typeList as $key => $text) $lang->jxregistration->featureBar['browse'][$key] = $text;
