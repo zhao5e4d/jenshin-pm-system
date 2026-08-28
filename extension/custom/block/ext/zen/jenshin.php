@@ -41,7 +41,8 @@ protected function printWelcomeBlock(): void
     $honorary = $finishTask ? zget($this->lang->block->honorary, 'task', '') : '';
 
     $alerts = $this->loadModel('jxcore')->getWelcomeAlerts($this->app->user->account);
-    $dashboardLink = common::hasPriv('jxdashboard', 'overview') ? helper::createLink('jxdashboard', 'overview') : '';
+    $jxDashModule  = !empty($this->config->jenshin->enableLegacyBizMenus) ? 'jxdashboard' : 'jxboard';
+    $dashboardLink = common::hasPriv($jxDashModule, 'overview') ? helper::createLink($jxDashModule, 'overview') : '';
     $taskLink = '';
     if(common::hasPriv('my', 'work') && $this->config->vision != 'lite') $taskLink = helper::createLink('my', 'work', 'mode=task&browseType=assignedTo');
     if(common::hasPriv('my', 'contribute') && $this->config->vision == 'lite') $taskLink = helper::createLink('my', 'contribute', 'mode=task&browseType=assignedTo');

@@ -69,6 +69,13 @@ $lang->mainNav->menuOrder[50] = 'system';
 $lang->mainNav->menuOrder[60] = 'admin';
 $lang->dividerMenu = ',doc,admin,';
 
+/* 默认不注册四个旧业务菜单，模块与语言项保留。 */
+if(empty($config->jenshin->enableLegacyBizMenus))
+{
+    unset($lang->mainNav->jxregistration, $lang->mainNav->jxmarketaccess, $lang->mainNav->jxadmission, $lang->mainNav->jxdashboard);
+    unset($lang->mainNav->menuOrder[20], $lang->mainNav->menuOrder[25], $lang->mainNav->menuOrder[30], $lang->mainNav->menuOrder[38]);
+}
+
 $lang->navGroup->jxproduct      = 'product';
 $lang->navGroup->jxregistration = 'jxregistration';
 $lang->navGroup->jxmarketaccess = 'jxmarketaccess';

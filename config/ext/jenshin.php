@@ -55,6 +55,10 @@ if(!function_exists('jxNeedGroupPrivForProjectSettings'))
 /* 工作台「SSH密钥」。false 隐藏菜单并拦截入口，改 true 即可恢复。 */
 $config->jenshin->enableSSH = false;
 
+/* 产品注册 / 市场准入 / 推广入院 / 旧数据看板。false 不注册一级菜单，模块代码保留，改 true 即可恢复。 */
+$config->jenshin->legacyBizModules = array('jxregistration', 'jxmarketaccess', 'jxadmission', 'jxdashboard');
+$config->jenshin->enableLegacyBizMenus = false;
+
 $config->jenshin->bizTypes = array('registration', 'marketaccess', 'admission', 'quality', 'ip', 'supply', 'brand', 'it');
 $config->jenshin->healthList = array('green', 'yellow', 'red');
 $config->jenshin->stageStatus = array('wait', 'doing', 'submitted', 'approved', 'rejected', 'done');
