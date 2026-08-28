@@ -1,0 +1,6 @@
+/* 创建页标题旁的 Scrum/看板/融合敏捷下拉，锁定为默认 Scrum。 */
+.m-project-create .panel-title .dropdown,
+.m-project-create .panel-heading .dropdown,
+.m-project-create .panel-title .gray-300-outline.rounded-full {
+    display: none !important;
+}

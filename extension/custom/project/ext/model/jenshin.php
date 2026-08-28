@@ -12,16 +12,33 @@ public function setMenu(int $projectID): int|bool
 
 public function jxHideDesignMenu(): void
 {
+    $menuKeys = array('design');
+    if(!empty($this->config->jenshin->hiddenProjectMenus) && is_array($this->config->jenshin->hiddenProjectMenus))
+    {
+        $menuKeys = array_merge($menuKeys, $this->config->jenshin->hiddenProjectMenus);
+    }
+    if(function_exists('jxHideProjectMenus'))
+    {
+        jxHideProjectMenus($this->lang, $menuKeys);
+        return;
+    }
+
     $keys = array('project', 'scrum', 'waterfall', 'kanbanProject', 'agileplus', 'waterfallplus', 'ipd');
     foreach($keys as $key)
     {
-        if(isset($this->lang->$key->menu->design)) unset($this->lang->$key->menu->design);
+        foreach($menuKeys as $menuKey)
+        {
+            if(isset($this->lang->$key->menu->$menuKey)) unset($this->lang->$key->menu->$menuKey);
+        }
     }
     if(isset($this->lang->project->noMultiple))
     {
         foreach(array('scrum', 'kanban', 'waterfall') as $key)
         {
-            if(isset($this->lang->project->noMultiple->$key->menu->design)) unset($this->lang->project->noMultiple->$key->menu->design);
+            foreach($menuKeys as $menuKey)
+            {
+                if(isset($this->lang->project->noMultiple->$key->menu->$menuKey)) unset($this->lang->project->noMultiple->$key->menu->$menuKey);
+            }
         }
     }
 }

@@ -25,6 +25,45 @@ $config->jenshin->blockedModules = array(
 
 $config->jenshin->blockedFeatures = 'otherDevOps,qaTestsuite,qaAutomated,qaCaselib,otherAI,productRoadmap,productTrack,productUR,productER,myScore';
 
+/* 创建项目默认 Scrum，跳过「选择项目管理方式」弹窗，并锁定模型不可切换。 */
+$config->jenshin->defaultProjectModel = 'scrum';
+$config->jenshin->skipCreateGuide    = true;
+$config->jenshin->lockProjectModel   = true;
+
+/* 项目详情二级菜单中隐藏的项。超级管理员直链仍可用于排障。 */
+$config->jenshin->hiddenProjectMenus = array('qa', 'build', 'release');
+
+if(!function_exists('jxHideProjectMenus'))
+{
+    /**
+     * 从各项目模型导航中移除指定二级菜单。
+     */
+    function jxHideProjectMenus($lang, array $menuKeys): void
+    {
+        if(empty($lang) || empty($menuKeys)) return;
+
+        $langKeys = array('project', 'scrum', 'waterfall', 'kanbanProject', 'agileplus', 'waterfallplus', 'ipd');
+        foreach($langKeys as $key)
+        {
+            if(!isset($lang->$key->menu)) continue;
+            foreach($menuKeys as $menuKey)
+            {
+                if(isset($lang->$key->menu->$menuKey)) unset($lang->$key->menu->$menuKey);
+            }
+        }
+
+        if(empty($lang->project->noMultiple)) return;
+        foreach(array('scrum', 'kanban', 'waterfall') as $key)
+        {
+            if(!isset($lang->project->noMultiple->$key->menu)) continue;
+            foreach($menuKeys as $menuKey)
+            {
+                if(isset($lang->project->noMultiple->$key->menu->$menuKey)) unset($lang->project->noMultiple->$key->menu->$menuKey);
+            }
+        }
+    }
+}
+
 /* 项目设置：团队 / 白名单 / 干系人 / 项目权限。不受项目管理员身份放行。 */
 $config->jenshin->projectSettingsPrivs = array(
     'stakeholder' => true,
@@ -54,6 +93,10 @@ if(!function_exists('jxNeedGroupPrivForProjectSettings'))
 
 /* 工作台「SSH密钥」。false 隐藏菜单并拦截入口，改 true 即可恢复。 */
 $config->jenshin->enableSSH = false;
+if(empty($config->jenshin->enableSSH) && !empty($config->logonMethods))
+{
+    $config->logonMethods = array_values(array_diff($config->logonMethods, array('my.ssh', 'my.createssh', 'my.editssh', 'my.deletessh')));
+}
 
 /* 产品注册 / 市场准入 / 推广入院 / 旧数据看板。false 不注册一级菜单，模块代码保留，改 true 即可恢复。 */
 $config->jenshin->legacyBizModules = array('jxregistration', 'jxmarketaccess', 'jxadmission', 'jxdashboard');

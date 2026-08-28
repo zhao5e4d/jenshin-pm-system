@@ -76,6 +76,13 @@ if(empty($config->jenshin->enableLegacyBizMenus))
     unset($lang->mainNav->menuOrder[20], $lang->mainNav->menuOrder[25], $lang->mainNav->menuOrder[30], $lang->mainNav->menuOrder[38]);
 }
 
+/* 工作台二级菜单「SSH密钥」。 */
+if(empty($config->jenshin->enableSSH) && isset($lang->my->menu))
+{
+    unset($lang->my->menu->ssh, $lang->my->menuOrder[55]);
+    if(!empty($lang->my->dividerMenu)) $lang->my->dividerMenu = str_replace(',ssh,', ',', $lang->my->dividerMenu);
+}
+
 $lang->navGroup->jxproduct      = 'product';
 $lang->navGroup->jxregistration = 'jxregistration';
 $lang->navGroup->jxmarketaccess = 'jxmarketaccess';
@@ -84,3 +91,9 @@ $lang->navGroup->jxdashboard    = 'jxdashboard';
 $lang->navGroup->jxboard        = 'jxboard';
 $lang->navGroup->jxcore         = 'jxdashboard';
 $lang->navGroup->jxhospital     = 'jxadmission';
+
+/* 项目详情二级菜单：测试 / 构建 / 发布。setMenu 还会再裁一次（含 design）。 */
+if(function_exists('jxHideProjectMenus') && !empty($config->jenshin->hiddenProjectMenus))
+{
+    jxHideProjectMenus($lang, $config->jenshin->hiddenProjectMenus);
+}
