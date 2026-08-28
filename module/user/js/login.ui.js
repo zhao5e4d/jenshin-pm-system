@@ -1,8 +1,6 @@
 window.adjustPanelPos = function()
 {
-    let $login = $('#login');
-    let bestTop = Math.max(0, Math.floor($(window).height() - $login.outerHeight())/2);
-    $login.css('margin-top', bestTop);
+    /* Full-page login layout does not need vertical centering. */
 };
 
 window.refreshCaptcha = function(obj)
@@ -31,6 +29,37 @@ window.switchLang = function(lang)
     selectLang(lang);
 };
 
+window.toggleLoginPassword = function()
+{
+    let $password = $('#password');
+    let visible   = $password.attr('type') !== 'password';
+    $password.attr('type', visible ? 'password' : 'text');
+    $('#togglePassword').toggleClass('is-on', !visible);
+};
+
+window.bindRememberAccount = function()
+{
+    const key = 'jxLoginAccount';
+    const saved = localStorage.getItem(key);
+    if(saved && !$('#account').val()) $('#account').val(saved);
+
+    $('#loginForm').on('submit', function()
+    {
+        if($('#keepLoginon').prop('checked')) localStorage.setItem(key, $('#account').val().trim());
+        else localStorage.removeItem(key);
+    });
+};
+
+$('#togglePassword').on('click', toggleLoginPassword);
+$('#togglePassword').on('keydown', function(e)
+{
+    if(e.key === 'Enter' || e.key === ' ')
+    {
+        e.preventDefault();
+        toggleLoginPassword();
+    }
+});
+bindRememberAccount();
 adjustPanelPos();
 $(window).on('resize', adjustPanelPos);
 
@@ -56,6 +85,10 @@ window.safeSubmit = function(e)
     {
         if(timeout) zui.Modal.alert(loginTimeoutTip);
     }, 4000);
+
+    const rememberKey = 'jxLoginAccount';
+    if(keepLogin) localStorage.setItem(rememberKey, account);
+    else localStorage.removeItem(rememberKey);
 
     $('#submit').attr('disabled', 'disabled');
     $.get($.createLink('user', 'refreshRandom'), function(rand)

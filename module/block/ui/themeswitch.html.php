@@ -22,6 +22,7 @@ function printThemeSwitch()
     $themes = array();
     foreach($lang->block->themes as $themeKey => $themeName)
     {
+        if(isset($lang->themes[$themeKey])) $themeName = $lang->themes[$themeKey];
         $image = $config->webRoot . "theme/default/images/guide/theme_{$themeKey}.png";
         $themes[] = cell
         (

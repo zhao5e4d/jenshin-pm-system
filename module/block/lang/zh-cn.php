@@ -508,11 +508,12 @@ $lang->block->guideTabs['preference']     = '个性化设置';
 $lang->block->guideTabs['downloadClient'] = '客户端下载';
 $lang->block->guideTabs['downloadMobile'] = '移动端下载';
 
-$lang->block->themes['default']    = '禅道蓝';
+$lang->block->themes = array();
+$lang->block->themes['purple']     = '萱萱紫';
+$lang->block->themes['default']    = '科技蓝';
 $lang->block->themes['blue']       = '青春蓝';
 $lang->block->themes['green']      = '叶兰绿';
 $lang->block->themes['red']        = '赤诚红';
-$lang->block->themes['purple']     = '萱萱紫';
 $lang->block->themes['blackberry'] = '黑莓黑';
 
 $lang->block->visionTitle            = '禅道使用界面分为【研发综合界面】和【运营管理界面】。';

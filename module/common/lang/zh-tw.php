@@ -387,11 +387,12 @@ $lang->setLang = '語言設置';
 
 /* 風格列表。*/
 $lang->theme                = '主題';
-$lang->themes['default']    = '禪道藍（預設）';
+$lang->themes = array();
+$lang->themes['purple']     = '萱萱紫';
+$lang->themes['default']    = '科技藍';
 $lang->themes['blue']       = '青春藍';
 $lang->themes['green']      = '葉蘭綠';
 $lang->themes['red']        = '赤誠紅';
-$lang->themes['purple']     = '萱萱紫';
 $lang->themes['blackberry'] = '黑莓黑';
 
 /* 錯誤提示信息。*/
