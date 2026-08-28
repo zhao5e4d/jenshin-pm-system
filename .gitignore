@@ -13,11 +13,13 @@ tmp/log/*
 tmp/model/*
 tmp/cache/*
 tmp/extension/*
+# 商业版 / 喧喧运行时安装目录（本仓库不开这些版本）
 extension/pro/*
 extension/biz/*
 extension/max/*
 extension/xuan/*
-extension/custom/*
+# 插件安装包缓存。当前仅有第三方「飞书导入」解压包，不是健忻二次开发。
+extension/pkg/*
 test/data/sql/
 skills-lock.json
 .agents

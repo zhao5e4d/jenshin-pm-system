@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="800" height="460" viewBox="0 0 800 460" fill="none" xmlns="http://www.w3.org/2000/svg">
+
+  <rect width="800" height="460" fill="#FCFDFE"/>
+  <defs>
+    <linearGradient id="jxBg2" x1="0" y1="0" x2="480" y2="460" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#171338"/><stop offset="1" stop-color="#4A39B4"/>
+    </linearGradient>
+  </defs>
+  <rect width="480" height="460" fill="url(#jxBg2)"/>
+  <text x="36" y="48" fill="#D7D0FF" font-family="Segoe UI, sans-serif" font-size="13">Stage-gate paths</text><text x="36" y="76" fill="#FFFFFF" font-family="Segoe UI, sans-serif" font-size="18" font-weight="700">One matter type, one locked path</text>
+  <rect x="36" y="100" width="408" height="86" rx="14" fill="#FFFFFF" fill-opacity=".1"/>
+  <text x="52" y="126" fill="#2DD4BF" font-family="Segoe UI, sans-serif" font-size="12">Registration</text><text x="52" y="150" fill="#FFFFFF" font-family="Segoe UI, sans-serif" font-size="13">Path lock - type test - clinical - QMS</text><text x="52" y="172" fill="#B8ACFE" font-family="Segoe UI, sans-serif" font-size="12">Submit - supplement - archive the certificate</text>
+  <rect x="36" y="198" width="408" height="86" rx="14" fill="#FFFFFF" fill-opacity=".1"/>
+  <text x="52" y="224" fill="#FBBF24" font-family="Segoe UI, sans-serif" font-size="12">Market access</text><text x="52" y="248" fill="#FFFFFF" font-family="Segoe UI, sans-serif" font-size="13">Lead - capability - quote - bid</text><text x="52" y="270" fill="#B8ACFE" font-family="Segoe UI, sans-serif" font-size="12">Award - contract - allocation</text>
+  <rect x="36" y="296" width="408" height="86" rx="14" fill="#FFFFFF" fill-opacity=".1"/>
+  <text x="52" y="322" fill="#9384FB" font-family="Segoe UI, sans-serif" font-size="12">Hospital admission</text><text x="52" y="346" fill="#FFFFFF" font-family="Segoe UI, sans-serif" font-size="13">Target - in-hospital access - coaching</text><text x="52" y="368" fill="#B8ACFE" font-family="Segoe UI, sans-serif" font-size="12">First order - ramp-up</text>
+  <rect x="56" y="404" width="268" height="28" rx="14" fill="#6C5CE7"/><text x="76" y="423" fill="#FFFFFF" font-family="Segoe UI, sans-serif" font-size="12">Checklists expand after the path is locked</text>
+  <circle cx="216" cy="444" r="4" fill="#FFFFFF" fill-opacity=".35"/>
+  <circle cx="232" cy="444" r="4" fill="#FFFFFF"/>
+  <circle cx="248" cy="444" r="4" fill="#FFFFFF" fill-opacity=".35"/>
+  <circle cx="264" cy="444" r="4" fill="#FFFFFF" fill-opacity=".35"/><text x="508" y="72" fill="#0E0B23" font-family="Segoe UI, sans-serif" font-size="20" font-weight="700">Stage gates, no skipped reviews</text><text x="508" y="104" fill="#5E626D" font-family="Segoe UI, sans-serif" font-size="13">Each matter follows its path. Submit and approve with a trail.</text><circle cx="516" cy="150" r="7" fill="#6C5CE7"/><path d="M513.2 150.1l1.8 1.8 4-4" stroke="#fff" stroke-width="1.4" fill="none" stroke-linecap="round"/>
+  <text x="532" y="155" fill="#3C4353" font-family="Segoe UI, sans-serif" font-size="13">Creating a matter builds project, sprint, and tasks</text>
+  <circle cx="516" cy="190" r="7" fill="#6C5CE7"/><path d="M513.2 190.1l1.8 1.8 4-4" stroke="#fff" stroke-width="1.4" fill="none" stroke-linecap="round"/>
+  <text x="532" y="195" fill="#3C4353" font-family="Segoe UI, sans-serif" font-size="13">Checklists bind to each stage</text>
+  <circle cx="516" cy="230" r="7" fill="#6C5CE7"/><path d="M513.2 230.1l1.8 1.8 4-4" stroke="#fff" stroke-width="1.4" fill="none" stroke-linecap="round"/>
+  <text x="532" y="235" fill="#3C4353" font-family="Segoe UI, sans-serif" font-size="13">Submit a gate to pending review, or reject it</text>
+  <circle cx="516" cy="270" r="7" fill="#6C5CE7"/><path d="M513.2 270.1l1.8 1.8 4-4" stroke="#fff" stroke-width="1.4" fill="none" stroke-linecap="round"/>
+  <text x="532" y="275" fill="#3C4353" font-family="Segoe UI, sans-serif" font-size="13">Approval comments stay on the record</text>
+  <circle cx="516" cy="310" r="7" fill="#6C5CE7"/><path d="M513.2 310.1l1.8 1.8 4-4" stroke="#fff" stroke-width="1.4" fill="none" stroke-linecap="round"/>
+  <text x="532" y="315" fill="#3C4353" font-family="Segoe UI, sans-serif" font-size="13">Blockers roll up under Needs attention</text>
+  <circle cx="516" cy="350" r="7" fill="#6C5CE7"/><path d="M513.2 350.1l1.8 1.8 4-4" stroke="#fff" stroke-width="1.4" fill="none" stroke-linecap="round"/>
+  <text x="532" y="355" fill="#3C4353" font-family="Segoe UI, sans-serif" font-size="13">Docs stay with the matter, not scattered</text>
+
+</svg>
