@@ -10,6 +10,8 @@ $config->jenshin = new stdclass();
 $config->jenshin->version = '1.0.0';
 $config->jenshin->edition = 'medical-pm';
 
+/* 首页 1.0 引导：extension/custom/misc/ext/config/jenshin.php，配图 www/static/svg/jenshin/ */
+
 /* 默认萱萱紫：与当前靛紫玻璃语言同一套色阶。 */
 if(isset($config->default)) $config->default->theme = 'purple';
 
@@ -58,6 +60,27 @@ $config->jenshin->healthList = array('green', 'yellow', 'red');
 $config->jenshin->stageStatus = array('wait', 'doing', 'submitted', 'approved', 'rejected', 'done');
 $config->jenshin->certWarnDays = 90;
 $config->jenshin->windowWarnDays = 14;
+
+$config->openMethods[] = 'jxsso.login';
+
+if(!isset($config->jenshin->sso)) $config->jenshin->sso = new stdclass();
+$config->jenshin->sso->enabled           = true;
+$config->jenshin->sso->secret            = '';
+$config->jenshin->sso->issuer            = 'boke-info-pro';
+$config->jenshin->sso->audience          = 'jenshin-pm-system';
+$config->jenshin->sso->clockSkewSeconds  = 30;
+$config->jenshin->sso->homeLink          = '';
+if(!empty($config->jenshinSsoSecret)) $config->jenshin->sso->secret = (string)$config->jenshinSsoSecret;
+if(isset($config->jenshinSsoEnabled)) $config->jenshin->sso->enabled = (bool)$config->jenshinSsoEnabled;
+if(!empty($config->jenshinSsoHomeLink)) $config->jenshin->sso->homeLink = (string)$config->jenshinSsoHomeLink;
+
+if(isset($filter))
+{
+    if(!isset($filter->jxsso)) $filter->jxsso = new stdclass();
+    if(!isset($filter->jxsso->login)) $filter->jxsso->login = new stdclass();
+    if(!isset($filter->jxsso->login->get)) $filter->jxsso->login->get = array();
+    $filter->jxsso->login->get['token'] = 'reg::any';
+}
 
 if(!defined('TABLE_JX_PRODUCT'))       define('TABLE_JX_PRODUCT',       '`' . $config->db->prefix . 'jx_product`');
 if(!defined('TABLE_JX_PROJECT'))       define('TABLE_JX_PROJECT',       '`' . $config->db->prefix . 'jx_project`');

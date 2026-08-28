@@ -2,6 +2,8 @@
 
 基于禅道开源版 22.5，通过 `extension/custom` 与 `module/jx*` 做二次开发，不删除上游模块。
 
+生产环境上云步骤见 [PRODUCTION-DEPLOY.md](PRODUCTION-DEPLOY.md)。
+
 ## 架构约束
 
 - 不改禅道内核业务逻辑；品牌、导航、权限裁剪放在 [extension/custom](../extension/custom)。
