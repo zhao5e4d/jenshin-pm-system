@@ -706,7 +706,6 @@ $lang->block->releasestatistic->annual  = "年度发布榜（%s年）";
 $lang->block->teamachievement = new stdclass();
 $lang->block->teamachievement->finishedTasks  = '完成任务数量';
 $lang->block->teamachievement->createdStories = '创建需求数量';
-$lang->block->teamachievement->closedBugs     = '关闭的Bug数';
 $lang->block->teamachievement->runCases       = '执行的用例数';
 $lang->block->teamachievement->consumedHours  = '消耗工时';
 $lang->block->teamachievement->totalWorkload  = '累计工作量';

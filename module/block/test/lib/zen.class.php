@@ -867,8 +867,6 @@ class blockZenTest extends baseTest
         $result->yesterdayTasks   = isset($view->yesterdayTasks)   ? $view->yesterdayTasks   : 0;
         $result->createdStories   = isset($view->createdStories)   ? $view->createdStories   : 0;
         $result->yesterdayStories = isset($view->yesterdayStories) ? $view->yesterdayStories : 0;
-        $result->closedBugs       = isset($view->closedBugs)       ? $view->closedBugs       : 0;
-        $result->yesterdayBugs    = isset($view->yesterdayBugs)    ? $view->yesterdayBugs    : 0;
         $result->runCases         = isset($view->runCases)         ? $view->runCases         : 0;
         $result->yesterdayCases   = isset($view->yesterdayCases)   ? $view->yesterdayCases   : 0;
         $result->consumedHours    = isset($view->consumedHours)    ? $view->consumedHours    : 0;

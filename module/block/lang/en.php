@@ -708,7 +708,6 @@ $lang->block->releasestatistic->annual  = "Annual Release Leaderboard (%s)";
 $lang->block->teamachievement = new stdclass();
 $lang->block->teamachievement->finishedTasks  = 'Completed Tasks';
 $lang->block->teamachievement->createdStories = 'Created Stories';
-$lang->block->teamachievement->closedBugs     = 'Closed Bugs';
 $lang->block->teamachievement->runCases       = 'Executed Cases';
 $lang->block->teamachievement->consumedHours  = 'Cost';
 $lang->block->teamachievement->totalWorkload  = 'Total Workload';

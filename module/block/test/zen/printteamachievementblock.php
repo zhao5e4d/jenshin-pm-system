@@ -12,17 +12,15 @@ cid=15306
  - 属性yesterdayTasks @0
  - 属性createdStories @0
  - 属性yesterdayStories @0
- - 属性closedBugs @0
+ - 属性runCases @0
 - 测试步骤2：仅有今日数据
  - 属性finishedTasks @8
  - 属性createdStories @6
- - 属性closedBugs @7
  - 属性runCases @9
  - 属性consumedHours @10
 - 测试步骤3：仅有昨日数据
  - 属性yesterdayTasks @18
  - 属性yesterdayStories @16
- - 属性yesterdayBugs @17
  - 属性yesterdayCases @19
  - 属性yesterdayHours @20
 - 测试步骤4：有今日和昨日数据
@@ -33,7 +31,6 @@ cid=15306
 - 测试步骤5：部分指标有数据
  - 属性finishedTasks @46
  - 属性createdStories @0
- - 属性closedBugs @0
  - 属性runCases @0
  - 属性consumedHours @0
 
@@ -57,7 +54,7 @@ $metric->gen(5);
 
 // 测试步骤1：无任何度量数据的情况
 zenData('metriclib')->gen(0);
-r($blockTest->printTeamAchievementBlockTest()) && p('finishedTasks,yesterdayTasks,createdStories,yesterdayStories,closedBugs') && e('0,0,0,0,0'); // 测试步骤1：无任何度量数据
+r($blockTest->printTeamAchievementBlockTest()) && p('finishedTasks,yesterdayTasks,createdStories,yesterdayStories,runCases') && e('0,0,0,0,0'); // 测试步骤1：无任何度量数据
 // 测试步骤2：仅有今日数据的情况
 $metriclib = zenData('metriclib');
 $metriclib->id->range('1-10');
@@ -69,7 +66,7 @@ $metriclib->day->range(date('d') . '{10}');
 $metriclib->value->range('5,8,3,6,4,7,2,9,1,10');
 $metriclib->calcType->range('cron{10}');
 $metriclib->gen(10);
-r($blockTest->printTeamAchievementBlockTest()) && p('finishedTasks,createdStories,closedBugs,runCases,consumedHours') && e('8,6,7,9,10'); // 测试步骤2：仅有今日数据
+r($blockTest->printTeamAchievementBlockTest()) && p('finishedTasks,createdStories,runCases,consumedHours') && e('8,6,9,10'); // 测试步骤2：仅有今日数据
 // 测试步骤3：仅有昨日数据的情况
 zenData('metriclib')->gen(0);
 $metriclib = zenData('metriclib');
@@ -82,7 +79,7 @@ $metriclib->day->range(date('d', strtotime('-1 day')) . '{10}');
 $metriclib->value->range('15,18,13,16,14,17,12,19,11,20');
 $metriclib->calcType->range('cron{10}');
 $metriclib->gen(10);
-r($blockTest->printTeamAchievementBlockTest()) && p('yesterdayTasks,yesterdayStories,yesterdayBugs,yesterdayCases,yesterdayHours') && e('18,16,17,19,20'); // 测试步骤3：仅有昨日数据
+r($blockTest->printTeamAchievementBlockTest()) && p('yesterdayTasks,yesterdayStories,yesterdayCases,yesterdayHours') && e('18,16,19,20'); // 测试步骤3：仅有昨日数据
 // 测试步骤4：有今日和昨日数据的正常情况
 zenData('metriclib')->gen(0);
 $metriclib = zenData('metriclib');
@@ -114,4 +111,4 @@ $metriclib->day->range(date('d') . '{4},' . date('d', strtotime('-1 day')) . '{4
 $metriclib->value->range('45,48,43,46,55,58,53,56');
 $metriclib->calcType->range('cron{8}');
 $metriclib->gen(8);
-r($blockTest->printTeamAchievementBlockTest()) && p('finishedTasks,createdStories,closedBugs,runCases,consumedHours') && e('46,0,0,0,0'); // 测试步骤5：部分指标有数据
+r($blockTest->printTeamAchievementBlockTest()) && p('finishedTasks,createdStories,runCases,consumedHours') && e('46,0,0,0'); // 测试步骤5：部分指标有数据

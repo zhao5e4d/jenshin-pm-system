@@ -705,7 +705,6 @@ $lang->block->releasestatistic->annual  = "Annual release list (%s year)";
 $lang->block->teamachievement = new stdclass();
 $lang->block->teamachievement->finishedTasks  = 'Finished Tasks';
 $lang->block->teamachievement->createdStories = 'New Stories';
-$lang->block->teamachievement->closedBugs     = 'Closed Bugs';
 $lang->block->teamachievement->runCases       = 'Run Cases';
 $lang->block->teamachievement->consumedHours  = 'Consumed Hours';
 $lang->block->teamachievement->totalWorkload  = 'Total Workload';

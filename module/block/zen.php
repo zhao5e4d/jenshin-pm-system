@@ -2930,7 +2930,6 @@ class blockZen extends block
         $this->loadModel('metric');
         $finishedTaskGroup = $this->metric->getResultByCodeWithArray('count_of_daily_finished_task', array('year' => join(',', $years), 'month' => join(',', $months)), 'cron'); // 完成任务数。
         $createdStoryGroup = $this->metric->getResultByCodeWithArray('count_of_daily_created_story', array('year' => join(',', $years), 'month' => join(',', $months)), 'cron'); // 创建需求数。
-        $closedBugGroup    = $this->metric->getResultByCodeWithArray('count_of_daily_closed_bug',    array('year' => join(',', $years), 'month' => join(',', $months)), 'cron'); // 关闭Bug数。
         $runCaseGroup      = $this->metric->getResultByCodeWithArray('count_of_daily_run_case',      array('year' => join(',', $years), 'month' => join(',', $months)), 'cron'); // 执行用例数。
         $consumedGroup     = $this->metric->getResultByCodeWithArray('hour_of_daily_effort',         array('year' => join(',', $years), 'month' => join(',', $months)), 'cron'); // 消耗工时。
 
@@ -2957,19 +2956,6 @@ class blockZen extends block
                 $currentDay = "{$data['year']}-{$data['month']}-{$data['day']}";
                 if($currentDay == date('Y-m-d'))                      $createdStories   = $data['value'];
                 if($currentDay == date('Y-m-d', strtotime("-1 day"))) $yesterdayStories = $data['value'];
-            }
-        }
-
-        /* 获取今日关闭Bug数和昨日关闭Bug数。 */
-        $closedBugs    = 0;
-        $yesterdayBugs = 0;
-        if($closedBugGroup)
-        {
-            foreach($closedBugGroup as $data)
-            {
-                $currentDay = "{$data['year']}-{$data['month']}-{$data['day']}";
-                if($currentDay == date('Y-m-d'))                      $closedBugs    = $data['value'];
-                if($currentDay == date('Y-m-d', strtotime("-1 day"))) $yesterdayBugs = $data['value'];
             }
         }
 
@@ -3003,8 +2989,6 @@ class blockZen extends block
         $this->view->yesterdayTasks   = $yesterdayTasks;
         $this->view->createdStories   = $createdStories;
         $this->view->yesterdayStories = $yesterdayStories;
-        $this->view->closedBugs       = $closedBugs;
-        $this->view->yesterdayBugs    = $yesterdayBugs;
         $this->view->runCases         = $runCases;
         $this->view->yesterdayCases   = $yesterdayCases;
         $this->view->consumedHours    = $consumedHours;

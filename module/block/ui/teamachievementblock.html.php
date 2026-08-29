@@ -107,30 +107,7 @@ blockPanel
                 cell
                 (
                     set::width('50%'),
-                    setClass('item-bug px-1 w-1/2'),
-                    div(setClass('h-0 w-0'), div(setClass('item-icon h-9 w-9'))),
-                    div(setClass('text-gray pl-1'), $lang->block->teamachievement->closedBugs),
-                    div
-                    (
-                        setClass('mt-2 items-center flex pl-1'),
-                        cell
-                        (
-                            setClass($yesterdayClassName),
-                            span(setClass('text-base'), $lang->yesterday),
-                            span(setClass('text-md pl-1 font-bold num'), $yesterdayBugs)
-                        ),
-                        cell
-                        (
-                            setClass($todayClassName),
-                            span(setClass('text-base'), $lang->today),
-                            span(setClass('text-md pl-1 font-bold num'), $closedBugs)
-                        )
-                    )
-                ),
-                cell
-                (
-                    set::width('50%'),
-                    setClass('item-case pl-8 w-1/2'),
+                    setClass('item-case px-1 w-1/2'),
                     div(setClass('h-0 w-0'), div(setClass('item-icon h-9 w-9'))),
                     div(setClass('text-gray pl-1'), $lang->block->teamachievement->runCases),
                     div
@@ -149,20 +126,11 @@ blockPanel
                             span(setClass('text-md pl-1 font-bold num'), $runCases)
                         )
                     )
-                )
-            )
-        ),
-        div
-        (
-            setClass('flex px-4 w-full item-row'),
-            cell
-            (
-                set::width('100%'),
-                setClass('flex'),
+                ),
                 cell
                 (
                     set::width('50%'),
-                    setClass('item-hour px-1 w-1/2'),
+                    setClass('item-hour pl-8 w-1/2'),
                     div(setClass('h-0 w-0'), div(setClass('item-icon h-9 w-9'))),
                     div(setClass('text-gray pl-1'), $lang->block->teamachievement->consumedHours . ($isEn ? ' ' : ' / ') . $lang->block->projectstatistic->hour),
                     div
