@@ -69,6 +69,9 @@ class pageBase extends wg
         $jsConfig->zin           = !empty($zinMode) ? $zinMode : true;
         $jsConfig->maxUploadSize = ini_get('upload_max_filesize');
         $extraCSS                = isset($config->zin->extraCSS) ? $config->zin->extraCSS : '';
+        $extraCssUrl             = ($zui && !empty($extraCSS))
+            ? ($webRoot . 'js/zui3/' . $extraCSS . '?v=' . (@filemtime($app->getWwwRoot() . 'js/zui3/' . $extraCSS) ?: time()))
+            : '';
 
         $headImports = array();
         $headImports[] = h::favicon($webRoot . 'favicon.ico');
@@ -77,6 +80,8 @@ class pageBase extends wg
         {
             $headImports[] = h::importCss($zuiPath . 'zui.zentao.css', setID('zuiCSS'));
             $headImports[] = h::importCss($zuiPath . 'themes/' . $themeName . '.css', setID('zuiTheme'));
+            /* Load extra theme in <head> so #header is painted with chrome styles, not the default solid bar. */
+            if($extraCssUrl) $headImports[] = h::importCss($extraCssUrl, setID('zuiExtraCSS'));
             $headImports[] = h::importJs($zuiPath . 'zui.zentao.js', setID('zuiJS'));
             $headImports[] = h::jsCall('$.setLibRoot', $zuiPath);
 
@@ -135,7 +140,7 @@ class pageBase extends wg
                 $setXuanClass,
                 empty($imports) ? null : h::import($imports),
                 h::css($css, setClass('zin-page-css'), setData('id', $pageID)),
-                ($zui && !empty($extraCSS)) ? h::importCss($webRoot . 'js/zui3/' . $extraCSS . '?v=' . (@filemtime($app->getWwwRoot() . 'js/zui3/' . $extraCSS) ?: time()), setID('zuiExtraCSSLate')) : null,
+                $extraCssUrl ? h::importCss($extraCssUrl, setID('zuiExtraCSSLate')) : null,
                 $body,
                 $rawContent ? rawContent() : null,
                 $hookContent ? hookContent() : null,

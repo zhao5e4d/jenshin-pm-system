@@ -259,6 +259,10 @@ html.theme-blackberry {
   --zt-header-height: 3.25rem;
   --zt-header-bg: var(--jx-ink-800);
   --zt-header-color: #fff;
+  --jx-header-bg:
+    linear-gradient(90deg, rgba(var(--color-primary-400-rgb), .26), transparent 44%),
+    radial-gradient(520px 160px at 82% 0%, rgba(var(--jx-accent-rgb), .14), transparent 62%),
+    linear-gradient(180deg, var(--jx-ink-700) 0%, var(--jx-ink-800) 100%);
   --zt-navbar-active-color: #fff;
   --zt-menu-bg: var(--jx-ink-900) !important;
   --zt-menu-hover-bg: rgba(255, 255, 255, .08);
@@ -332,6 +336,20 @@ a {
 
 #apps {
   transition: left .22s var(--jx-ease);
+}
+
+/* Switching a first-level app paints .loading before the iframe is ready.
+   Match #header chrome so the placeholder is not a solid black bar. */
+#apps .app-container.loading {
+  background-color: var(--zt-page-bg) !important;
+  background-image: var(--jx-header-bg) !important;
+  background-size: 100% var(--zt-header-height) !important;
+  background-repeat: no-repeat !important;
+  background-attachment: scroll !important;
+}
+
+#apps .app-container.loading::before {
+  background-color: transparent !important;
 }
 
 /* ---------- Sidebar ---------- */
@@ -443,10 +461,7 @@ a {
 
 #header,
 .in-workspace #header {
-  background:
-    linear-gradient(90deg, rgba(var(--color-primary-400-rgb), .26), transparent 44%),
-    radial-gradient(520px 160px at 82% 0%, rgba(var(--jx-accent-rgb), .14), transparent 62%),
-    linear-gradient(180deg, var(--jx-ink-700) 0%, var(--jx-ink-800) 100%) !important;
+  background: var(--jx-header-bg) !important;
 }
 
 #header,
