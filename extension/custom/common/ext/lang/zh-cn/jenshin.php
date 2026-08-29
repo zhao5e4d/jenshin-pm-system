@@ -7,6 +7,7 @@ global $config;
 
 $lang->zentaoPMS = '健忻医疗项目管理系统';
 $lang->logoImg  = 'jx-logo.png';
+$lang->jenshinCopyright = '© 健忻科技 ' . date('Y');
 
 if(!isset($lang->jxproduct))      $lang->jxproduct      = new stdclass();
 if(!isset($lang->jxregistration)) $lang->jxregistration = new stdclass();

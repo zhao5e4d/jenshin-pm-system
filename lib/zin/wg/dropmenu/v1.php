@@ -62,6 +62,7 @@ class dropmenu extends wg
             set('_props', array('data-fetcher' => $url, 'data-text' => $text, 'data-default-value' => $defaultValue, 'data-cache' => $cache)),
             set('data', $data),
             set(array('fetcher' => $url, 'text' => $text, 'defaultValue' => $defaultValue, 'cache' => $cache)),
+            $menuID === 'admin-menu' ? null : set::popWidth(520),
             set($this->getRestProps())
         );
     }

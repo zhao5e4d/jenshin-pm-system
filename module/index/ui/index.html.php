@@ -178,10 +178,18 @@ div
                 setData(array('collapse-text' => $lang->collapseMenu, 'hint' => $lang->unfoldMenu)),
                 a
                 (
-                    setClass('menu-toggle justify-center cursor-pointer'),
-                    icon('icon-menu-collapse icon-sm')
+                    setClass('menu-toggle cursor-pointer'),
+                    icon('menu-collapse'),
+                    span(setClass('text'), $lang->collapseMenu)
                 )
             )
+        ),
+        div
+        (
+            setID('menuCopyright'),
+            setClass('jx-menu-copyright'),
+            set::title($lang->jenshinCopyright),
+            span(setClass('jx-menu-copyright-text'), $lang->jenshinCopyright)
         )
     )
 );

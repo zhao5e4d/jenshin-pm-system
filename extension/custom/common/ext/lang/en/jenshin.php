@@ -3,6 +3,7 @@ global $config;
 
 $lang->zentaoPMS = 'Jenshin Medical PM System';
 $lang->logoImg  = 'jx-logo.png';
+$lang->jenshinCopyright = '© Jenshin ' . date('Y');
 
 if(empty($config->jenshin->enableSSH) && isset($lang->my->menu))
 {

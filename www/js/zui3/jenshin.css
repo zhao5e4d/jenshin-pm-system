@@ -354,6 +354,8 @@ a {
 
 /* ---------- Sidebar ---------- */
 #menu {
+  display: flex;
+  flex-direction: column;
   background:
     radial-gradient(900px 300px at 0% -8%, rgba(var(--color-primary-400-rgb), .3), transparent 60%),
     radial-gradient(520px 380px at 130% 96%, rgba(var(--jx-accent-rgb), .16), transparent 62%),
@@ -379,7 +381,11 @@ a {
 }
 
 #menuNav {
-  padding: 8px 0;
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  padding: 8px 0 10px;
 }
 
 #menu .nav {
@@ -423,6 +429,89 @@ a {
 #menu .nav > .divider,
 #menuToggleNav::before {
   opacity: .16;
+}
+
+#menuCopyright {
+  position: relative;
+  z-index: 1;
+  margin-top: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 8px 2px;
+  color: rgba(255, 255, 255, .62);
+  font-size: 12px;
+  letter-spacing: .04em;
+  line-height: 1.2;
+  user-select: none;
+}
+
+#menuCopyright .jx-menu-copyright-text {
+  white-space: nowrap;
+}
+
+#menuToggleNav {
+  margin-top: 0;
+  padding: 2px 0 4px;
+}
+
+.hide-menu #menuCopyright {
+  display: none;
+}
+
+#menuToggleNav::before {
+  margin: 2px 14px 8px;
+  padding: 0;
+  height: 1px;
+  opacity: .14;
+}
+
+#menu #menuToggleMenu > a.menu-toggle {
+  justify-content: flex-start;
+  background: rgba(255, 255, 255, .06);
+  border-color: rgba(255, 255, 255, .1);
+  color: rgba(255, 255, 255, .82);
+}
+
+#menu #menuToggleMenu > a.menu-toggle:hover {
+  background: rgba(255, 255, 255, .12) !important;
+  border-color: rgba(255, 255, 255, .22);
+  color: #fff !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, .2),
+    0 8px 18px -12px rgba(8, 12, 22, .5);
+}
+
+#menu #menuToggleMenu > a.menu-toggle > .icon {
+  font-size: 18px;
+  transition: transform .22s var(--jx-ease);
+}
+
+#menu #menuToggleMenu > a.menu-toggle > .text {
+  font-size: 12px;
+  letter-spacing: .04em;
+}
+
+.hide-menu #menu #menuToggleMenu {
+  display: flex;
+  justify-content: center;
+}
+
+.hide-menu #menu #menuToggleMenu > a.menu-toggle {
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  flex: none;
+  justify-content: center;
+}
+
+.hide-menu #menu #menuToggleMenu > a.menu-toggle > .icon {
+  transform: rotate(180deg);
+}
+
+.show-menu #menuToggleNav [data-hint]::before,
+.show-menu #menuToggleNav [data-hint]::after {
+  display: none;
 }
 
 #spaceHeading {
@@ -646,22 +735,43 @@ a {
   box-shadow: 0 4px 10px rgba(var(--color-primary-500-rgb), .4);
 }
 
-/* ---------- Heading dropmenu: glass panel matching the chip ---------- */
+/* ---------- Heading dropmenu: frosted glass, stable width ---------- */
 :is(#pick-pop-dropmenu-menu, #pick-pop-admin-menu, [id^="pick-pop-"][id*="dropmenu"]) {
-  --jx-glass-pop-fg: rgba(255, 255, 255, .88);
-  --jx-glass-pop-muted: rgba(255, 255, 255, .58);
+  --jx-glass-pop-fg: rgba(255, 255, 255, .94);
+  --jx-glass-pop-muted: rgba(255, 255, 255, .68);
   color: var(--jx-glass-pop-fg) !important;
+  background-color: transparent !important;
   background:
-    linear-gradient(180deg, rgba(var(--jx-ink-glass), .8) 0%, rgba(var(--jx-ink-deep), .86) 100%) !important;
-  border: 1px solid rgba(255, 255, 255, .18) !important;
-  border-radius: 16px !important;
+    linear-gradient(165deg, rgba(255, 255, 255, .2) 0%, rgba(255, 255, 255, .04) 38%, transparent 58%),
+    linear-gradient(180deg, rgba(var(--jx-ink-glass), .34) 0%, rgba(var(--jx-ink-deep), .4) 100%) !important;
+  border: 1px solid rgba(255, 255, 255, .28) !important;
+  border-radius: 18px !important;
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, .16),
-    0 28px 64px -22px rgba(8, 12, 22, .62),
-    0 0 0 1px rgba(var(--color-primary-500-rgb), .2) !important;
-  backdrop-filter: blur(20px) saturate(1.3);
-  -webkit-backdrop-filter: blur(20px) saturate(1.3);
+    inset 0 1px 0 rgba(255, 255, 255, .32),
+    0 28px 64px -18px rgba(8, 12, 22, .36),
+    0 0 0 1px rgba(var(--color-primary-500-rgb), .12) !important;
+  backdrop-filter: blur(40px) saturate(1.85) !important;
+  -webkit-backdrop-filter: blur(40px) saturate(1.85) !important;
   overflow: hidden;
+}
+
+:is(#pick-pop-dropmenu-menu, #pick-pop-admin-menu, [id^="pick-pop-"][id*="dropmenu"])::before,
+:is(#pick-pop-dropmenu-menu, #pick-pop-admin-menu, [id^="pick-pop-"][id*="dropmenu"])::after {
+  background: transparent !important;
+}
+
+#pick-pop-dropmenu-menu,
+[id^="pick-pop-"][id*="dropmenu"]:not(#pick-pop-admin-menu) {
+  width: min(32.5rem, calc(100vw - 2rem)) !important;
+  min-width: min(30rem, calc(100vw - 2rem)) !important;
+}
+
+:is(#pick-pop-dropmenu-menu, #pick-pop-admin-menu, [id^="pick-pop-"][id*="dropmenu"]) :is(.popup, .menu, .dropmenu, .tree, .search-box, .dropmenu-list, .dropmenu-nav, .dropmenu-body, .dropmenu-foot) {
+  background: transparent !important;
+  background-color: transparent !important;
+  box-shadow: none !important;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
 }
 
 :is(#pick-pop-dropmenu-menu, #pick-pop-admin-menu, [id^="pick-pop-"][id*="dropmenu"]) .search-box .form-control,
