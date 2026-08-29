@@ -945,9 +945,9 @@ class jxcoreModel extends model
 
     /**
      * Welcome-block alerts scoped to the current user.
-     * pendingStage: submitted stage gates on projects I PM.
+     * task: undone todos on 日程.
+     * pendingStage: open assigned items on 待处理 (my-work tasks).
      * overdue/blocker: medical matters I own or PM.
-     * task: open tasks assigned to me.
      *
      * @param  string $account
      * @access public
@@ -979,13 +979,6 @@ class jxcoreModel extends model
             ->fetchPairs('id', 'id');
         $myProjects = $ownerProjects + (array)$pmProjects;
 
-        $alerts['pendingStage'] = (int)$this->dao->select('t1.id')->from(TABLE_JX_STAGE)->alias('t1')
-            ->leftJoin(TABLE_PROJECT)->alias('t2')->on('t1.project = t2.id')
-            ->where('t1.status')->eq('submitted')
-            ->andWhere('t2.deleted')->eq(0)
-            ->andWhere('t2.PM')->eq($account)
-            ->count();
-
         if($myProjects)
         {
             $rows = $this->dao->select('t1.health, t1.blocker, t2.end, t2.status AS projectStatus')
@@ -1002,11 +995,24 @@ class jxcoreModel extends model
             }
         }
 
-        $alerts['task'] = (int)$this->dao->select('id')->from(TABLE_TASK)
-            ->where('deleted')->eq(0)
+        $todoQuery = $this->dao->select('id')->from(TABLE_TODO)
+            ->where('deleted')->eq('0')
+            ->andWhere('cycle')->eq('0')
             ->andWhere('assignedTo')->eq($account)
-            ->andWhere('status')->in(array('wait', 'doing'))
-            ->count();
+            ->andWhere('status')->notin(array('done', 'closed'));
+        if(!empty($this->config->vision)) $todoQuery->andWhere('vision')->eq($this->config->vision);
+        $alerts['task'] = (int)$todoQuery->count();
+
+        $workQuery = $this->dao->select('t1.id')->from(TABLE_TASK)->alias('t1')
+            ->leftJoin(TABLE_EXECUTION)->alias('t2')->on('t1.execution = t2.id')
+            ->leftJoin(TABLE_PROJECT)->alias('t4')->on('t2.project = t4.id')
+            ->where('t1.deleted')->eq(0)
+            ->andWhere('t2.deleted')->eq(0)
+            ->andWhere('t4.deleted')->eq(0)
+            ->andWhere('t1.assignedTo')->eq($account)
+            ->andWhere('t1.status')->notin(array('closed', 'cancel'));
+        if(!empty($this->config->vision)) $workQuery->andWhere('t1.vision')->eq($this->config->vision);
+        $alerts['pendingStage'] = (int)$workQuery->count();
 
         return $alerts;
     }

@@ -43,15 +43,18 @@ protected function printWelcomeBlock(): void
     $alerts = $this->loadModel('jxcore')->getWelcomeAlerts($this->app->user->account);
     $jxDashModule  = !empty($this->config->jenshin->enableLegacyBizMenus) ? 'jxdashboard' : 'jxboard';
     $dashboardLink = common::hasPriv($jxDashModule, 'overview') ? helper::createLink($jxDashModule, 'overview') : '';
-    $taskLink = '';
-    if(common::hasPriv('my', 'work') && $this->config->vision != 'lite') $taskLink = helper::createLink('my', 'work', 'mode=task&browseType=assignedTo');
-    if(common::hasPriv('my', 'contribute') && $this->config->vision == 'lite') $taskLink = helper::createLink('my', 'contribute', 'mode=task&browseType=assignedTo');
+    $todoLink = '';
+    if(common::hasPriv('my', 'calendar') && $this->config->vision != 'lite') $todoLink = helper::createLink('my', 'calendar');
+    if(!$todoLink && common::hasPriv('my', 'todo') && $this->config->vision != 'lite') $todoLink = helper::createLink('my', 'todo');
+    $workLink = '';
+    if(common::hasPriv('my', 'work') && $this->config->vision != 'lite') $workLink = helper::createLink('my', 'work', 'mode=task&browseType=assignedTo');
+    if(common::hasPriv('my', 'contribute') && $this->config->vision == 'lite') $workLink = helper::createLink('my', 'contribute', 'mode=task&browseType=assignedTo');
 
     $assignToMe = array();
-    $assignToMe['task']         = array('number' => (int)zget($alerts, 'task', 0),          'href' => $taskLink);
+    $assignToMe['task']         = array('number' => (int)zget($alerts, 'task', 0),          'href' => $todoLink);
+    $assignToMe['pendingStage'] = array('number' => (int)zget($alerts, 'pendingStage', 0),  'href' => $workLink);
     $assignToMe['overdue']      = array('number' => (int)zget($alerts, 'overdue', 0),       'href' => $dashboardLink);
     $assignToMe['blocker']      = array('number' => (int)zget($alerts, 'blocker', 0),       'href' => $dashboardLink);
-    $assignToMe['pendingStage'] = array('number' => (int)zget($alerts, 'pendingStage', 0),  'href' => $dashboardLink);
 
     $reviewList = $this->loadModel('my')->getReviewingList('all');
     $reviewByMe = array();
@@ -72,7 +75,7 @@ protected function printWelcomeBlock(): void
         $yesterdaySummary .= $this->lang->block->summary->noWork;
     }
 
-    $alertCount = (int)zget($alerts, 'overdue', 0) + (int)zget($alerts, 'blocker', 0) + (int)zget($alerts, 'pendingStage', 0);
+    $alertCount = (int)zget($alerts, 'overdue', 0) + (int)zget($alerts, 'blocker', 0);
     if($alertCount && !empty($this->lang->block->summary->currentAlert)) $yesterdaySummary .= sprintf($this->lang->block->summary->currentAlert, $alertCount);
 
     if($isEn) $yesterdaySummary = $yesterdaySummary . ' ' . $this->lang->block->summary->yesterday;
