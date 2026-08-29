@@ -40,6 +40,10 @@ $config->jenshin->lockProjectModel   = true;
 /* 项目/执行详情二级菜单中隐藏的项。超级管理员直链仍可用于排障。 */
 $config->jenshin->hiddenProjectMenus = array('qa', 'build', 'release');
 
+/* 工作台「贡献」「待处理」二级菜单中隐藏的项（测试相关）。直链仍可用于排障。 */
+$config->jenshin->hiddenContributeMenus = array('bug', 'testcase', 'testtask');
+$config->jenshin->hiddenWorkMenus       = array('bug', 'testcase', 'testtask');
+
 if(!function_exists('jxStripDividerMenus'))
 {
     /**
@@ -97,6 +101,32 @@ $config->jenshin->projectSettingsPrivs = array(
         'whitelist' => 1, 'addwhitelist' => 1, 'unbindwhitelist' => 1
     )
 );
+
+if(!function_exists('jxHideMySubMenus'))
+{
+    /**
+     * 从工作台某一级菜单的二级菜单中移除指定项。
+     */
+    function jxHideMySubMenus($lang, string $section, array $menuKeys): void
+    {
+        if(empty($lang) || empty($lang->my->menu->$section) || empty($menuKeys)) return;
+        $menu = $lang->my->menu->$section;
+        if(!is_array($menu) || empty($menu['subMenu'])) return;
+
+        foreach($menuKeys as $menuKey)
+        {
+            if(isset($menu['subMenu']->$menuKey)) unset($menu['subMenu']->$menuKey);
+        }
+        if(!empty($menu['menuOrder']) && is_array($menu['menuOrder']))
+        {
+            foreach($menu['menuOrder'] as $order => $name)
+            {
+                if(in_array($name, $menuKeys, true)) unset($menu['menuOrder'][$order]);
+            }
+        }
+        $lang->my->menu->$section = $menu;
+    }
+}
 
 if(!function_exists('jxNeedGroupPrivForProjectSettings'))
 {

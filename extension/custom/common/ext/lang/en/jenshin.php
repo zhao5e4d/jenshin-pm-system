@@ -15,3 +15,9 @@ if(function_exists('jxHideProjectMenus') && !empty($config->jenshin->hiddenProje
 {
     jxHideProjectMenus($lang, $config->jenshin->hiddenProjectMenus);
 }
+
+if(function_exists('jxHideMySubMenus'))
+{
+    if(!empty($config->jenshin->hiddenContributeMenus)) jxHideMySubMenus($lang, 'contribute', $config->jenshin->hiddenContributeMenus);
+    if(!empty($config->jenshin->hiddenWorkMenus))       jxHideMySubMenus($lang, 'work',       $config->jenshin->hiddenWorkMenus);
+}
