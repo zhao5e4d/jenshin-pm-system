@@ -11,6 +11,7 @@ $lang->user->loginPage->welcomeHint  = 'Sign in to Jenshin PM System';
 $lang->user->loginPage->accountPh    = 'Enter username';
 $lang->user->loginPage->passwordPh   = 'Enter password';
 $lang->user->loginPage->remember     = 'Remember account';
+$lang->user->loginPage->langTitle    = 'Change Language';
 $lang->user->loginPage->trust        = 'A trusted medical-tech project management platform';
 $lang->user->loginPage->copyright    = '© 2026 Jenshin PM System. All rights reserved.';
 $lang->user->loginPage->features     = array(

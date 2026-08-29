@@ -11,6 +11,7 @@ $lang->user->loginPage->welcomeHint  = '登录 健忻项目管理系统';
 $lang->user->loginPage->accountPh    = '请输入用户名';
 $lang->user->loginPage->passwordPh   = '请输入密码';
 $lang->user->loginPage->remember     = '记住账号';
+$lang->user->loginPage->langTitle    = '切换语言';
 $lang->user->loginPage->trust        = '值得信赖的医疗科技项目管理平台';
 $lang->user->loginPage->copyright    = '© 2026 健忻项目管理系统. All rights reserved.';
 $lang->user->loginPage->features     = array(

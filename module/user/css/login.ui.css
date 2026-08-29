@@ -218,6 +218,7 @@ body.jx-login-page > svg {
   margin: 8px 80px 8px auto;
   padding: 42px 36px 36px !important;
   border-radius: 28px !important;
+  overflow: visible !important;
   background: rgba(255, 255, 255, .42) !important;
   border: 1px solid rgba(255, 255, 255, .58) !important;
   box-shadow: 0 20px 48px rgba(20, 50, 100, .12) !important;
@@ -228,9 +229,12 @@ body.jx-login-page > svg {
 .jx-login-card-head,
 #loginPanel .header {
   position: relative;
+  z-index: 6;
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
+  gap: 12px;
+  overflow: visible;
   margin-bottom: 28px;
 }
 
@@ -251,27 +255,99 @@ body.jx-login-page > svg {
   color: #94a3b8;
 }
 
-.jx-login-lang,
-#loginPanel .header .btn,
-#loginPanel #langs {
-  min-width: 0;
+#langs-toggle,
+#loginPanel .header .jx-login-lang,
+#loginPanel .header .btn.jx-login-lang {
+  float: none;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  flex: 0 0 auto;
+  min-width: 96px;
   width: auto;
   height: 28px;
   padding: 0 10px;
   border-radius: 999px !important;
-  border: 1px solid rgba(29, 110, 245, .12);
-  background: rgba(255, 255, 255, .55);
-  color: #64748b;
+  border: 1px solid rgba(29, 110, 245, .16) !important;
+  background: rgba(255, 255, 255, .78) !important;
+  box-shadow: none !important;
+  color: #475569 !important;
   font-size: 12px;
+  font-weight: 500;
+  line-height: 1;
+  white-space: nowrap;
 }
 
-#langs-toggle {
-  float: none;
-  position: static;
+#langs-toggle:hover,
+#langs-toggle.show,
+#loginPanel .header .jx-login-lang:hover,
+#loginPanel .header .jx-login-lang.show {
+  color: #1d4ed8 !important;
+  border-color: rgba(29, 110, 245, .32) !important;
+  background: #fff !important;
 }
 
-.langsDropMenu.dropdown-menu {
-  min-width: 85px;
+#loginPanel #langs,
+#langs.dropdown-menu,
+.langsDropMenu.dropdown-menu,
+.langsDropMenu.menu {
+  min-width: 136px !important;
+  width: max-content !important;
+  height: auto !important;
+  max-height: none !important;
+  padding: 6px !important;
+  margin: 0 !important;
+  overflow: hidden;
+  border-radius: 12px !important;
+  border: 1px solid rgba(15, 40, 80, .08) !important;
+  background: #fff !important;
+  box-shadow: 0 14px 32px rgba(15, 40, 80, .16) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  z-index: 40;
+}
+
+#langs .item,
+#langs .menu-item,
+.langsDropMenu .item,
+.langsDropMenu .menu-item {
+  display: block;
+  margin: 0;
+}
+
+#langs .item > a,
+#langs .menu-item > a,
+.langsDropMenu .item > a,
+.langsDropMenu .menu-item > a {
+  display: block;
+  min-height: 32px;
+  margin: 2px 0;
+  padding: 6px 10px;
+  border-radius: 8px !important;
+  color: #334155 !important;
+  font-size: 13px;
+  line-height: 20px;
+  white-space: nowrap;
+  background: transparent !important;
+}
+
+#langs .item > a:hover,
+#langs .menu-item > a:hover,
+.langsDropMenu .item > a:hover,
+.langsDropMenu .menu-item > a:hover {
+  background: rgba(43, 115, 255, .08) !important;
+  color: #1d4ed8 !important;
+}
+
+#langs .item > a.active,
+#langs .menu-item > a.active,
+.langsDropMenu .item > a.active,
+.langsDropMenu .menu-item > a.active {
+  background: rgba(43, 115, 255, .12) !important;
+  color: #1d4ed8 !important;
+  font-weight: 600;
 }
 
 .jx-login-form,

@@ -111,7 +111,11 @@ class router extends baseRouter
         {
             $langs = $this->dbQuery('SELECT `value` FROM ' . TABLE_CONFIG . " WHERE `owner`='system' AND `module`='common' AND `section`='global' AND `key`='langs'")->fetch();
             $langs = empty($langs) ? array() : json_decode($langs->value, true);
-            foreach($langs as $langKey => $langData) $this->config->langs[$langKey] = $langData['name'];
+            foreach($langs as $langKey => $langData) $this->config->langs[$langKey] = is_array($langData) ? ($langData['name'] ?? $langKey) : $langData;
+        }
+        if(isset($this->config->jenshin->langs) && is_array($this->config->jenshin->langs))
+        {
+            $this->config->langs = $this->config->jenshin->langs;
         }
         return parent::setClientLang($lang);
     }

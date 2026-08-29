@@ -10,19 +10,21 @@ if(empty($config->notMd5Pwd)) h::import($config->webRoot . 'js/md5.js', 'js');
 $resetLink     = empty($this->config->resetPWDByMail) ? inlink('reset') : inlink('forgetPassword');
 $zentaoDirName = basename($this->app->getBasePath());
 $clientLang    = $app->getClientLang();
+$uiLangs       = !empty($config->jenshin->langs) ? $config->jenshin->langs : $config->langs;
+$currentLang   = $uiLangs[$clientLang] ?? reset($uiLangs);
 $langItems     = array();
-foreach($config->langs as $key => $value) $langItems[] = array('text' => $value, 'data-on' => 'click', 'data-call' => 'switchLang', 'data-params' => $key, 'active' => $key == $clientLang);
+foreach($uiLangs as $key => $value) $langItems[] = array('text' => $value, 'data-on' => 'click', 'data-call' => 'switchLang', 'data-params' => $key, 'active' => $key == $clientLang);
 
 $pluginTips      = '';
 $expiredPlugins  = implode('、', $plugins['expired']);
 $expiringPlugins = implode('、', $plugins['expiring']);
-$expiredTips     = sprintf($lang->misc->expiredPluginTips, $expiredPlugins);
-$expiringTips    = sprintf($lang->misc->expiringPluginTips, $expiringPlugins);
+$expiredTips     = sprintf((string)($lang->misc->expiredPluginTips ?? '%s'), $expiredPlugins);
+$expiringTips    = sprintf((string)($lang->misc->expiringPluginTips ?? '%s'), $expiringPlugins);
 if($expiredPlugins)  $pluginTips = $expiredTips;
 if($expiringPlugins) $pluginTips = $expiringTips;
 if($expiredPlugins and $expiringPlugins) $pluginTips = $expiredTips . $pluginTips;
 $pluginTotal = count($plugins['expired']) + count($plugins['expiring']);
-$expiredCountTips = sprintf($lang->misc->expiredCountTips, $pluginTips, $pluginTotal);
+$expiredCountTips = sprintf((string)($lang->misc->expiredCountTips ?? '%s %s'), $pluginTips, $pluginTotal);
 
 $demoUserItems = array();
 if(!empty($this->config->global->showDemoUsers))
@@ -157,14 +159,22 @@ div
                     ),
                     dropdown
                     (
+                        btn
+                        (
+                            setClass('jx-login-lang'),
+                            set::type('ghost'),
+                            set::size('sm'),
+                            set::caret(true),
+                            $currentLang
+                        ),
                         setID('langs'),
-                        setClass('actions btn jx-login-lang'),
-                        set::title('Change Language/更换语言/更換語言'),
+                        set::title($copy?->langTitle ?? '切换语言 / Change Language'),
                         set::items($langItems),
                         set::menuClass('langsDropMenu'),
-                        set::staticMenu(true),
-                        set::trigger('hover'),
-                        html($config->langs[$clientLang])
+                        set::placement('bottom-end'),
+                        set::strategy('fixed'),
+                        set::trigger('click'),
+                        set::caret(false)
                     )
                 ),
                 $loginExpired ? p(setClass('text-danger loginExpired'), $lang->user->loginExpired) : null,

@@ -10,6 +10,13 @@ $config->jenshin = new stdclass();
 $config->jenshin->version = '1.0.0';
 $config->jenshin->edition = 'medical-pm';
 
+/* 界面语言仅保留简体中文、English；登录页与头像菜单共用此列表。 */
+$config->jenshin->langs = array(
+    'zh-cn' => '简体中文',
+    'en'    => 'English'
+);
+$config->langs = $config->jenshin->langs;
+
 /* 首页 1.0 引导：extension/custom/misc/ext/config/jenshin.php，配图 www/static/svg/jenshin/ */
 
 /* 默认萱萱紫：与当前靛紫玻璃语言同一套色阶。 */

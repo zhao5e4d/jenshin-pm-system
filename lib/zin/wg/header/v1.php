@@ -175,8 +175,9 @@ class header extends wg
             'listProps' => ['getItem' => jsRaw('(item) => {item.selected = item["data-value"] === $.cookie.get("theme"); return item;}')]
         );
 
+        $uiLangs   = !empty($config->jenshin->langs) ? $config->jenshin->langs : $app->config->langs;
         $langItems = array();
-        foreach($app->config->langs as $key => $value) $langItems[] = array('text' => $value, 'data-value' => $key, 'url' => "javascript:selectLang(\"$key\")", 'active' => $app->cookie->lang == $key);
+        foreach($uiLangs as $key => $value) $langItems[] = array('text' => $value, 'data-value' => $key, 'url' => "javascript:selectLang(\"$key\")", 'active' => $app->cookie->lang == $key);
         $items[] = array('text' => $lang->lang, 'icon' => 'lang', 'items' => $langItems);
 
         /* Zentao desktop client menu. */
