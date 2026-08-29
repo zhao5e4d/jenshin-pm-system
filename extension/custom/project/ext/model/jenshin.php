@@ -23,7 +23,7 @@ public function jxHideDesignMenu(): void
         return;
     }
 
-    $keys = array('project', 'scrum', 'waterfall', 'kanbanProject', 'agileplus', 'waterfallplus', 'ipd');
+    $keys = array('project', 'scrum', 'waterfall', 'kanbanProject', 'agileplus', 'waterfallplus', 'ipd', 'execution');
     foreach($keys as $key)
     {
         foreach($menuKeys as $menuKey)

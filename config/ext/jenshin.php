@@ -30,19 +30,34 @@ $config->jenshin->defaultProjectModel = 'scrum';
 $config->jenshin->skipCreateGuide    = true;
 $config->jenshin->lockProjectModel   = true;
 
-/* 项目详情二级菜单中隐藏的项。超级管理员直链仍可用于排障。 */
+/* 项目/执行详情二级菜单中隐藏的项。超级管理员直链仍可用于排障。 */
 $config->jenshin->hiddenProjectMenus = array('qa', 'build', 'release');
+
+if(!function_exists('jxStripDividerMenus'))
+{
+    /**
+     * 从 dividerMenu 中去掉已隐藏的项，避免留下空分隔。
+     */
+    function jxStripDividerMenus(&$dividerMenu, array $menuKeys): void
+    {
+        if(empty($dividerMenu) || empty($menuKeys)) return;
+        foreach($menuKeys as $menuKey)
+        {
+            $dividerMenu = str_replace(',' . $menuKey . ',', ',', $dividerMenu);
+        }
+    }
+}
 
 if(!function_exists('jxHideProjectMenus'))
 {
     /**
-     * 从各项目模型导航中移除指定二级菜单。
+     * 从项目模型导航和执行详情导航中移除指定二级菜单。
      */
     function jxHideProjectMenus($lang, array $menuKeys): void
     {
         if(empty($lang) || empty($menuKeys)) return;
 
-        $langKeys = array('project', 'scrum', 'waterfall', 'kanbanProject', 'agileplus', 'waterfallplus', 'ipd');
+        $langKeys = array('project', 'scrum', 'waterfall', 'kanbanProject', 'agileplus', 'waterfallplus', 'ipd', 'execution');
         foreach($langKeys as $key)
         {
             if(!isset($lang->$key->menu)) continue;
@@ -50,6 +65,7 @@ if(!function_exists('jxHideProjectMenus'))
             {
                 if(isset($lang->$key->menu->$menuKey)) unset($lang->$key->menu->$menuKey);
             }
+            if(isset($lang->$key->dividerMenu)) jxStripDividerMenus($lang->$key->dividerMenu, $menuKeys);
         }
 
         if(empty($lang->project->noMultiple)) return;
@@ -60,6 +76,7 @@ if(!function_exists('jxHideProjectMenus'))
             {
                 if(isset($lang->project->noMultiple->$key->menu->$menuKey)) unset($lang->project->noMultiple->$key->menu->$menuKey);
             }
+            if(isset($lang->project->noMultiple->$key->dividerMenu)) jxStripDividerMenus($lang->project->noMultiple->$key->dividerMenu, $menuKeys);
         }
     }
 }

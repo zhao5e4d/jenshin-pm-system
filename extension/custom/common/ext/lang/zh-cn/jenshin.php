@@ -93,7 +93,7 @@ $lang->navGroup->jxboard        = 'jxboard';
 $lang->navGroup->jxcore         = 'jxdashboard';
 $lang->navGroup->jxhospital     = 'jxadmission';
 
-/* 项目详情二级菜单：测试 / 构建 / 发布。setMenu 还会再裁一次（含 design）。 */
+/* 项目/执行详情二级菜单：测试 / 构建 / 发布。setMenu 还会再裁一次（含 design）。 */
 if(function_exists('jxHideProjectMenus') && !empty($config->jenshin->hiddenProjectMenus))
 {
     jxHideProjectMenus($lang, $config->jenshin->hiddenProjectMenus);
