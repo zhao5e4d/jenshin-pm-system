@@ -1363,6 +1363,48 @@ html:lang(en) .table thead > tr > th {
   background: transparent;
 }
 
+/* ZUI datetime/time picker shares one hour-minute menu everywhere
+   (task lifetime, start/finish, bug, release, filters, …). Each column
+   is `<menu class="menu col w-10">`: 40px wide, `.menu` padding .5rem,
+   and `.item-title { overflow:hidden }`. Jenshin's 8px classic scrollbar
+   then leaves ~14px for "10"/"11", so only the first digit remains. */
+.datetime-picker-menu.row,
+.time-picker-menu.row {
+  flex-wrap: nowrap;
+}
+
+.time-picker-menu.row {
+  flex-shrink: 0;
+}
+
+.time-picker-menu.row > .menu.col {
+  flex: 0 0 3.25rem;
+  width: 3.25rem !important;
+  min-width: 3.25rem;
+  padding-left: 0;
+  padding-right: 0;
+  align-items: center;
+  overflow-x: hidden;
+}
+
+.time-picker-menu .menu-item > a {
+  justify-content: center;
+  width: auto;
+}
+
+.time-picker-menu .menu-item .item-title,
+.time-picker-menu .menu-item > a > .text {
+  flex: none;
+  min-width: auto;
+  overflow: visible;
+  text-overflow: unset;
+  text-align: center;
+}
+
+.time-picker-menu .scrollbar-thin::-webkit-scrollbar {
+  width: 6px;
+}
+
 /* ---------- Dashboard / blocks ---------- */
 .dashboard .panel,
 .block,

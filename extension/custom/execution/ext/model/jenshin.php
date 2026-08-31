@@ -16,6 +16,22 @@ public function getExecutionFeatures(object $execution): array
     return $features;
 }
 
+public function statRelatedData(int $executionID): object
+{
+    $statData = parent::statRelatedData($executionID);
+
+    $delayedCount = $this->dao->select('COUNT(id) AS `count`')->from(TABLE_TASK)
+        ->where('execution')->eq($executionID)
+        ->andWhere('deadline')->notZeroDate()
+        ->andWhere('deadline')->lt(helper::today())
+        ->andWhere('status')->in('wait,doing')
+        ->andWhere('deleted')->eq(0)
+        ->fetch('count');
+
+    $statData->delayedCount = (int)$delayedCount;
+    return $statData;
+}
+
 public function jxHideExecutionMenus(): void
 {
     $menuKeys = !empty($this->config->jenshin->hiddenProjectMenus) && is_array($this->config->jenshin->hiddenProjectMenus)
