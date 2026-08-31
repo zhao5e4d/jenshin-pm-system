@@ -359,3 +359,129 @@ protected function jxCountTasksOpenedOn(string $day): int
         ->orWhere('t1.vision IS NULL')->markRight(1)
         ->fetch('value');
 }
+
+/**
+ * 产品年度工作量：第三列改为各产品今年完成任务数。
+ *
+ * @access protected
+ * @return void
+ */
+protected function printAnnualWorkloadBlock()
+{
+    $products      = $this->loadModel('product')->getPairs();
+    $productIdList = array_keys($products);
+
+    $this->loadModel('metric');
+    $finishEstimateGroup = $this->metric->getResultByCodeWithArray('scale_of_annual_finished_story_in_product', array('product' => join(',', $productIdList), 'year' => date('Y')), 'cron');
+    $doneStoryGroup      = $this->metric->getResultByCodeWithArray('count_of_annual_finished_story_in_product', array('product' => join(',', $productIdList), 'year' => date('Y')), 'cron');
+    $finishedTaskGroup   = $this->jxCountTasksByProduct($productIdList, 'finishedYear');
+
+    if(!empty($finishEstimateGroup)) $finishEstimateGroup = array_column($finishEstimateGroup, null, 'product');
+    if(!empty($doneStoryGroup))      $doneStoryGroup      = array_column($doneStoryGroup,      null, 'product');
+
+    $doneStoryEstimate = array();
+    $doneStoryCount    = array();
+    $resolvedBugCount  = array();
+    foreach($products as $productID => $productName)
+    {
+        $doneStoryEstimate[$productID] = isset($finishEstimateGroup[$productID]['value']) ? $finishEstimateGroup[$productID]['value'] : 0;
+        $doneStoryCount[$productID]    = isset($doneStoryGroup[$productID]['value'])      ? $doneStoryGroup[$productID]['value']      : 0;
+        $resolvedBugCount[$productID]  = (int)($finishedTaskGroup[$productID] ?? 0);
+    }
+
+    arsort($doneStoryEstimate);
+    arsort($doneStoryCount);
+    arsort($resolvedBugCount);
+
+    $this->view->products          = $products;
+    $this->view->doneStoryEstimate = $doneStoryEstimate;
+    $this->view->doneStoryCount    = $doneStoryCount;
+    $this->view->resolvedBugCount  = $resolvedBugCount;
+    $this->view->maxStoryEstimate  = !empty($doneStoryEstimate) ? max($doneStoryEstimate) : 0;
+    $this->view->maxStoryCount     = !empty($doneStoryCount)    ? max($doneStoryCount)    : 0;
+    $this->view->maxBugCount       = !empty($resolvedBugCount)  ? max($resolvedBugCount)  : 0;
+}
+
+/**
+ * 未关闭产品列表：激活Bug列改为未完成任务数。
+ *
+ * @param  object $block
+ * @access protected
+ * @return void
+ */
+protected function printProductListBlock(object $block): void
+{
+    $this->app->loadClass('pager', true);
+    $count = isset($block->params->count) ? (int)$block->params->count : 0;
+    $type  = isset($block->params->type) ? $block->params->type : '';
+    $pager = pager::init(0, $count, 1);
+
+    $products     = $this->loadModel('product')->getList(0, $type);
+    $productStats = $this->product->getStats(array_keys($products), 'order_desc', $this->viewType != 'json' ? $pager : '');
+    $this->jxAttachUnfinishedTasks($productStats);
+
+    $this->view->productStats = $productStats;
+    $this->view->users        = $this->loadModel('user')->getPairs('noletter');
+    $this->view->avatarList   = $this->user->getAvatarPairs();
+}
+
+/**
+ * 按产品统计任务数（走项目-产品关联，口径对齐度量 getTasks）。
+ *
+ * @param  array  $productIdList
+ * @param  string $kind          unfinished|finishedYear
+ * @access protected
+ * @return array
+ */
+protected function jxCountTasksByProduct(array $productIdList, string $kind): array
+{
+    if(empty($productIdList)) return array();
+
+    $vision = $this->config->vision;
+    $stmt   = $this->dao->select('t4.product AS product, COUNT(DISTINCT t1.id) AS value')->from(TABLE_TASK)->alias('t1')
+        ->leftJoin(TABLE_PROJECT)->alias('t2')->on('t1.execution = t2.id')
+        ->leftJoin(TABLE_PROJECT)->alias('t3')->on('t2.project = t3.id')
+        ->leftJoin(TABLE_PROJECTPRODUCT)->alias('t4')->on('t3.id = t4.project')
+        ->where('t2.type')->in('sprint,kanban,stage')
+        ->andWhere('t1.deleted')->eq('0')
+        ->andWhere('t2.deleted')->eq('0')
+        ->andWhere('t3.deleted')->eq('0')
+        ->andWhere('t1.isParent')->eq('0')
+        ->andWhere('t4.product')->in($productIdList);
+
+    if($kind === 'finishedYear')
+    {
+        $year = date('Y');
+        $stmt->andWhere('t1.finishedDate')->ge("{$year}-01-01")
+            ->andWhere('t1.finishedDate')->lt(((int)$year + 1) . '-01-01')
+            ->andWhere('t1.status', true)->eq('done')
+            ->orWhere('t1.status')->eq('closed')->andWhere('t1.closedReason')->eq('done')->markRight(1);
+    }
+    else
+    {
+        $stmt->andWhere('t1.status')->notin('done,closed,cancel');
+    }
+
+    return $stmt->andWhere("t1.vision LIKE '%{$vision}%'", true)
+        ->orWhere('t1.vision IS NULL')->markRight(1)
+        ->groupBy('t4.product')
+        ->fetchPairs('product', 'value');
+}
+
+/**
+ * 把未完成任务数写入产品列表的原 Bug 列。
+ *
+ * @param  array $productStats
+ * @access protected
+ * @return void
+ */
+protected function jxAttachUnfinishedTasks(array $productStats): void
+{
+    if(empty($productStats)) return;
+
+    $counts = $this->jxCountTasksByProduct(array_keys($productStats), 'unfinished');
+    foreach($productStats as $productID => $product)
+    {
+        $product->unresolvedBugs = (int)($counts[$productID] ?? 0);
+    }
+}
