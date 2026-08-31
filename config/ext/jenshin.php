@@ -40,6 +40,21 @@ $config->jenshin->lockProjectModel   = true;
 /* 项目/执行详情二级菜单中隐藏的项。超级管理员直链仍可用于排障。 */
 $config->jenshin->hiddenProjectMenus = array('qa', 'build', 'release');
 
+/* 任务执行综合看板不展示 Bug 泳道 / Bug看板。改 false 可恢复。 */
+$config->jenshin->hideBugKanban = true;
+
+if(!function_exists('jxHideBugKanban'))
+{
+    /**
+     * 健忻裁掉执行看板里的 Bug 泳道。
+     */
+    function jxHideBugKanban(): bool
+    {
+        global $config;
+        return !isset($config->jenshin->hideBugKanban) || !empty($config->jenshin->hideBugKanban);
+    }
+}
+
 /* 工作台「贡献」「待处理」二级菜单中隐藏的项（测试相关）。直链仍可用于排障。 */
 $config->jenshin->hiddenContributeMenus = array('bug', 'testcase', 'testtask');
 $config->jenshin->hiddenWorkMenus       = array('bug', 'testcase', 'testtask');
@@ -142,6 +157,27 @@ if(!function_exists('jxNeedGroupPrivForProjectSettings'))
         $method = strtolower((string)$method);
         if($module === 'stakeholder' && !empty($map['stakeholder'])) return true;
         return $module === 'project' && !empty($map['project'][$method]);
+    }
+}
+
+/* 对所有账号隐藏的权限点（含管理员工具栏）。从 hiddenPrivs 去掉对应项即可恢复。 */
+$config->jenshin->hiddenPrivs = array(
+    'execution' => array('importbug' => 1),
+    'task'      => array('importbug' => 1)
+);
+
+if(!function_exists('jxIsHiddenPriv'))
+{
+    /**
+     * 健忻裁掉的方法：hasPriv 一律 false，工具栏不再出现入口。
+     */
+    function jxIsHiddenPriv($module, $method): bool
+    {
+        global $config;
+        if(empty($config->jenshin->hiddenPrivs)) return false;
+        $module = strtolower((string)$module);
+        $method = strtolower((string)$method);
+        return !empty($config->jenshin->hiddenPrivs[$module][$method]);
     }
 }
 

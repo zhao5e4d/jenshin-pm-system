@@ -9,6 +9,13 @@ public function setMenu(int $executionID)
     return $result;
 }
 
+public function getExecutionFeatures(object $execution): array
+{
+    $features = parent::getExecutionFeatures($execution);
+    if(function_exists('jxHideBugKanban') && jxHideBugKanban()) $features['qa'] = false;
+    return $features;
+}
+
 public function jxHideExecutionMenus(): void
 {
     $menuKeys = !empty($this->config->jenshin->hiddenProjectMenus) && is_array($this->config->jenshin->hiddenProjectMenus)
