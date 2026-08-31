@@ -46,3 +46,8 @@ $lang->block->productoverview->releaseCount         = '今年完成项目';
 $lang->block->productoverview->milestoneCount       = '未完成任务数';
 $lang->block->monthlyprogress->bugTrendChart        = '任务新增和完成趋势图';
 
+$lang->block->teamachievement->createdTasks = '新增任务数量';
+$lang->block->teamachievement->runCases     = '新增任务数量';
+
+$lang->project->overdueTasks = '逾期任务';
+

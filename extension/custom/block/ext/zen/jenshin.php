@@ -246,3 +246,116 @@ protected function jxReplaceProductOverviewMetrics(int $width, array $params = a
     $data->activeBugCount = $this->jxMetricValue('count_of_unfinished_task');
     $data->finishedReleaseCount['year'] = $this->jxMetricValue('count_of_annual_finished_project', array(), $year);
 }
+
+/**
+ * 团队成就：用「新增任务」替换测试用例指标。
+ *
+ * @access protected
+ * @return void
+ */
+protected function printTeamAchievementBlock()
+{
+    $years  = array();
+    $months = array();
+    for($i = 0; $i <= 1; $i ++)
+    {
+        $years[]  = date('Y', strtotime("-{$i} day"));
+        $months[] = date('m', strtotime("-{$i} day"));
+    }
+
+    $this->loadModel('metric');
+    $finishedTaskGroup = $this->metric->getResultByCodeWithArray('count_of_daily_finished_task', array('year' => join(',', $years), 'month' => join(',', $months)), 'cron');
+    $createdStoryGroup = $this->metric->getResultByCodeWithArray('count_of_daily_created_story', array('year' => join(',', $years), 'month' => join(',', $months)), 'cron');
+    $consumedGroup     = $this->metric->getResultByCodeWithArray('hour_of_daily_effort',         array('year' => join(',', $years), 'month' => join(',', $months)), 'cron');
+
+    $today     = date('Y-m-d');
+    $yesterday = date('Y-m-d', strtotime('-1 day'));
+
+    $finishedTasks  = $this->jxDailyMetricOn($finishedTaskGroup, $today);
+    $yesterdayTasks = $this->jxDailyMetricOn($finishedTaskGroup, $yesterday);
+
+    $createdStories   = $this->jxDailyMetricOn($createdStoryGroup, $today);
+    $yesterdayStories = $this->jxDailyMetricOn($createdStoryGroup, $yesterday);
+
+    $createdTasks          = $this->jxCountTasksOpenedOn($today);
+    $yesterdayCreatedTasks = $this->jxCountTasksOpenedOn($yesterday);
+
+    $consumedHours  = $this->jxDailyMetricOn($consumedGroup, $today);
+    $yesterdayHours = $this->jxDailyMetricOn($consumedGroup, $yesterday);
+
+    $this->view->finishedTasks         = $finishedTasks;
+    $this->view->yesterdayTasks        = $yesterdayTasks;
+    $this->view->createdStories        = $createdStories;
+    $this->view->yesterdayStories      = $yesterdayStories;
+    $this->view->createdTasks          = $createdTasks;
+    $this->view->yesterdayCreatedTasks = $yesterdayCreatedTasks;
+    $this->view->runCases              = $createdTasks;
+    $this->view->yesterdayCases        = $yesterdayCreatedTasks;
+    $this->view->consumedHours         = $consumedHours;
+    $this->view->yesterdayHours        = $yesterdayHours;
+}
+
+/**
+ * 项目列表：补上逾期任务数。
+ *
+ * @param  object $block
+ * @access protected
+ * @return void
+ */
+protected function printProjectBlock(object $block): void
+{
+    $this->app->loadLang('execution');
+    $this->app->loadLang('task');
+    $count   = isset($block->params->count)   ? $block->params->count   : 15;
+    $type    = isset($block->params->type)    ? $block->params->type    : 'all';
+    $orderBy = isset($block->params->orderBy) ? $block->params->orderBy : 'id_desc';
+
+    $projects = $this->loadModel('project')->getOverviewList($type, 0, $orderBy, $count);
+    $this->jxAttachOverdueTasks($projects);
+    $this->view->projects = $projects;
+    $this->view->users    = $this->loadModel('user')->getPairs('noletter', '', 0, array_unique(array_column($projects, 'PM')));
+}
+
+/**
+ * 从按日度量结果中取某一天的值。
+ *
+ * @param  mixed  $group
+ * @param  string $day
+ * @access protected
+ * @return int
+ */
+protected function jxDailyMetricOn($group, string $day): int
+{
+    if(empty($group) || !is_array($group)) return 0;
+    foreach($group as $data)
+    {
+        $data = (array)$data;
+        if("{$data['year']}-{$data['month']}-{$data['day']}" === $day) return (int)zget($data, 'value', 0);
+    }
+    return 0;
+}
+
+/**
+ * 统计某日新建的任务数（与度量 getTasks 口径一致）。
+ *
+ * @param  string $day
+ * @access protected
+ * @return int
+ */
+protected function jxCountTasksOpenedOn(string $day): int
+{
+    $nextDay = date('Y-m-d', strtotime($day . ' +1 day'));
+    $vision  = $this->config->vision;
+    return (int)$this->dao->select('COUNT(t1.id) AS value')->from(TABLE_TASK)->alias('t1')
+        ->leftJoin(TABLE_PROJECT)->alias('t2')->on('t1.execution = t2.id')
+        ->leftJoin(TABLE_PROJECT)->alias('t3')->on('t2.project = t3.id')
+        ->where('t2.type')->in('sprint,kanban,stage')
+        ->andWhere('t1.deleted')->eq('0')
+        ->andWhere('t2.deleted')->eq('0')
+        ->andWhere('t3.deleted')->eq('0')
+        ->andWhere('t1.openedDate')->ge($day . ' 00:00:00')
+        ->andWhere('t1.openedDate')->lt($nextDay . ' 00:00:00')
+        ->andWhere("t1.vision LIKE '%{$vision}%'", true)
+        ->orWhere('t1.vision IS NULL')->markRight(1)
+        ->fetch('value');
+}

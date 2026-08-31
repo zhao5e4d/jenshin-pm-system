@@ -94,3 +94,4 @@ foreach($blocked as $mod)
 {
     if(isset($lang->resource->$mod)) unset($lang->resource->$mod);
 }
+if(isset($lang->resource->execution->importBug)) unset($lang->resource->execution->importBug);

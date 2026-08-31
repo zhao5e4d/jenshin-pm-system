@@ -12,7 +12,7 @@ $config->block->project->dtable->fieldList['PM']          = array('name' => 'PM'
 $config->block->project->dtable->fieldList['status']      = array('name' => 'status',      'title' => $lang->project->status,      'type' => 'status',   'sort' => true, 'width' => 70, 'statusMap' => $lang->project->statusList);
 $config->block->project->dtable->fieldList['consumed']    = array('name' => 'consumed',    'title' => $lang->task->consumed,       'type' => 'count',    'sort' => 'number', 'width' => 80);
 $config->block->project->dtable->fieldList['leftStories'] = array('name' => 'leftStories', 'title' => $lang->project->leftStories, 'type' => 'count',    'sort' => 'number', 'width' => $isEn ? 120 : 80);
-$config->block->project->dtable->fieldList['leftTasks']   = array('name' => 'leftTasks',   'title' => $lang->project->leftTasks,   'type' => 'count',    'sort' => 'number', 'width' => $isEn ? 120 : 80);
-$config->block->project->dtable->fieldList['leftBugs']    = array('name' => 'leftBugs',    'title' => $lang->project->leftBugs,    'type' => 'count',    'sort' => 'number', 'width' => $isEn ? 120 : 80);
+$config->block->project->dtable->fieldList['leftTasks']    = array('name' => 'leftTasks',    'title' => $lang->project->leftTasks,    'type' => 'count',    'sort' => 'number', 'width' => $isEn ? 120 : 80);
+$config->block->project->dtable->fieldList['overdueTasks'] = array('name' => 'overdueTasks', 'title' => !empty($lang->project->overdueTasks) ? $lang->project->overdueTasks : '逾期任务', 'type' => 'count', 'sort' => 'number', 'width' => $isEn ? 120 : 80);
 $config->block->project->dtable->fieldList['end']         = array('name' => 'end',         'title' => $lang->project->end,         'type' => 'date',     'sort' => 'date');
 $config->block->project->dtable->fieldList['progress']    = array('name' => 'progress',    'title' => $lang->project->progress,    'type' => 'progress', 'sort' => true);

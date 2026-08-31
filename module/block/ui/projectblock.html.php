@@ -28,6 +28,7 @@ if(!$longBlock)
     unset($config->block->project->dtable->fieldList['storyCount']);
     unset($config->block->project->dtable->fieldList['leftStories']);
     unset($config->block->project->dtable->fieldList['leftTasks']);
+    unset($config->block->project->dtable->fieldList['overdueTasks']);
     unset($config->block->project->dtable->fieldList['leftBugs']);
 }
 

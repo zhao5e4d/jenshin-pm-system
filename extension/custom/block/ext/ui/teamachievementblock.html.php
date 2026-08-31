@@ -1,20 +1,14 @@
 <?php
 declare(strict_types=1);
 /**
-* The teamachievement block view file of block module of ZenTaoPMS.
-* @copyright   Copyright 2009-2023 禅道软件（青岛）集团有限公司(ZenTao Software (Qingdao) Co., Ltd. www.zentao.net)
-* @license     ZPL(https://zpl.pub/page/zplv12.html) or AGPL(https://www.gnu.org/licenses/agpl-3.0.en.html)
-* @author      Yuting Wang <wangyuting@easycorp.ltd>
-* @package     block
-* @link        https://www.zentao.net
-*/
-
+ * 团队成就：第三项改为新增任务，不再展示测试用例。
+ */
 namespace zin;
 
 $isEn               = $app->getClientLang() === 'en';
 $yesterdayClassName = $isEn ? 'items-center text-gray border-r pr-2 col-reverse' : 'items-center text-gray border-r pr-2';
 $todayClassName     = $isEn ? 'items-center text-success pl-2 col-reverse' : 'items-center text-success pl-2';
-
+$createdTasksLabel  = !empty($lang->block->teamachievement->createdTasks) ? $lang->block->teamachievement->createdTasks : $lang->block->teamachievement->runCases;
 
 blockPanel
 (
@@ -109,7 +103,7 @@ blockPanel
                     set::width('50%'),
                     setClass('item-newtask px-1 w-1/2'),
                     div(setClass('h-0 w-0'), div(setClass('item-icon h-9 w-9'))),
-                    div(setClass('text-gray pl-1'), !empty($lang->block->teamachievement->createdTasks) ? $lang->block->teamachievement->createdTasks : $lang->block->teamachievement->runCases),
+                    div(setClass('text-gray pl-1'), $createdTasksLabel),
                     div
                     (
                         setClass('mt-2 items-center flex pl-1'),

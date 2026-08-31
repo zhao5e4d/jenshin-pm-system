@@ -862,7 +862,36 @@ class blockZen extends block
         $orderBy = isset($block->params->orderBy) ? $block->params->orderBy : 'id_desc';
 
         $this->view->projects = $this->loadModel('project')->getOverviewList($type, 0, $orderBy, $count);
+        $this->jxAttachOverdueTasks($this->view->projects);
         $this->view->users    = $this->loadModel('user')->getPairs('noletter', '', 0, array_unique(array_column($this->view->projects, 'PM')));
+    }
+
+    /**
+     * 给项目列表补上逾期任务数，替代剩余 Bug。
+     *
+     * @param  array $projects
+     * @access protected
+     * @return void
+     */
+    protected function jxAttachOverdueTasks(array $projects): void
+    {
+        if(empty($projects)) return;
+
+        $today  = date('Y-m-d');
+        $counts = $this->dao->select('project, COUNT(id) AS value')->from(TABLE_TASK)
+            ->where('deleted')->eq('0')
+            ->andWhere('isParent')->eq('0')
+            ->andWhere('project')->in(array_keys($projects))
+            ->andWhere('deadline')->ne('0000-00-00')
+            ->andWhere('deadline')->lt($today)
+            ->andWhere('status')->in('wait,doing,pause')
+            ->groupBy('project')
+            ->fetchPairs('project', 'value');
+
+        foreach($projects as $projectID => $project)
+        {
+            $project->overdueTasks = (int)($counts[$projectID] ?? 0);
+        }
     }
 
     /**

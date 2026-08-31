@@ -1437,6 +1437,9 @@ eof;
         /* Check the parent object is closed. */
         if(!empty($method) and !commonModel::canBeChanged($module, $object)) return false;
 
+        /* 健忻裁剪：这些方法对所有账号关闭（含管理员工具栏）。 */
+        if(function_exists('jxIsHiddenPriv') && jxIsHiddenPriv($module, $method)) return false;
+
         /* Check is the super admin or not. */
         if(!empty($app->user->admin) or strpos($app->company->admins, ",{$app->user->account},") !== false) return true;
 
