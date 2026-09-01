@@ -81,3 +81,36 @@ foreach($jxHideCols as $col)
     unset($config->product->all->dtable->fieldList[$col]);
     unset($config->product->dtable->fieldList[$col]);
 }
+
+/*
+ * 产品名称默认链到 product-browse（需求列表）。取消「浏览需求」后
+ * dtable 因无权限把超链接拆掉。按当前账号落到仍有权限的产品页。
+ */
+if(!function_exists('jxProductNameLink'))
+{
+    function jxProductNameLink(): array
+    {
+        $candidates = array(
+            array('module' => 'product', 'method' => 'browse',    'params' => 'productID={id}'),
+            array('module' => 'product', 'method' => 'dashboard', 'params' => 'productID={id}'),
+            array('module' => 'product', 'method' => 'view',      'params' => 'productID={id}'),
+            array('module' => 'product', 'method' => 'project',   'params' => 'status=all&productID={id}'),
+        );
+        if(!class_exists('common')) return $candidates[1];
+        foreach($candidates as $link)
+        {
+            if(common::hasPriv($link['module'], $link['method'])) return $link;
+        }
+        return $candidates[1];
+    }
+}
+
+$jxNameLink = jxProductNameLink();
+if(isset($config->product->all->dtable->fieldList['name']))
+{
+    $config->product->all->dtable->fieldList['name']['link'] = $jxNameLink;
+}
+if(isset($config->product->dtable->fieldList['name']))
+{
+    $config->product->dtable->fieldList['name']['link'] = $jxNameLink;
+}

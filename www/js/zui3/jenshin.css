@@ -1937,3 +1937,23 @@ hr {
 .guide-block .theme-switch div.theme-purple { background-color: #6c5ce7; }
 .guide-block .theme-switch div.theme-default { background-color: #3883fa; }
 .guide-block .theme-switch div.theme-blue { background-color: #2b80ff; }
+
+/* 健忻不提供禅道帮助 / 教程 / 手册入口。表单字段旁的说明图标不在此列。 */
+#dashboard .icon-help,
+.dashboard .icon-help,
+.block-panel .icon-help,
+.guide-block,
+#tutorial-start-btn,
+.zentao-help,
+.user-tutorial,
+a[data-app="help"],
+#helpLink,
+.side .icon-help,
+.setting-box a[title="帮助"],
+.setting-box a[title="Help"],
+#featureBar a[href*="item=burndown"],
+#featureBar a[title*="如何更新燃尽图"],
+#featureBar a[title*="How to update the Burndown"],
+#featureBar li.nav-item.mr-3:has(a[href*="burndown"]) {
+  display: none !important;
+}

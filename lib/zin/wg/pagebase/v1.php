@@ -74,7 +74,8 @@ class pageBase extends wg
             : '';
 
         $headImports = array();
-        $headImports[] = h::favicon($webRoot . 'favicon.ico');
+        $faviconHref = function_exists('jxFaviconHref') ? \jxFaviconHref($webRoot) : ($webRoot . 'favicon.ico');
+        $headImports[] = h::favicon($faviconHref);
         $headImports[] = h::jsVar('window.config', $jsConfig, setID('configJS'));
         if($zui)
         {

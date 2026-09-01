@@ -48,8 +48,53 @@ $lang->block->monthlyprogress->bugTrendChart        = '任务新增和完成趋�
 $lang->block->annualworkload->resolvedBugCount      = '完成任务数';
 $lang->block->productlist->activatedBug             = '未完成任务';
 
+$lang->block->qastatistic->fixBugRate    = '任务完成率';
+$lang->block->qastatistic->bugStatusStat = '月度任务变化情况';
+$lang->block->bugstatistic->effective    = '任务总数';
+$lang->block->bugstatistic->fixed        = '已完成';
+$lang->block->bugstatistic->activated    = '未完成';
+$lang->block->tooltips['resolvedRate']   = "按{$lang->productCommon}统计的任务完成率 = 按{$lang->productCommon}统计的已完成任务数 / 按{$lang->productCommon}统计的未取消任务数";
+
+if(!empty($lang->block->modules['product']->availableBlocks['bugstatistic']))
+{
+    $lang->block->modules['product']->availableBlocks['bugstatistic'] = "{$lang->productCommon}任务统计";
+}
+if(!empty($lang->block->modules['singleproduct']->availableBlocks['singlebugstatistic']))
+{
+    $lang->block->modules['singleproduct']->availableBlocks['singlebugstatistic'] = "{$lang->productCommon}任务统计";
+}
+foreach(array('product', 'singleproduct') as $jxDash)
+{
+    if(empty($lang->block->default[$jxDash])) continue;
+    foreach($lang->block->default[$jxDash] as $jxIndex => $jxBlock)
+    {
+        $jxCode = $jxBlock['code'] ?? '';
+        if($jxCode === 'bugstatistic' || $jxCode === 'singlebugstatistic')
+        {
+            $lang->block->default[$jxDash][$jxIndex]['title'] = str_replace('Bug统计', '任务统计', $jxBlock['title']);
+        }
+    }
+}
+
 $lang->block->teamachievement->createdTasks = '新增任务数量';
 $lang->block->teamachievement->runCases     = '新增任务数量';
+
+/* 关闭禅道「使用帮助」：新账号默认布局不再带该区块，添加区块列表也不再出现。 */
+global $config;
+if(empty($config->jenshin->enableHelp))
+{
+    unset($lang->block->moduleList['guide'], $lang->block->titleList['guide']);
+    if(!empty($lang->block->default['full']['my']) && is_array($lang->block->default['full']['my']))
+    {
+        foreach($lang->block->default['full']['my'] as $jxIndex => $jxBlock)
+        {
+            if(($jxBlock['module'] ?? '') === 'guide' || ($jxBlock['code'] ?? '') === 'guide')
+            {
+                unset($lang->block->default['full']['my'][$jxIndex]);
+            }
+        }
+    }
+}
 
 $lang->project->overdueTasks = '逾期任务';
 

@@ -1016,4 +1016,70 @@ class jxcoreModel extends model
 
         return $alerts;
     }
+
+    /**
+     * 产品概括「其他信息」：任务/模块统计，替代已裁剪的构建、发布、Bug、用例。
+     *
+     * @param  int $productID
+     * @access public
+     * @return object
+     */
+    public function getProductOtherInfo(int $productID): object
+    {
+        $info = new stdclass();
+        $info->tasks            = 0;
+        $info->unfinishedTasks  = 0;
+        $info->overdueTasks     = 0;
+        $info->modules          = 0;
+        if($productID <= 0) return $info;
+
+        $info->tasks           = $this->countProductTasks($productID);
+        $info->unfinishedTasks = $this->countProductTasks($productID, 'unfinished');
+        $info->overdueTasks    = $this->countProductTasks($productID, 'overdue');
+        $info->modules         = (int)$this->dao->select('COUNT(1) AS count')->from(TABLE_MODULE)
+            ->where('root')->eq($productID)
+            ->andWhere('type')->eq('story')
+            ->andWhere('deleted')->eq('0')
+            ->fetch('count');
+
+        return $info;
+    }
+
+    /**
+     * 按产品统计关联执行上的任务（口径对齐工作台任务统计）。
+     *
+     * @param  int    $productID
+     * @param  string $kind      all|unfinished|overdue
+     * @access protected
+     * @return int
+     */
+    protected function countProductTasks(int $productID, string $kind = 'all'): int
+    {
+        $vision = $this->config->vision;
+        $stmt   = $this->dao->select('COUNT(DISTINCT t1.id) AS value')->from(TABLE_TASK)->alias('t1')
+            ->leftJoin(TABLE_PROJECT)->alias('t2')->on('t1.execution = t2.id')
+            ->leftJoin(TABLE_PROJECT)->alias('t3')->on('t2.project = t3.id')
+            ->leftJoin(TABLE_PROJECTPRODUCT)->alias('t4')->on('t3.id = t4.project')
+            ->where('t2.type')->in('sprint,kanban,stage')
+            ->andWhere('t1.deleted')->eq('0')
+            ->andWhere('t2.deleted')->eq('0')
+            ->andWhere('t3.deleted')->eq('0')
+            ->andWhere('t1.isParent')->eq('0')
+            ->andWhere('t4.product')->eq($productID);
+
+        if($kind === 'unfinished')
+        {
+            $stmt->andWhere('t1.status')->notin('done,closed,cancel');
+        }
+        elseif($kind === 'overdue')
+        {
+            $stmt->andWhere('t1.status')->in('wait,doing,pause')
+                ->andWhere('t1.deadline')->notZeroDate()
+                ->andWhere('t1.deadline')->lt(helper::today());
+        }
+
+        return (int)$stmt->andWhere("t1.vision LIKE '%{$vision}%'", true)
+            ->orWhere('t1.vision IS NULL')->markRight(1)
+            ->fetch('value');
+    }
 }

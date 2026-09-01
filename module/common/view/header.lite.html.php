@@ -60,7 +60,7 @@ $commonLang   = array('zh-cn', 'zh-tw', 'en', 'fr', 'de');
   if(isset($pageCSS)) css::internal($pageCSS);
   css::import($jsRoot . 'zui3/jenshin.css?v=' . (@filemtime($this->app->getWwwRoot() . 'js/zui3/jenshin.css') ?: time()));
 
-  echo html::favicon($webRoot . 'favicon.ico');
+  echo html::favicon(function_exists('jxFaviconHref') ? jxFaviconHref($webRoot) : ($webRoot . 'favicon.ico'));
   ?>
 <!--[if lt IE 10]>
 <?php js::import($jsRoot . 'jquery/placeholder/min.js'); ?>

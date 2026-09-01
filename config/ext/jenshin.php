@@ -9,6 +9,23 @@ $config->zin->extraCSS = 'jenshin.css';
 $config->jenshin = new stdclass();
 $config->jenshin->version = '1.0.0';
 $config->jenshin->edition = 'medical-pm';
+$config->jenshin->favicon = 'theme/default/images/main/jx-favicon.ico';
+
+if(!function_exists('jxFaviconHref'))
+{
+    /**
+     * 浏览器标签图标：用健忻 logo，带文件时间戳以免缓存到禅道原版。
+     */
+    function jxFaviconHref($webRoot = '')
+    {
+        global $app, $config;
+        if($webRoot === '') $webRoot = $app->getWebRoot();
+        $rel = !empty($config->jenshin->favicon) ? $config->jenshin->favicon : 'favicon.ico';
+        $abs = rtrim($app->getWwwRoot(), '/\\') . DIRECTORY_SEPARATOR . str_replace(array('/', '\\'), DIRECTORY_SEPARATOR, $rel);
+        $ver = is_file($abs) ? filemtime($abs) : time();
+        return $webRoot . $rel . '?v=' . $ver;
+    }
+}
 
 /* 界面语言仅保留简体中文、English；登录页与头像菜单共用此列表。 */
 $config->jenshin->langs = array(
@@ -180,6 +197,9 @@ if(!function_exists('jxIsHiddenPriv'))
         return !empty($config->jenshin->hiddenPrivs[$module][$method]);
     }
 }
+
+/* 禅道帮助 / 使用教程 / 手册。false 隐藏入口并不渲染「使用帮助」区块，改 true 即可恢复。 */
+$config->jenshin->enableHelp = false;
 
 /* 工作台「SSH密钥」。false 隐藏菜单并拦截入口，改 true 即可恢复。 */
 $config->jenshin->enableSSH = false;

@@ -195,6 +195,90 @@ protected function printMonthlyProgressBlock()
 }
 
 /**
+ * 单个产品月度推进：第三张图改为该产品任务新增/完成，不读 Bug 度量。
+ *
+ * @access protected
+ * @return void
+ */
+protected function printSingleMonthlyProgressBlock(): void
+{
+    $productID = (int)$this->session->product;
+
+    $years  = array();
+    $months = array();
+    $dates  = array();
+    for($i = 5; $i >= 0; $i --)
+    {
+        $years[]  = date('Y',   strtotime("first day of -{$i} month"));
+        $months[] = date('m',   strtotime("first day of -{$i} month"));
+        $dates[]  = date('Y-m', strtotime("first day of -{$i} month"));
+    }
+
+    $this->loadModel('metric');
+    $monthStroyScaleGroup     = $this->metric->getResultByCodeWithArray('scale_of_monthly_finished_story_in_product',  array('product' => $productID, 'year' => join(',', $years), 'month' => join(',', $months)), 'cron');
+    $monthCreatedStroyGroup   = $this->metric->getResultByCodeWithArray('count_of_monthly_created_story_in_product',   array('product' => $productID, 'year' => join(',', $years), 'month' => join(',', $months)), 'cron');
+    $monthFinishedStoryGroup  = $this->metric->getResultByCodeWithArray('count_of_monthly_finished_story_in_product',  array('product' => $productID, 'year' => join(',', $years), 'month' => join(',', $months)), 'cron');
+    $monthCreatedReleaseGroup = $this->metric->getResultByCodeWithArray('count_of_monthly_created_release_in_product', array('product' => $productID, 'year' => join(',', $years), 'month' => join(',', $months)), 'cron');
+
+    $productIds      = $productID ? array($productID) : array();
+    $createdMonthly  = $this->jxCountTasksByProductMonthly($productIds, 'created', $dates);
+    $finishedMonthly = $this->jxCountTasksByProductMonthly($productIds, 'finished', $dates);
+
+    $doneStoryEstimate = array();
+    $doneStoryCount    = array();
+    $createStoryCount  = array();
+    $fixedBugCount     = array();
+    $createBugCount    = array();
+    $releaseCount      = array();
+    foreach($dates as $date)
+    {
+        $doneStoryEstimate[$date] = 0;
+        $doneStoryCount[$date]    = 0;
+        $createStoryCount[$date]  = 0;
+        $fixedBugCount[$date]     = (int)($finishedMonthly[$productID][$date] ?? 0);
+        $createBugCount[$date]    = (int)($createdMonthly[$productID][$date] ?? 0);
+        $releaseCount[$date]      = 0;
+
+        if(!empty($monthStroyScaleGroup))
+        {
+            foreach($monthStroyScaleGroup as $data)
+            {
+                if($date == "{$data['year']}-{$data['month']}") $doneStoryEstimate[$date] = $data['value'];
+            }
+        }
+        if(!empty($monthCreatedStroyGroup))
+        {
+            foreach($monthCreatedStroyGroup as $data)
+            {
+                if($date == "{$data['year']}-{$data['month']}") $createStoryCount[$date] = $data['value'];
+            }
+        }
+        if(!empty($monthFinishedStoryGroup))
+        {
+            foreach($monthFinishedStoryGroup as $data)
+            {
+                if($date == "{$data['year']}-{$data['month']}") $doneStoryCount[$date] = $data['value'];
+            }
+        }
+        if(!empty($monthCreatedReleaseGroup))
+        {
+            foreach($monthCreatedReleaseGroup as $data)
+            {
+                if($date == "{$data['year']}-{$data['month']}") $releaseCount[$date] = $data['value'];
+            }
+        }
+    }
+
+    $this->view->months            = array();
+    $this->view->doneStoryEstimate = $doneStoryEstimate;
+    $this->view->doneStoryCount    = $doneStoryCount;
+    $this->view->createStoryCount  = $createStoryCount;
+    $this->view->fixedBugCount     = $fixedBugCount;
+    $this->view->createBugCount    = $createBugCount;
+    $this->view->releaseCount      = $releaseCount;
+}
+
+/**
  * 读取实时度量值。
  *
  * @param  string $code
@@ -235,15 +319,18 @@ protected function jxReplaceProductOverviewMetrics(int $width, array $params = a
     $data = $this->view->data ?? null;
     if(!is_object($data)) return;
 
+    $productIds      = array_keys($this->loadModel('product')->getPairs());
+    $unfinishedTotal = (int)array_sum($this->jxCountTasksByProduct($productIds, 'unfinished'));
+
     if($width == 1)
     {
         $data->releaseCount   = $this->jxMetricValue('count_of_annual_finished_project', array('year' => date('Y')));
-        $data->milestoneCount = $this->jxMetricValue('count_of_unfinished_task');
+        $data->milestoneCount = $unfinishedTotal;
         return;
     }
 
     $year = isset($params['year']) ? (string)(int)$params['year'] : date('Y');
-    $data->activeBugCount = $this->jxMetricValue('count_of_unfinished_task');
+    $data->activeBugCount = $unfinishedTotal;
     $data->finishedReleaseCount['year'] = $this->jxMetricValue('count_of_annual_finished_project', array(), $year);
 }
 
@@ -429,7 +516,7 @@ protected function printProductListBlock(object $block): void
  * 按产品统计任务数（走项目-产品关联，口径对齐度量 getTasks）。
  *
  * @param  array  $productIdList
- * @param  string $kind          unfinished|finishedYear
+ * @param  string $kind          unfinished|finished|finishedYear
  * @access protected
  * @return array
  */
@@ -449,12 +536,15 @@ protected function jxCountTasksByProduct(array $productIdList, string $kind): ar
         ->andWhere('t1.isParent')->eq('0')
         ->andWhere('t4.product')->in($productIdList);
 
-    if($kind === 'finishedYear')
+    if($kind === 'finishedYear' || $kind === 'finished')
     {
-        $year = date('Y');
-        $stmt->andWhere('t1.finishedDate')->ge("{$year}-01-01")
-            ->andWhere('t1.finishedDate')->lt(((int)$year + 1) . '-01-01')
-            ->andWhere('t1.status', true)->eq('done')
+        if($kind === 'finishedYear')
+        {
+            $year = date('Y');
+            $stmt->andWhere('t1.finishedDate')->ge("{$year}-01-01")
+                ->andWhere('t1.finishedDate')->lt(((int)$year + 1) . '-01-01');
+        }
+        $stmt->andWhere('t1.status', true)->eq('done')
             ->orWhere('t1.status')->eq('closed')->andWhere('t1.closedReason')->eq('done')->markRight(1);
     }
     else
@@ -484,4 +574,146 @@ protected function jxAttachUnfinishedTasks(array $productStats): void
     {
         $product->unresolvedBugs = (int)($counts[$productID] ?? 0);
     }
+}
+
+/**
+ * 产品 Bug 统计：改为按产品统计任务完成率与近 6 个月新增/完成，不读 Bug 表。
+ *
+ * @param  object $block
+ * @param  array  $params
+ * @access protected
+ * @return void
+ */
+protected function printBugStatisticBlock(object $block, array $params = array())
+{
+    $status    = isset($block->params->type)  ? $block->params->type  : '';
+    $count     = isset($block->params->count) ? $block->params->count : '';
+    $products  = $this->loadModel('product')->getOrderedProducts($status, (int)$count, 0, 'all');
+    $productID = !empty($params['active']) ? (int)$params['active'] : (int)key($products);
+    $this->jxFillTaskStatisticView($productID, $products);
+}
+
+/**
+ * 单个产品 Bug 统计：同样改为任务口径。
+ *
+ * @param  object $block
+ * @access protected
+ * @return void
+ */
+protected function printSingleBugStatisticBlock(object $block)
+{
+    $productID = (int)$this->session->product;
+    $this->jxFillTaskStatisticView($productID);
+}
+
+/**
+ * 组装任务统计区块视图（复用原 Bug 统计变量名，避免改模板结构）。
+ *
+ * @param  int   $productID
+ * @param  array $products
+ * @access protected
+ * @return void
+ */
+protected function jxFillTaskStatisticView(int $productID, array $products = array()): void
+{
+    $months = array();
+    $dates  = array();
+    for($i = 5; $i >= 0; $i --)
+    {
+        $months[] = date('m',   strtotime("first day of -{$i} month"));
+        $dates[]  = date('Y-m', strtotime("first day of -{$i} month"));
+    }
+
+    $productIds  = $productID ? array($productID) : array();
+    $finished    = $this->jxCountTasksByProduct($productIds, 'finished');
+    $unfinished  = $this->jxCountTasksByProduct($productIds, 'unfinished');
+    $closedBugs  = (int)($finished[$productID] ?? 0);
+    $unresolved  = (int)($unfinished[$productID] ?? 0);
+    $totalBugs   = $closedBugs + $unresolved;
+    $resolvedRate = $totalBugs ? round($closedBugs / $totalBugs * 100, 1) : 0;
+
+    $createdMonthly  = $this->jxCountTasksByProductMonthly($productIds, 'created', $dates);
+    $finishedMonthly = $this->jxCountTasksByProductMonthly($productIds, 'finished', $dates);
+
+    $activateBugs = array();
+    $resolveBugs  = array();
+    $closeBugs    = array();
+    foreach($dates as $date)
+    {
+        $activateBugs[$date] = (int)($createdMonthly[$productID][$date] ?? 0);
+        $resolveBugs[$date]  = 0;
+        $closeBugs[$date]    = (int)($finishedMonthly[$productID][$date] ?? 0);
+    }
+
+    $this->view->months         = $months;
+    $this->view->products       = $products;
+    $this->view->productID      = $productID;
+    $this->view->totalBugs      = $totalBugs;
+    $this->view->closedBugs     = $closedBugs;
+    $this->view->unresovledBugs = $unresolved;
+    $this->view->resolvedRate   = $resolvedRate;
+    $this->view->activateBugs   = $activateBugs;
+    $this->view->resolveBugs    = $resolveBugs;
+    $this->view->closeBugs      = $closeBugs;
+}
+
+/**
+ * 按产品、月份统计任务新增或完成数。
+ *
+ * @param  array  $productIdList
+ * @param  string $kind          created|finished
+ * @param  array  $dates         Y-m
+ * @access protected
+ * @return array
+ */
+protected function jxCountTasksByProductMonthly(array $productIdList, string $kind, array $dates): array
+{
+    if(empty($productIdList) || empty($dates)) return array();
+
+    $first     = reset($dates);
+    $last      = end($dates);
+    $begin     = $first . '-01';
+    $end       = date('Y-m-d', strtotime($last . '-01 +1 month'));
+    $dateField = $kind === 'finished' ? 't1.finishedDate' : 't1.openedDate';
+    $vision    = $this->config->vision;
+
+    $stmt = $this->dao->select("t4.product AS product, {$dateField} AS happenDate, t1.id AS id")->from(TABLE_TASK)->alias('t1')
+        ->leftJoin(TABLE_PROJECT)->alias('t2')->on('t1.execution = t2.id')
+        ->leftJoin(TABLE_PROJECT)->alias('t3')->on('t2.project = t3.id')
+        ->leftJoin(TABLE_PROJECTPRODUCT)->alias('t4')->on('t3.id = t4.project')
+        ->where('t2.type')->in('sprint,kanban,stage')
+        ->andWhere('t1.deleted')->eq('0')
+        ->andWhere('t2.deleted')->eq('0')
+        ->andWhere('t3.deleted')->eq('0')
+        ->andWhere('t1.isParent')->eq('0')
+        ->andWhere('t4.product')->in($productIdList)
+        ->andWhere($dateField)->ge($begin)
+        ->andWhere($dateField)->lt($end);
+
+    if($kind === 'finished')
+    {
+        $stmt->andWhere('t1.status', true)->eq('done')
+            ->orWhere('t1.status')->eq('closed')->andWhere('t1.closedReason')->eq('done')->markRight(1);
+    }
+
+    $rows = $stmt->andWhere("t1.vision LIKE '%{$vision}%'", true)
+        ->orWhere('t1.vision IS NULL')->markRight(1)
+        ->fetchAll();
+
+    $result = array();
+    $seen   = array();
+    foreach($rows as $row)
+    {
+        $row = (array)$row;
+        $id  = (int)zget($row, 'id', 0);
+        if(!$id || isset($seen[$id])) continue;
+        $seen[$id] = true;
+
+        $product = (int)zget($row, 'product', 0);
+        $ym      = substr((string)zget($row, 'happenDate', ''), 0, 7);
+        if(!$product || $ym === '') continue;
+        if(!isset($result[$product][$ym])) $result[$product][$ym] = 0;
+        $result[$product][$ym] ++;
+    }
+    return $result;
 }
