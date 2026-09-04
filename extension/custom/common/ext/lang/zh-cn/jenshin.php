@@ -45,7 +45,35 @@ $lang->mainNav = new stdclass();
 $lang->mainNav->my             = "{$lang->navIcons['my']} 工作台|my|index|";
 $lang->mainNav->product        = "{$lang->navIcons['product']} 产品组合|product|all|";
 $lang->mainNav->project        = "{$lang->navIcons['project']} 项目管理|project|browse|";
-$lang->mainNav->execution      = "{$lang->navIcons['execution']} 任务执行|$executionModule|$executionMethod|";
+$lang->mainNav->execution      = "{$lang->navIcons['execution']} 阶段任务|$executionModule|$executionMethod|";
+
+/* 一级「阶段任务」：应用名与列表/看板，避免和项目内「阶段」以及任务列表撞名。 */
+$lang->execution->common          = '阶段任务';
+$lang->execution->all             = '阶段列表';
+$lang->execution->list            = '阶段列表';
+$lang->execution->executionKanban = '阶段看板';
+$lang->searchObjects['execution'] = $lang->execution->common;
+$lang->createObjects['execution'] = $lang->execution->common;
+if(isset($lang->workspaceList['execution'])) $lang->workspaceList['execution'] = $lang->execution->common . '空间';
+if(isset($lang->doc->execution)) $lang->doc->execution = $lang->execution->common . '库';
+
+if(!empty($lang->execution->homeMenu->all['link']))
+{
+    $lang->execution->homeMenu->all['link'] = preg_replace('/^[^|]+/', '阶段列表', $lang->execution->homeMenu->all['link']);
+}
+if(!empty($lang->execution->homeMenu->executionkanban['link']))
+{
+    $lang->execution->homeMenu->executionkanban['link'] = preg_replace('/^[^|]+/', '阶段看板', $lang->execution->homeMenu->executionkanban['link']);
+}
+if(!empty($lang->my->menu->execution['link']))
+{
+    $lang->my->menu->execution['link'] = preg_replace('/^[^|]+/', '阶段任务', $lang->my->menu->execution['link']);
+}
+
+/* 动态/搜索里的对象名：原「执行」改为「阶段」。 */
+if(isset($lang->action->objectTypes['execution'])) $lang->action->objectTypes['execution'] = $lang->executionCommon;
+if(isset($lang->action->search->objectTypeList['execution'])) $lang->action->search->objectTypeList['execution'] = $lang->executionCommon;
+if(isset($lang->action->label->execution)) $lang->action->label->execution = "{$lang->executionCommon}|execution|task|executionID=%s";
 $lang->mainNav->jxboard        = "{$lang->navIcons['jxboard']} 数据看板|jxboard|overview|";
 $lang->mainNav->jxdashboard    = "{$lang->navIcons['jxdashboard']} 旧数据看板|jxdashboard|overview|";
 $lang->mainNav->jxregistration = "{$lang->navIcons['jxregistration']} 产品注册|jxregistration|browse|";

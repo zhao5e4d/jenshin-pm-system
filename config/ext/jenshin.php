@@ -54,10 +54,13 @@ $config->jenshin->defaultProjectModel = 'scrum';
 $config->jenshin->skipCreateGuide    = true;
 $config->jenshin->lockProjectModel   = true;
 
+/* 原「迭代」对用户不熟：项目内改称阶段；一级菜单「阶段任务」覆盖阶段+任务。 */
+$config->executionCommonList['zh-cn'][0] = '阶段';
+
 /* 项目/执行详情二级菜单中隐藏的项。超级管理员直链仍可用于排障。 */
 $config->jenshin->hiddenProjectMenus = array('qa', 'build', 'release');
 
-/* 任务执行综合看板不展示 Bug 泳道 / Bug看板。改 false 可恢复。 */
+/* 阶段任务综合看板不展示 Bug 泳道 / Bug看板。改 false 可恢复。 */
 $config->jenshin->hideBugKanban = true;
 
 if(!function_exists('jxHideBugKanban'))

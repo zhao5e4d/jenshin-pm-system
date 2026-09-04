@@ -1,0 +1,4 @@
+/* 有产品的项目仍显示关联产品，只去掉关联计划。 */
+.productsBox .planBox {
+    display: none !important;
+}

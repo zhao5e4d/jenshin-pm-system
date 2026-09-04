@@ -16,12 +16,19 @@ foreach($blocks as $jxBlock)
 {
     $jxCode  = $jxBlock->code ?? '';
     $jxTitle = $jxBlock->title ?? '';
-    if(!in_array($jxCode, array('bugstatistic', 'singlebugstatistic'), true)) continue;
-    $jxBlock->title = str_replace(
-        array('Bug统计', 'Bug 统计', 'Bug Statistics', 'Bug Statistic'),
-        array('任务统计', '任务统计', 'Task Statistics', 'Task Statistic'),
-        $jxTitle
-    );
+    if(in_array($jxCode, array('bugstatistic', 'singlebugstatistic'), true))
+    {
+        $jxBlock->title = str_replace(
+            array('Bug统计', 'Bug 统计', 'Bug Statistics', 'Bug Statistic'),
+            array('任务统计', '任务统计', 'Task Statistics', 'Task Statistic'),
+            $jxTitle
+        );
+        continue;
+    }
+    if(in_array($jxCode, array('scrumlist', 'sprint'), true) && $jxTitle !== '')
+    {
+        $jxBlock->title = str_replace(array('任务执行', '迭代', '冲刺'), array($this->lang->executionCommon, $this->lang->executionCommon, $this->lang->executionCommon), $jxTitle);
+    }
 }
 
 $ganttBottom = 0;

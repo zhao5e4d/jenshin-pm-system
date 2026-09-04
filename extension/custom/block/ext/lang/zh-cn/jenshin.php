@@ -96,5 +96,10 @@ if(empty($config->jenshin->enableHelp))
     }
 }
 
+$lang->block->titleList['scrumlist'] = $lang->executionCommon . '列表';
+$lang->block->titleList['sprint']    = $lang->executionCommon . '总览';
+$lang->block->projectstatistic->lastestExecution = '最新' . $lang->executionCommon;
+$lang->block->productstatistic->newExecution     = '最新' . $lang->executionCommon;
+
 $lang->project->overdueTasks = '逾期任务';
 

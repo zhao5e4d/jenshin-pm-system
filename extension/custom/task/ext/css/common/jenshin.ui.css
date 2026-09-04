@@ -1,0 +1,168 @@
+/* 任务详情 / 编辑：任务记录列表卡片，弱化时间轴。 */
+:is(.m-task-view, .m-task-edit) .history-panel-body {
+    gap: 8px;
+}
+
+:is(.m-task-view, .m-task-edit) .history-panel-body .listitem,
+:is(.m-task-view, .m-task-edit) .history-panel-action.list-item {
+    padding: 0;
+}
+
+:is(.m-task-view, .m-task-edit) .history-panel-action {
+    border: 1px solid rgba(var(--color-border-rgb), 1);
+    border-radius: 8px;
+    background: var(--color-canvas, #fff);
+    transition: border-color .15s ease, box-shadow .15s ease;
+}
+
+:is(.m-task-view, .m-task-edit) .history-panel-action:hover {
+    border-color: rgba(var(--color-primary-rgb), .28);
+    box-shadow: 0 1px 6px rgba(15, 23, 42, .06);
+}
+
+:is(.m-task-view, .m-task-edit) .history-panel-action:before {
+    display: none !important;
+}
+
+:is(.m-task-view, .m-task-edit) .history-panel-action > .item-inner {
+    padding: 10px 14px 10px 2.75rem;
+}
+
+:is(.m-task-view, .m-task-edit) .history-panel-action > .item-inner > .avatar {
+    top: 12px;
+    left: 12px;
+    width: 22px !important;
+    height: 22px !important;
+    font-size: 12px;
+    background: #f3f4f6 !important;
+    color: #4b5563 !important;
+    box-shadow: none;
+}
+
+:is(.m-task-view, .m-task-edit) .history-panel-action:has([data-action="commented"]) {
+    border-color: rgba(var(--color-primary-rgb), .22);
+    background: rgba(var(--color-primary-rgb), .03);
+}
+
+:is(.m-task-view, .m-task-edit) .history-panel-action:has([data-action="commented"]) .avatar {
+    background: rgba(var(--color-primary-rgb), .12) !important;
+    color: var(--color-primary-500) !important;
+}
+
+:is(.m-task-view, .m-task-edit) .jx-task-record-title {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+    width: 100%;
+    font-weight: 400;
+    line-height: 1.5;
+}
+
+:is(.m-task-view, .m-task-edit) .jx-task-record-desc {
+    min-width: 0;
+    flex: 1;
+}
+
+:is(.m-task-view, .m-task-edit) .jx-task-record-time {
+    flex: none;
+    color: var(--color-gray-500, #6b7280);
+    font-size: 12px;
+    font-variant-numeric: tabular-nums;
+}
+
+:is(.m-task-view, .m-task-edit) .history-panel-action-content {
+    padding-left: 0;
+    margin-top: 2px;
+}
+
+:is(.m-task-view, .m-task-edit) .history-panel-action-comment {
+    margin-top: 8px;
+    border: 1px solid rgba(var(--color-border-rgb), .85);
+    border-radius: 6px;
+    background: #f7f8fa;
+    padding: 10px 12px;
+}
+
+:is(.m-task-view, .m-task-edit) .history-panel-action-comment .article {
+    line-height: 1.65;
+    color: var(--color-fore);
+}
+
+:is(.m-task-view, .m-task-edit) .history-panel-action .file-list,
+:is(.m-task-view, .m-task-edit) .history-panel-action .bg-primary-50 {
+    margin-top: 8px;
+    border-radius: 6px;
+    background: rgba(var(--color-primary-rgb), .06) !important;
+}
+
+/* 任务详情 / 编辑：左右切换任务按钮加对比度。 */
+:is(.m-task-view, .m-task-edit) .detail-prev-next {
+    z-index: 30;
+}
+
+:is(.m-task-view, .m-task-edit) .detail-prev-next > .container {
+    margin-top: -32px !important;
+}
+
+:is(.m-task-view, .m-task-edit) .detail-prev-btn,
+:is(.m-task-view, .m-task-edit) .detail-next-btn {
+    width: 28px !important;
+    min-width: 28px !important;
+    height: 64px !important;
+    padding: 0 !important;
+    background: #6c5ce7 !important;
+    --tw-bg-opacity: 1 !important;
+    opacity: 1 !important;
+    box-shadow: 0 6px 16px rgba(108, 92, 231, .38);
+    backdrop-filter: none !important;
+    border: 0 !important;
+    transition: background-color .15s ease, box-shadow .15s ease, transform .15s ease;
+}
+
+:is(.m-task-view, .m-task-edit) .detail-prev-btn {
+    left: 0;
+    border-radius: 0 12px 12px 0 !important;
+}
+
+:is(.m-task-view, .m-task-edit) .detail-next-btn {
+    right: 0;
+    border-radius: 12px 0 0 12px !important;
+}
+
+:is(.m-task-view, .m-task-edit) .detail-prev-btn .icon,
+:is(.m-task-view, .m-task-edit) .detail-next-btn .icon {
+    color: #fff !important;
+    font-size: 22px !important;
+    opacity: 1 !important;
+}
+
+:is(.m-task-view, .m-task-edit) .detail-prev-btn:hover,
+:is(.m-task-view, .m-task-edit) .detail-next-btn:hover {
+    background: #5b49d6 !important;
+    box-shadow: 0 8px 20px rgba(108, 92, 231, .48);
+    transform: scale(1.04);
+}
+
+:is(.m-task-view, .m-task-edit) .detail-prev-btn:active,
+:is(.m-task-view, .m-task-edit) .detail-next-btn:active {
+    background: #4a39b4 !important;
+    transform: scale(.98);
+}
+
+:is(.m-task-view, .m-task-edit) .detail-toggle > .btn {
+    width: 22px !important;
+    height: 48px !important;
+    background: #fff !important;
+    border: 1px solid rgba(108, 92, 231, .28) !important;
+    box-shadow: 0 2px 8px rgba(15, 23, 42, .08);
+}
+
+:is(.m-task-view, .m-task-edit) .detail-toggle > .btn .icon {
+    color: #6c5ce7 !important;
+}
+
+:is(.m-task-view, .m-task-edit) .detail-toggle > .btn:hover {
+    background: #f4f3ff !important;
+    border-color: rgba(108, 92, 231, .45) !important;
+}
