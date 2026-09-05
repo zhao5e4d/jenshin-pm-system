@@ -3,6 +3,10 @@ namespace zin;
 
 $blocks    = data('blocks');
 $dashboard = data('dashboard');
+
+/* 欢迎弹窗只留在工作台。其它仪表盘（文档空间等）即使拉到了引导页也不渲染。 */
+if($dashboard !== 'my') query('#featureNoticeModal')->remove();
+
 if(!empty($blocks) || empty($dashboard)) return;
 
 query('#mainContent')->append

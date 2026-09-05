@@ -4,8 +4,8 @@
  *
  * 文案和配图在 www/static/svg/jenshin/（cn_ / en_ 各 4 页）。
  * 生效依赖 model hook：ext/model/hook/getPendingFeatureNotices.jenshin.php。
- * 打开弹窗不会记已读；只有点「立即体验」才写入 showUpgradeGuide（固定写 jx11）。
- * 某账号再弹一次：把 zt_config 里该账号 common.global.showUpgradeGuide 中的 jx11 去掉。
+ * 只在工作台（my/index）弹出。打开不会记已读；只有点「立即体验」才写入 showUpgradeGuide（固定写 jx11）。
+ * 点其它一级菜单会关掉弹窗，但不会记已读。某账号再弹一次：把该账号 showUpgradeGuide 中的 jx11 去掉。
  */
 $config->featureNotice = array();
 $config->featureNotice[] = array(
