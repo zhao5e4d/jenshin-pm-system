@@ -74,16 +74,6 @@ formBatchPanel
     ),
     formBatchItem
     (
-        set::name('module'),
-        set::label($lang->task->module),
-        set::control('picker'),
-        set::items($modules),
-        set::width('200px'),
-        set::ditto(true),
-        set::defaultDitto('off')
-    ),
-    formBatchItem
-    (
         set::name('assignedTo'),
         set::label($lang->task->assignedTo),
         set::control(array('control' => 'taskAssignedTo')),

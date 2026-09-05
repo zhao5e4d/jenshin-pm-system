@@ -5,7 +5,7 @@ declare(strict_types=1);
  */
 namespace zin;
 
-$jxSkipBatchFields = array('QD' => true, 'RD' => true, 'program' => true);
+$jxSkipBatchFields = array('QD' => true, 'RD' => true, 'program' => true, 'jxUdi' => true);
 $lineOptions       = (isset($fields['line']['options']) && is_array($fields['line']['options'])) ? $fields['line']['options'] : array();
 if(empty($lineOptions))
 {
@@ -22,6 +22,10 @@ else
 }
 
 $app->loadLang('jxproduct');
+if(!isset($fields['jxModel']))
+{
+    $fields['jxModel'] = array('title' => $lang->jxproduct->model, 'control' => 'text', 'width' => '120px', 'required' => false, 'options' => array());
+}
 if(!isset($fields['jxCategory']))
 {
     $fields['jxCategory'] = array('title' => $lang->jxproduct->category, 'control' => 'select', 'width' => '120px', 'required' => false, 'options' => $lang->jxproduct->categoryList);
@@ -75,6 +79,7 @@ if(isset($items['acl']))
 unset($customFields['QD'], $customFields['RD'], $customFields['program']);
 $customFields = array(
     'line'          => $lang->product->belongingLine,
+    'jxModel'       => $lang->jxproduct->model,
     'jxCategory'    => $lang->jxproduct->category,
     'jxCertNo'      => $lang->jxproduct->certNo,
     'jxCertValidTo' => $lang->jxproduct->certValidTo
@@ -88,7 +93,7 @@ foreach(explode(',', (string)$showFields) as $fieldName)
     $showList[] = $fieldName;
 }
 if(!in_array('line', $showList, true)) array_unshift($showList, 'line');
-foreach(array('jxCategory', 'jxCertNo', 'jxCertValidTo') as $jxField)
+foreach(array('jxModel', 'jxCategory', 'jxCertNo', 'jxCertValidTo') as $jxField)
 {
     if(!in_array($jxField, $showList, true)) $showList[] = $jxField;
 }

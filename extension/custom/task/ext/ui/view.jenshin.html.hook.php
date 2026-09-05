@@ -31,9 +31,8 @@ onBeforeBuildNode(function($node) use ($lang)
 
     if(!($node instanceof datalist)) return;
     $items = $node->prop('items');
-    if(!is_array($items) || !isset($items[$lang->task->fromBug])) return;
-    if(!isset($items[$lang->task->module]) || !isset($items[$lang->task->type])) return;
+    if(!is_array($items)) return;
 
-    unset($items[$lang->task->fromBug]);
+    unset($items[$lang->task->fromBug], $items[$lang->task->module], $items[$lang->task->story]);
     $node->setProp('items', $items);
 });

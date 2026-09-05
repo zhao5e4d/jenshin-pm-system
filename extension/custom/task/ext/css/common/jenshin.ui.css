@@ -1,3 +1,14 @@
+/* 任务编辑侧栏：所属模块行。 */
+.m-task-edit .moduleTR {
+    display: none !important;
+}
+
+/* 任务详情：所属模块、来源 Bug。 */
+.m-task-view .task-basic-info .datalist-item:has([title="所属模块"]),
+.m-task-view .task-basic-info .datalist-item:has([title="来源Bug"]) {
+    display: none !important;
+}
+
 /* 任务详情 / 编辑：任务记录列表卡片，弱化时间轴。 */
 :is(.m-task-view, .m-task-edit) .history-panel-body {
     gap: 8px;

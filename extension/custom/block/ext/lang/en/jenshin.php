@@ -26,7 +26,12 @@ if(empty($config->jenshin->enableHelp))
     }
 }
 
-$lang->block->annualworkload->resolvedBugCount = 'Completed Tasks';
+$lang->block->monthlyprogress->doneStoryEstimateTrendChart = 'Completed Task Hours Trend';
+$lang->block->monthlyprogress->storyTrendChart             = 'Created and Completed Tasks Trend';
+$lang->block->monthlyprogress->bugTrendChart               = 'Created and Completed Tasks Trend';
+$lang->block->annualworkload->doneStoryEstimate            = 'Completed Task Hours';
+$lang->block->annualworkload->doneStoryCount               = 'Completed Tasks';
+$lang->block->annualworkload->resolvedBugCount             = 'Completed Tasks';
 $lang->block->productlist->activatedBug        = 'Unfinished Tasks';
 
 $lang->block->qastatistic->fixBugRate    = 'Task Completion Rate';

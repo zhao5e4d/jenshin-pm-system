@@ -6,7 +6,7 @@
 protected function getCustomFields(object $execution, string $action): array
 {
     list($customFields, $checkedFields) = parent::getCustomFields($execution, $action);
-    if($action !== 'batchCreate') return array($customFields, $checkedFields);
+    if($action !== 'batchCreate' && $action !== 'batchEdit') return array($customFields, $checkedFields);
 
     unset($customFields['module'], $customFields['story'], $customFields['preview'], $customFields['copyStory']);
     $checkedFields = trim(str_replace(array(',module,', ',story,', ',preview,', ',copyStory,'), ',', ",{$checkedFields},"), ',');
@@ -32,6 +32,10 @@ protected function buildTaskForEdit(object $task): object|false
     $jxOldTask = $this->task->getByID($task->id);
     $task      = parent::buildTaskForEdit($task);
     if($task === false) return false;
-    if(!isset($task->story) && $jxOldTask) $task->story = $jxOldTask->story;
+    if($jxOldTask)
+    {
+        if(!isset($task->story))  $task->story  = $jxOldTask->story;
+        if(!isset($task->module)) $task->module = $jxOldTask->module;
+    }
     return $task;
 }

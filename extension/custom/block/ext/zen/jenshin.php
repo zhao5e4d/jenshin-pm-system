@@ -127,81 +127,23 @@ protected function printProductOverviewBlock(object $block, array $params = arra
  */
 protected function printMonthlyProgressBlock()
 {
-    $years  = array();
-    $months = array();
-    $dates  = array();
-    for($i = 5; $i >= 0; $i --)
-    {
-        $years[]  = date('Y',   strtotime("first day of -{$i} month"));
-        $months[] = date('m',   strtotime("first day of -{$i} month"));
-        $dates[]  = date('Y-m', strtotime("first day of -{$i} month"));
-    }
+    $dates = array();
+    for($i = 5; $i >= 0; $i --) $dates[] = date('Y-m', strtotime("first day of -{$i} month"));
 
-    $this->loadModel('metric');
-    $monthFinishedScale = $this->metric->getResultByCodeWithArray('scale_of_monthly_finished_story', array('year' => join(',', $years), 'month' => join(',', $months)), 'cron');
-    $monthCreatedStory  = $this->metric->getResultByCodeWithArray('count_of_monthly_created_story',  array('year' => join(',', $years), 'month' => join(',', $months)), 'cron');
-    $monthFinishedStory = $this->metric->getResultByCodeWithArray('count_of_monthly_finished_story', array('year' => join(',', $years), 'month' => join(',', $months)), 'cron');
-    $monthCreatedTask   = $this->metric->getResultByCode('count_of_monthly_created_task',  array('year' => join(',', $years), 'month' => join(',', $months)), 'realtime');
-    $monthFinishedTask  = $this->metric->getResultByCode('count_of_monthly_finished_task', array('year' => join(',', $years), 'month' => join(',', $months)), 'realtime');
-    if(!is_array($monthCreatedTask))  $monthCreatedTask  = array();
-    if(!is_array($monthFinishedTask)) $monthFinishedTask = array();
+    $productIds      = array_keys($this->loadModel('product')->getPairs());
+    $createdMonthly  = $this->jxCountTasksByProductMonthly($productIds, 'created', $dates);
+    $finishedMonthly = $this->jxCountTasksByProductMonthly($productIds, 'finished', $dates);
+    $estimateMonthly = $this->jxCountTasksByProductMonthly($productIds, 'finishedEstimate', $dates);
 
-    foreach($dates as $date)
-    {
-        $doneStoryEstimate[$date] = 0;
-        $doneStoryCount[$date]    = 0;
-        $createStoryCount[$date]  = 0;
-        $fixedBugCount[$date]     = 0;
-        $createBugCount[$date]    = 0;
-
-        if(!empty($monthFinishedScale))
-        {
-            foreach($monthFinishedScale as $scale)
-            {
-                if($date == "{$scale['year']}-{$scale['month']}") $doneStoryEstimate[$date] = $scale['value'];
-            }
-        }
-
-        if(!empty($monthCreatedStory))
-        {
-            foreach($monthCreatedStory as $story)
-            {
-                if($date == "{$story['year']}-{$story['month']}") $createStoryCount[$date] = $story['value'];
-            }
-        }
-
-        if(!empty($monthFinishedStory))
-        {
-            foreach($monthFinishedStory as $story)
-            {
-                if($date == "{$story['year']}-{$story['month']}") $doneStoryCount[$date] = $story['value'];
-            }
-        }
-
-        if(!empty($monthCreatedTask))
-        {
-            foreach($monthCreatedTask as $task)
-            {
-                $task = (array)$task;
-                if($date == "{$task['year']}-{$task['month']}") $createBugCount[$date] = zget($task, 'value', 0);
-            }
-        }
-
-        if(!empty($monthFinishedTask))
-        {
-            foreach($monthFinishedTask as $task)
-            {
-                $task = (array)$task;
-                if($date == "{$task['year']}-{$task['month']}") $fixedBugCount[$date] = zget($task, 'value', 0);
-            }
-        }
-    }
+    $doneStoryEstimate = $this->jxSumMonthlyAcrossProducts($estimateMonthly, $dates);
+    $createStoryCount  = $this->jxSumMonthlyAcrossProducts($createdMonthly, $dates);
+    $doneStoryCount    = $this->jxSumMonthlyAcrossProducts($finishedMonthly, $dates);
 
     $this->view->doneStoryEstimate = $doneStoryEstimate;
     $this->view->doneStoryCount    = $doneStoryCount;
     $this->view->createStoryCount  = $createStoryCount;
-    $this->view->fixedBugCount     = $fixedBugCount;
-    $this->view->createBugCount    = $createBugCount;
+    $this->view->fixedBugCount     = $doneStoryCount;
+    $this->view->createBugCount    = $createStoryCount;
 }
 
 /**
@@ -214,24 +156,13 @@ protected function printSingleMonthlyProgressBlock(): void
 {
     $productID = (int)$this->session->product;
 
-    $years  = array();
-    $months = array();
-    $dates  = array();
-    for($i = 5; $i >= 0; $i --)
-    {
-        $years[]  = date('Y',   strtotime("first day of -{$i} month"));
-        $months[] = date('m',   strtotime("first day of -{$i} month"));
-        $dates[]  = date('Y-m', strtotime("first day of -{$i} month"));
-    }
-
-    $this->loadModel('metric');
-    $monthStroyScaleGroup    = $this->metric->getResultByCodeWithArray('scale_of_monthly_finished_story_in_product', array('product' => $productID, 'year' => join(',', $years), 'month' => join(',', $months)), 'cron');
-    $monthCreatedStroyGroup  = $this->metric->getResultByCodeWithArray('count_of_monthly_created_story_in_product',  array('product' => $productID, 'year' => join(',', $years), 'month' => join(',', $months)), 'cron');
-    $monthFinishedStoryGroup = $this->metric->getResultByCodeWithArray('count_of_monthly_finished_story_in_product', array('product' => $productID, 'year' => join(',', $years), 'month' => join(',', $months)), 'cron');
+    $dates = array();
+    for($i = 5; $i >= 0; $i --) $dates[] = date('Y-m', strtotime("first day of -{$i} month"));
 
     $productIds      = $productID ? array($productID) : array();
     $createdMonthly  = $this->jxCountTasksByProductMonthly($productIds, 'created', $dates);
     $finishedMonthly = $this->jxCountTasksByProductMonthly($productIds, 'finished', $dates);
+    $estimateMonthly = $this->jxCountTasksByProductMonthly($productIds, 'finishedEstimate', $dates);
 
     $doneStoryEstimate = array();
     $doneStoryCount    = array();
@@ -240,33 +171,11 @@ protected function printSingleMonthlyProgressBlock(): void
     $createBugCount    = array();
     foreach($dates as $date)
     {
-        $doneStoryEstimate[$date] = 0;
-        $doneStoryCount[$date]    = 0;
-        $createStoryCount[$date]  = 0;
-        $fixedBugCount[$date]     = (int)($finishedMonthly[$productID][$date] ?? 0);
-        $createBugCount[$date]    = (int)($createdMonthly[$productID][$date] ?? 0);
-
-        if(!empty($monthStroyScaleGroup))
-        {
-            foreach($monthStroyScaleGroup as $data)
-            {
-                if($date == "{$data['year']}-{$data['month']}") $doneStoryEstimate[$date] = $data['value'];
-            }
-        }
-        if(!empty($monthCreatedStroyGroup))
-        {
-            foreach($monthCreatedStroyGroup as $data)
-            {
-                if($date == "{$data['year']}-{$data['month']}") $createStoryCount[$date] = $data['value'];
-            }
-        }
-        if(!empty($monthFinishedStoryGroup))
-        {
-            foreach($monthFinishedStoryGroup as $data)
-            {
-                if($date == "{$data['year']}-{$data['month']}") $doneStoryCount[$date] = $data['value'];
-            }
-        }
+        $doneStoryEstimate[$date] = (float)($estimateMonthly[$productID][$date] ?? 0);
+        $doneStoryCount[$date]    = (int)($finishedMonthly[$productID][$date] ?? 0);
+        $createStoryCount[$date]  = (int)($createdMonthly[$productID][$date] ?? 0);
+        $fixedBugCount[$date]     = $doneStoryCount[$date];
+        $createBugCount[$date]    = $createStoryCount[$date];
     }
 
     $this->view->months            = array();
@@ -457,21 +366,16 @@ protected function printAnnualWorkloadBlock()
     $products      = $this->loadModel('product')->getPairs();
     $productIdList = array_keys($products);
 
-    $this->loadModel('metric');
-    $finishEstimateGroup = $this->metric->getResultByCodeWithArray('scale_of_annual_finished_story_in_product', array('product' => join(',', $productIdList), 'year' => date('Y')), 'cron');
-    $doneStoryGroup      = $this->metric->getResultByCodeWithArray('count_of_annual_finished_story_in_product', array('product' => join(',', $productIdList), 'year' => date('Y')), 'cron');
-    $finishedTaskGroup   = $this->jxCountTasksByProduct($productIdList, 'finishedYear');
-
-    if(!empty($finishEstimateGroup)) $finishEstimateGroup = array_column($finishEstimateGroup, null, 'product');
-    if(!empty($doneStoryGroup))      $doneStoryGroup      = array_column($doneStoryGroup,      null, 'product');
+    $finishedTaskGroup     = $this->jxCountTasksByProduct($productIdList, 'finishedYear');
+    $finishedEstimateGroup = $this->jxCountTasksByProduct($productIdList, 'finishedYearEstimate');
 
     $doneStoryEstimate = array();
     $doneStoryCount    = array();
     $resolvedBugCount  = array();
     foreach($products as $productID => $productName)
     {
-        $doneStoryEstimate[$productID] = isset($finishEstimateGroup[$productID]['value']) ? $finishEstimateGroup[$productID]['value'] : 0;
-        $doneStoryCount[$productID]    = isset($doneStoryGroup[$productID]['value'])      ? $doneStoryGroup[$productID]['value']      : 0;
+        $doneStoryEstimate[$productID] = (float)($finishedEstimateGroup[$productID] ?? 0);
+        $doneStoryCount[$productID]    = (int)($finishedTaskGroup[$productID] ?? 0);
         $resolvedBugCount[$productID]  = (int)($finishedTaskGroup[$productID] ?? 0);
     }
 
@@ -524,7 +428,8 @@ protected function jxCountTasksByProduct(array $productIdList, string $kind): ar
     if(empty($productIdList)) return array();
 
     $vision = $this->config->vision;
-    $stmt   = $this->dao->select('t4.product AS product, COUNT(DISTINCT t1.id) AS value')->from(TABLE_TASK)->alias('t1')
+    $sumEstimate = ($kind === 'finishedYearEstimate');
+    $stmt        = $this->dao->select($sumEstimate ? 't4.product AS product, SUM(t1.estimate) AS value' : 't4.product AS product, COUNT(DISTINCT t1.id) AS value')->from(TABLE_TASK)->alias('t1')
         ->leftJoin(TABLE_PROJECT)->alias('t2')->on('t1.execution = t2.id')
         ->leftJoin(TABLE_PROJECT)->alias('t3')->on('t2.project = t3.id')
         ->leftJoin(TABLE_PROJECTPRODUCT)->alias('t4')->on('t3.id = t4.project')
@@ -535,9 +440,9 @@ protected function jxCountTasksByProduct(array $productIdList, string $kind): ar
         ->andWhere('t1.isParent')->eq('0')
         ->andWhere('t4.product')->in($productIdList);
 
-    if($kind === 'finishedYear' || $kind === 'finished')
+    if($kind === 'finishedYear' || $kind === 'finishedYearEstimate' || $kind === 'finished')
     {
-        if($kind === 'finishedYear')
+        if($kind === 'finishedYear' || $kind === 'finishedYearEstimate')
         {
             $year = date('Y');
             $stmt->andWhere('t1.finishedDate')->ge("{$year}-01-01")
@@ -660,7 +565,7 @@ protected function jxFillTaskStatisticView(int $productID, array $products = arr
  * 按产品、月份统计任务新增或完成数。
  *
  * @param  array  $productIdList
- * @param  string $kind          created|finished
+ * @param  string $kind          created|finished|finishedEstimate
  * @param  array  $dates         Y-m
  * @access protected
  * @return array
@@ -673,10 +578,11 @@ protected function jxCountTasksByProductMonthly(array $productIdList, string $ki
     $last      = end($dates);
     $begin     = $first . '-01';
     $end       = date('Y-m-d', strtotime($last . '-01 +1 month'));
-    $dateField = $kind === 'finished' ? 't1.finishedDate' : 't1.openedDate';
+    $isFinish  = ($kind === 'finished' || $kind === 'finishedEstimate');
+    $dateField = $isFinish ? 't1.finishedDate' : 't1.openedDate';
     $vision    = $this->config->vision;
 
-    $stmt = $this->dao->select("t4.product AS product, {$dateField} AS happenDate, t1.id AS id")->from(TABLE_TASK)->alias('t1')
+    $stmt = $this->dao->select("t4.product AS product, {$dateField} AS happenDate, t1.id AS id, t1.estimate AS estimate")->from(TABLE_TASK)->alias('t1')
         ->leftJoin(TABLE_PROJECT)->alias('t2')->on('t1.execution = t2.id')
         ->leftJoin(TABLE_PROJECT)->alias('t3')->on('t2.project = t3.id')
         ->leftJoin(TABLE_PROJECTPRODUCT)->alias('t4')->on('t3.id = t4.project')
@@ -689,7 +595,7 @@ protected function jxCountTasksByProductMonthly(array $productIdList, string $ki
         ->andWhere($dateField)->ge($begin)
         ->andWhere($dateField)->lt($end);
 
-    if($kind === 'finished')
+    if($isFinish)
     {
         $stmt->andWhere('t1.status', true)->eq('done')
             ->orWhere('t1.status')->eq('closed')->andWhere('t1.closedReason')->eq('done')->markRight(1);
@@ -712,7 +618,26 @@ protected function jxCountTasksByProductMonthly(array $productIdList, string $ki
         $ym      = substr((string)zget($row, 'happenDate', ''), 0, 7);
         if(!$product || $ym === '') continue;
         if(!isset($result[$product][$ym])) $result[$product][$ym] = 0;
-        $result[$product][$ym] ++;
+        $result[$product][$ym] += ($kind === 'finishedEstimate') ? (float)zget($row, 'estimate', 0) : 1;
     }
     return $result;
+}
+
+/**
+ * 把按产品分月的计数汇总成单条月份序列。
+ *
+ * @param  array $byProduct
+ * @param  array $dates
+ * @access protected
+ * @return array
+ */
+protected function jxSumMonthlyAcrossProducts(array $byProduct, array $dates): array
+{
+    $sum = array();
+    foreach($dates as $date) $sum[$date] = 0;
+    foreach($byProduct as $months)
+    {
+        foreach($dates as $date) $sum[$date] += (float)($months[$date] ?? 0);
+    }
+    return $sum;
 }

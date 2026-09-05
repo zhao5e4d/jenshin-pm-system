@@ -19,9 +19,13 @@ if(empty($config->product->form->batchEdit['line']))
 /* Keep posted 所属产品线; do not let a missing field default-write 0. */
 unset($config->product->form->batchEdit['line']['default']);
 
-/* 批量编辑：保留所属产品线，去掉测试负责人、发布负责人；可改类别 / 证号 / 有效期。 */
+/* 批量编辑：保留所属产品线，去掉测试负责人、发布负责人；可改型号 / 类别 / 证号 / 有效期。 */
 unset($config->product->form->batchEdit['QD'], $config->product->form->batchEdit['RD'], $config->product->form->batchEdit['program']);
 $app->loadLang('jxproduct');
+$config->product->form->batchEdit['jxModel'] = array(
+    'type' => 'string', 'control' => 'text', 'width' => '120px', 'required' => false, 'default' => '',
+    'title' => $lang->jxproduct->model
+);
 $config->product->form->batchEdit['jxCategory'] = array(
     'type' => 'string', 'control' => 'select', 'width' => '120px', 'required' => false, 'default' => '',
     'options' => $lang->jxproduct->categoryList, 'title' => $lang->jxproduct->category
@@ -34,8 +38,8 @@ $config->product->form->batchEdit['jxCertValidTo'] = array(
     'type' => 'date', 'control' => 'date', 'width' => '128px', 'required' => false, 'default' => '',
     'title' => $lang->jxproduct->certValidTo
 );
-$config->product->custom->batchEditFields     = 'line,PO,status,type,acl,jxCategory,jxCertNo,jxCertValidTo';
-$config->product->list->customBatchEditFields = 'line,PO,status,type,acl,jxCategory,jxCertNo,jxCertValidTo';
+$config->product->custom->batchEditFields     = 'line,PO,status,type,acl,jxModel,jxCategory,jxCertNo,jxCertValidTo';
+$config->product->list->customBatchEditFields = 'line,PO,status,type,acl,jxModel,jxCategory,jxCertNo,jxCertValidTo';
 
 $jxProductLineCol = array(
     'name'     => 'productLine',
@@ -114,7 +118,8 @@ foreach($jxArchiveCols as $col)
 $jxHideCols = array(
     'unresolvedBugs', 'totalBugs', 'bugFixedRate',
     'testCaseCoverage',
-    'releases', 'latestReleaseDate', 'latestRelease'
+    'releases', 'latestReleaseDate', 'latestRelease',
+    'jxUdi'
 );
 foreach($jxHideCols as $col)
 {

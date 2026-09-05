@@ -25,6 +25,7 @@ public function batchUpdate(array $products): array
     foreach($products as $productID => $product)
     {
         $patch = array();
+        if(isset($product->jxModel))       $patch['model']       = $product->jxModel;
         if(isset($product->jxCategory))    $patch['category']    = $product->jxCategory;
         if(isset($product->jxCertNo))      $patch['certNo']      = $product->jxCertNo;
         if(isset($product->jxCertValidTo)) $patch['certValidTo'] = $product->jxCertValidTo;

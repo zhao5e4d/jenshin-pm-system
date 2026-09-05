@@ -46,7 +46,11 @@ $lang->block->productoverview->activeBugCount       = '未完成任务数';
 $lang->block->productoverview->finishedReleaseCount = '已完成项目数';
 $lang->block->productoverview->releaseCount         = '今年完成项目';
 $lang->block->productoverview->milestoneCount       = '未完成任务数';
-$lang->block->monthlyprogress->bugTrendChart        = '任务新增和完成趋势图';
+$lang->block->monthlyprogress->doneStoryEstimateTrendChart = '完成任务工时趋势图';
+$lang->block->monthlyprogress->storyTrendChart             = '任务新增和完成趋势图';
+$lang->block->monthlyprogress->bugTrendChart               = '任务新增和完成趋势图';
+$lang->block->annualworkload->doneStoryEstimate            = '完成任务工时';
+$lang->block->annualworkload->doneStoryCount               = '完成任务数';
 $lang->block->annualworkload->resolvedBugCount      = '完成任务数';
 $lang->block->productlist->activatedBug             = '未完成任务';
 

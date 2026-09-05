@@ -59,13 +59,11 @@ $replaced[] = panel
     div
     (
         setClass('flex flex-wrap'),
-        $jxOtherCell('jx-other-plans', $lang->product->plans, $product->plans ?? 0),
         $jxOtherCell('jx-other-tasks', $lang->product->tasks, $other->tasks),
         $jxOtherCell('jx-other-unfinished', $lang->product->unfinishedTasks, $other->unfinishedTasks),
         $jxOtherCell('jx-other-projects', $lang->product->projects, $product->projects ?? 0),
         $jxOtherCell('jx-other-overdue', $lang->product->overdueTasks, $other->overdueTasks),
         $jxOtherCell('jx-other-docs', $lang->product->docs, $product->docs ?? 0),
-        $jxOtherCell('jx-other-modules', $lang->product->modules, $other->modules),
         $jxOtherCell('jx-other-executions', $lang->product->executions, $product->executions ?? 0)
     )
 );
