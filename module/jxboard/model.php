@@ -20,14 +20,32 @@ class jxboardModel extends model
             ->fetchPairs('id', 'name');
     }
 
+    public function normalizeFilters(array $filters = array()): array
+    {
+        $health = (string)($filters['health'] ?? '');
+        $period = (string)($filters['period'] ?? ($this->config->jxboard->defaultPeriod ?? 'month'));
+        $focus  = (string)($filters['focus'] ?? '');
+        if(!in_array($health, array('green', 'yellow', 'red'), true)) $health = '';
+        if(!in_array($period, array('week', 'month', 'halfyear', 'custom'), true)) $period = 'month';
+        if(!in_array($focus, array('overdue', 'due', 'risk', 'certs'), true)) $focus = '';
+
+        return array(
+            'dept'      => (string)($filters['dept'] ?? ''),
+            'product'   => (int)($filters['product'] ?? 0),
+            'status'    => (string)($filters['status'] ?? ''),
+            'health'    => $health,
+            'period'    => $period,
+            'begin'     => $this->validDate((string)($filters['begin'] ?? '')),
+            'end'       => $this->validDate((string)($filters['end'] ?? '')),
+            'focus'     => $focus,
+            'expandAll' => !empty($filters['expandAll'])
+        );
+    }
+
     public function getBoard(array $filters = array()): object
     {
-        $filters = array(
-            'dept'    => (string)($filters['dept'] ?? ''),
-            'product' => (int)($filters['product'] ?? 0),
-            'status'  => (string)($filters['status'] ?? '')
-        );
-        $hasFilter = $filters['dept'] !== '' || $filters['product'] > 0 || $filters['status'] !== '';
+        $filters = $this->normalizeFilters($filters);
+        $hasFilter = $filters['dept'] !== '' || $filters['product'] > 0 || $filters['status'] !== '' || $filters['health'] !== '';
         $this->app->loadLang('jxboard');
         $this->app->loadLang('project');
 
@@ -38,17 +56,25 @@ class jxboardModel extends model
         $warnDay    = date('Y-m-d', strtotime("+{$warnDays} days"));
         $unassigned = $this->lang->jxboard->unassigned;
         $noProduct  = $this->lang->jxboard->noProduct;
+        $range      = $this->resolvePeriod($filters, $today);
 
         $data = $this->emptyBoard($filters);
         $data->visibleTotal  = $this->countVisibleProjects();
         $data->filteredEmpty = false;
+        $data->periodRange   = $range;
+        $data->listLimit     = $topN;
+        $data->trends        = $this->emptyTrends($range);
+        $data->certExpiring  = array();
+        $data->certCount     = 0;
 
         $projects = $this->fetchProjects($filters);
-        $data->total = count($projects);
-        if($data->total === 0)
+        if(!$projects)
         {
             $data->isEmpty       = true;
             $data->filteredEmpty = $hasFilter && $data->visibleTotal > 0;
+            $allCerts            = $this->fetchDueCerts($filters, $today);
+            $data->certCount     = count($allCerts);
+            $data->certExpiring  = $this->sliceList($allCerts, $filters, 'certs', $topN);
             return $data;
         }
 
@@ -59,12 +85,40 @@ class jxboardModel extends model
         $overdueByProject = $this->fetchOverdueCounts($projectIds, $today);
         $productsByProject = $this->fetchProductsByProject($projectIds);
 
-        $funnel = array('wait' => 0, 'doing' => 0, 'done' => 0, 'closed' => 0);
+        $decorated = array();
         foreach($projects as $project)
         {
             $stat = $taskByProject[(int)$project->id] ?? $this->emptyTaskStat();
             $overdueCount = (int)($overdueByProject[(int)$project->id] ?? 0);
             $this->decorateProject($project, $stat, $overdueCount, $productsByProject, $today, $warnDay, $redOverdue, $unassigned, $noProduct);
+            $decorated[] = $project;
+        }
+
+        if($filters['health'] !== '')
+        {
+            $decorated = array_values(array_filter($decorated, function($project) use ($filters)
+            {
+                return $project->health === $filters['health'];
+            }));
+        }
+
+        $data->total = count($decorated);
+        if($data->total === 0)
+        {
+            $data->isEmpty       = true;
+            $data->filteredEmpty = $hasFilter && $data->visibleTotal > 0;
+            $allCerts            = $this->fetchDueCerts($filters, $today);
+            $data->certCount     = count($allCerts);
+            $data->certExpiring  = $this->sliceList($allCerts, $filters, 'certs', $topN);
+            return $data;
+        }
+
+        $projectIds = array();
+        $funnel = array('wait' => 0, 'doing' => 0, 'done' => 0, 'closed' => 0);
+        foreach($decorated as $project)
+        {
+            $projectIds[] = (int)$project->id;
+            $stat = $taskByProject[(int)$project->id] ?? $this->emptyTaskStat();
 
             $data->budget   += (float)$project->budget;
             $data->estimate += $project->estimate;
@@ -79,7 +133,16 @@ class jxboardModel extends model
             $deptName = $project->deptName;
             if(!isset($data->byDept[$deptName]))
             {
-                $data->byDept[$deptName] = array('count' => 0, 'budget' => 0, 'estimate' => 0, 'consumed' => 0, 'overdue' => 0, 'red' => 0);
+                $data->byDept[$deptName] = array(
+                    'id' => (int)$project->deptID,
+                    'name' => $deptName,
+                    'count' => 0,
+                    'budget' => 0,
+                    'estimate' => 0,
+                    'consumed' => 0,
+                    'overdue' => 0,
+                    'red' => 0
+                );
             }
             $data->byDept[$deptName]['count']++;
             $data->byDept[$deptName]['budget']    += (float)$project->budget;
@@ -113,10 +176,21 @@ class jxboardModel extends model
             $data->projects[] = $project;
         }
 
-        $data->taskFunnel    = $funnel;
-        $data->overdueTasks  = $this->fetchOverdueTasks($projectIds, $today, $topN);
-        $data->dueExecutions = $this->fetchDueExecutions($projectIds, $today, $warnDay, $topN);
-        $data->isEmpty       = false;
+        $allOverdue = $this->fetchOverdueTasks($projectIds, $today, 0);
+        $allDue     = $this->fetchDueExecutions($projectIds, $today, $warnDay, 0);
+        $allCerts   = $this->fetchDueCerts($filters, $today);
+
+        $data->taskFunnel         = $funnel;
+        $data->overdueTaskCount   = count($allOverdue);
+        $data->dueExecutionCount  = count($allDue);
+        $data->riskCount          = count($data->riskProjects);
+        $data->certCount          = count($allCerts);
+        $data->overdueTasks       = $this->sliceList($allOverdue, $filters, 'overdue', $topN);
+        $data->dueExecutions      = $this->sliceList($allDue, $filters, 'due', $topN);
+        $data->riskProjectsView   = $this->sliceList($data->riskProjects, $filters, 'risk', $topN);
+        $data->certExpiring       = $this->sliceList($allCerts, $filters, 'certs', $topN);
+        $data->trends             = $this->fetchTrends($projectIds, $range);
+        $data->isEmpty            = false;
         return $data;
     }
 
@@ -135,6 +209,10 @@ class jxboardModel extends model
         $data->consumed          = 0.0;
         $data->left              = 0.0;
         $data->overdueTaskCount  = 0;
+        $data->dueExecutionCount = 0;
+        $data->riskCount         = 0;
+        $data->certCount         = 0;
+        $data->listLimit         = (int)($this->config->jxboard->topN ?? 10);
         $data->byStatus          = array('wait' => 0, 'doing' => 0, 'suspended' => 0, 'closed' => 0);
         $data->byDept            = array();
         $data->byProduct         = array();
@@ -142,8 +220,233 @@ class jxboardModel extends model
         $data->overdueTasks      = array();
         $data->dueExecutions     = array();
         $data->riskProjects      = array();
+        $data->riskProjectsView  = array();
+        $data->certExpiring      = array();
         $data->projects          = array();
+        $data->periodRange       = array('period' => 'month', 'begin' => '', 'end' => '', 'grain' => 'week');
+        $data->trends            = $this->emptyTrends($data->periodRange);
         return $data;
+    }
+
+    protected function emptyTrends(array $range): object
+    {
+        $trends = new stdclass();
+        $trends->begin   = $range['begin'] ?? '';
+        $trends->end     = $range['end'] ?? '';
+        $trends->grain   = $range['grain'] ?? 'week';
+        $trends->period  = $range['period'] ?? 'month';
+        $trends->buckets = array();
+        $trends->hasData = false;
+        return $trends;
+    }
+
+    protected function sliceList(array $list, array $filters, string $focusKey, int $topN): array
+    {
+        if(!empty($filters['expandAll']) || ($filters['focus'] ?? '') === $focusKey || $topN <= 0) return array_values($list);
+        return array_slice(array_values($list), 0, $topN);
+    }
+
+    public function compactDate(string $value): string
+    {
+        $value = $this->validDate($value);
+        return $value === '' ? '' : str_replace('-', '', $value);
+    }
+
+    protected function validDate(string $value): string
+    {
+        $value = trim($value);
+        if($value === '' || $value === '0000-00-00' || $value === '0000-00-00 00:00:00') return '';
+        if(preg_match('/^\d{8}$/', $value)) $value = substr($value, 0, 4) . '-' . substr($value, 4, 2) . '-' . substr($value, 6, 2);
+        $time = strtotime($value);
+        if($time === false) return '';
+        return date('Y-m-d', $time);
+    }
+
+    protected function resolvePeriod(array $filters, string $today): array
+    {
+        $period = $filters['period'] ?? 'month';
+        if($period === 'week')
+        {
+            $dow   = (int)date('N', strtotime($today));
+            $begin = date('Y-m-d', strtotime($today . ' -' . ($dow - 1) . ' days'));
+            return array('period' => $period, 'begin' => $begin, 'end' => $today, 'grain' => 'day');
+        }
+        if($period === 'halfyear')
+        {
+            $begin = date('Y-m-01', strtotime($today . ' -5 months'));
+            return array('period' => $period, 'begin' => $begin, 'end' => $today, 'grain' => 'month');
+        }
+        if($period === 'custom')
+        {
+            $begin = $filters['begin'] !== '' ? $filters['begin'] : date('Y-m-d', strtotime($today . ' -29 days'));
+            $end   = $filters['end'] !== '' ? $filters['end'] : $today;
+            if($begin > $end)
+            {
+                $swap  = $begin;
+                $begin = $end;
+                $end   = $swap;
+            }
+            $days  = (int)round((strtotime($end) - strtotime($begin)) / 86400);
+            $grain = $days <= 14 ? 'day' : ($days <= 90 ? 'week' : 'month');
+            return array('period' => $period, 'begin' => $begin, 'end' => $end, 'grain' => $grain);
+        }
+
+        $begin = date('Y-m-01', strtotime($today));
+        return array('period' => 'month', 'begin' => $begin, 'end' => $today, 'grain' => 'week');
+    }
+
+    protected function buildBuckets(string $begin, string $end, string $grain): array
+    {
+        $buckets = array();
+        if($grain === 'day')
+        {
+            for($time = strtotime($begin); $time <= strtotime($end); $time += 86400)
+            {
+                $key = date('Y-m-d', $time);
+                $buckets[$key] = array('key' => $key, 'label' => date('m-d', $time), 'tasks' => 0, 'hours' => 0.0);
+            }
+            return $buckets;
+        }
+
+        if($grain === 'week')
+        {
+            $dow         = (int)date('N', strtotime($begin));
+            $startMonday = strtotime($begin . ' -' . ($dow - 1) . ' days');
+            for($time = $startMonday; $time <= strtotime($end); $time += 7 * 86400)
+            {
+                $key     = date('o-\WW', $time);
+                $weekEnd = min(strtotime($end), $time + 6 * 86400);
+                $buckets[$key] = array(
+                    'key'   => $key,
+                    'label' => date('m/d', $time) . '-' . date('m/d', $weekEnd),
+                    'tasks' => 0,
+                    'hours' => 0.0
+                );
+            }
+            return $buckets;
+        }
+
+        $month = date('Y-m-01', strtotime($begin));
+        $last  = date('Y-m-01', strtotime($end));
+        for($time = strtotime($month); $time <= strtotime($last); $time = strtotime('+1 month', $time))
+        {
+            $key = date('Y-m', $time);
+            $buckets[$key] = array('key' => $key, 'label' => $key, 'tasks' => 0, 'hours' => 0.0);
+        }
+        return $buckets;
+    }
+
+    protected function bucketKey(string $date, string $grain): string
+    {
+        $date = substr($date, 0, 10);
+        if($grain === 'day') return $date;
+        if($grain === 'week') return date('o-\WW', strtotime($date));
+        return substr($date, 0, 7);
+    }
+
+    protected function fetchTrends(array $projectIds, array $range): object
+    {
+        $trends = $this->emptyTrends($range);
+        $begin  = $range['begin'];
+        $end    = $range['end'];
+        $grain  = $range['grain'];
+        if(!$projectIds || $begin === '' || $end === '') return $trends;
+
+        $buckets = $this->buildBuckets($begin, $end, $grain);
+        $endNext = date('Y-m-d', strtotime($end . ' +1 day'));
+
+        $taskRows = $this->dao->select("DATE(finishedDate) AS finishedDay, COUNT(id) AS `count`, SUM(consumed) AS consumed")
+            ->from(TABLE_TASK)
+            ->where('deleted')->eq('0')
+            ->andWhere('isParent')->eq('0')
+            ->andWhere('project')->in($projectIds)
+            ->andWhere('status')->in('done,closed')
+            ->andWhere('finishedDate')->ge($begin)
+            ->andWhere('finishedDate')->lt($endNext)
+            ->groupBy('finishedDay')
+            ->fetchAll();
+
+        foreach($taskRows as $row)
+        {
+            $day = substr((string)$row->finishedDay, 0, 10);
+            $key = $this->bucketKey($day, $grain);
+            if(!isset($buckets[$key])) continue;
+            $buckets[$key]['tasks'] += (int)$row->count;
+        }
+
+        $effortRows = $this->dao->select('`date` AS effortDay, SUM(consumed) AS consumed')
+            ->from(TABLE_EFFORT)
+            ->where('deleted')->eq('0')
+            ->andWhere('project')->in($projectIds)
+            ->andWhere('`date`')->ge($begin)
+            ->andWhere('`date`')->le($end)
+            ->beginIF(!empty($this->config->vision))->andWhere('vision')->eq($this->config->vision)->fi()
+            ->groupBy('effortDay')
+            ->fetchAll();
+
+        $usedEffort = false;
+        foreach($effortRows as $row)
+        {
+            $day = substr((string)$row->effortDay, 0, 10);
+            $key = $this->bucketKey($day, $grain);
+            if(!isset($buckets[$key])) continue;
+            $hours = (float)$row->consumed;
+            if($hours <= 0) continue;
+            $buckets[$key]['hours'] += $hours;
+            $usedEffort = true;
+        }
+
+        if(!$usedEffort)
+        {
+            foreach($taskRows as $row)
+            {
+                $day = substr((string)$row->finishedDay, 0, 10);
+                $key = $this->bucketKey($day, $grain);
+                if(!isset($buckets[$key])) continue;
+                $buckets[$key]['hours'] += (float)$row->consumed;
+            }
+        }
+
+        $hasData = false;
+        foreach($buckets as $bucket)
+        {
+            if($bucket['tasks'] > 0 || $bucket['hours'] > 0) $hasData = true;
+        }
+
+        $trends->buckets = array_values($buckets);
+        $trends->hasData = $hasData;
+        return $trends;
+    }
+
+    protected function fetchDueCerts(array $filters, string $today): array
+    {
+        if(!defined('TABLE_JX_PRODUCT')) return array();
+
+        $certDays = (int)($this->config->jenshin->certWarnDays ?? 90);
+        $certFrom = date('Y-m-d', strtotime('-30 days'));
+        $certTo   = date('Y-m-d', strtotime("+{$certDays} days"));
+
+        $rows = $this->dao->select('t1.product, t1.certNo, t1.certValidTo, t2.name AS productName')
+            ->from(TABLE_JX_PRODUCT)->alias('t1')
+            ->leftJoin(TABLE_PRODUCT)->alias('t2')->on('t1.product = t2.id')
+            ->where('t1.deleted')->eq(0)
+            ->andWhere('t2.deleted')->eq('0')
+            ->andWhere('t2.vision')->eq($this->config->vision)
+            ->andWhere('t1.certValidTo')->notNull()
+            ->andWhere('t1.certValidTo')->ge($certFrom)
+            ->andWhere('t1.certValidTo')->le($certTo)
+            ->beginIF($filters['product'] > 0)->andWhere('t1.product')->eq($filters['product'])->fi()
+            ->beginIF(!$this->app->user->admin)->andWhere('t1.product')->in($this->app->user->view->products)->fi()
+            ->orderBy('t1.certValidTo')
+            ->fetchAll();
+
+        $list = array();
+        foreach($rows as $row)
+        {
+            $row->daysLeft = (int)round((strtotime((string)$row->certValidTo) - strtotime($today)) / 86400);
+            $list[] = $row;
+        }
+        return $list;
     }
 
     protected function countVisibleProjects(): int
@@ -280,7 +583,7 @@ class jxboardModel extends model
             $row->overdueDays   = max(0, (int)round((strtotime($today) - strtotime((string)$row->deadline)) / 86400));
             $row->assignedName  = $row->assignedName ?: $row->assignedTo;
             $list[] = $row;
-            if(count($list) >= $topN) break;
+            if($topN > 0 && count($list) >= $topN) break;
         }
         return $list;
     }
@@ -306,7 +609,7 @@ class jxboardModel extends model
         {
             $row->daysLeft = (int)round((strtotime((string)$row->end) - strtotime($today)) / 86400);
             $list[] = $row;
-            if(count($list) >= $topN) break;
+            if($topN > 0 && count($list) >= $topN) break;
         }
         return $list;
     }

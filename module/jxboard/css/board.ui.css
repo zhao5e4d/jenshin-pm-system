@@ -19,6 +19,19 @@
   padding: 14px 16px;
   box-shadow: var(--shadow-sm, 0 1px 2px rgba(15,23,42,.04));
 }
+a.pm-kpi-card.is-link {
+  color: inherit;
+  text-decoration: none;
+  cursor: pointer;
+}
+a.pm-kpi-card.is-link:hover {
+  border-color: #93c5fd;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, .08);
+}
+.pm-kpi-card.is-active {
+  outline: 2px solid #2563eb;
+  outline-offset: 0;
+}
 .pm-kpi-label { color: #64748b; font-size: 12px; }
 .pm-kpi-value { font-size: 24px; font-weight: 650; margin-top: 4px; font-variant-numeric: tabular-nums; }
 .pm-kpi-card.is-green .pm-kpi-value { color: #059669; }
@@ -41,6 +54,9 @@
 .pm-dash-grid.is-lists {
   grid-template-columns: repeat(3, minmax(0, 1fr));
 }
+.pm-dash-grid.is-lists.is-four {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
 .pm-dash-grid.is-single {
   grid-template-columns: minmax(0, 560px);
 }
@@ -56,6 +72,11 @@
 }
 .pm-dash-panel.is-chart { min-height: 236px; }
 .pm-dash-panel.is-list { height: 348px; }
+.pm-dash-panel.is-list.is-focus {
+  height: auto;
+  min-height: 348px;
+  outline: 2px solid #93c5fd;
+}
 .pm-dash-panel.is-wide { grid-column: 1 / -1; min-height: 0; height: auto; }
 .pm-dash-panel h4 {
   margin: 0 0 12px;
@@ -161,6 +182,13 @@
   align-items: center;
   gap: 8px;
   font-size: 13px;
+  color: inherit;
+  padding: 2px 4px;
+  border-radius: 6px;
+}
+a.pm-legend-row:hover {
+  background: #f1f5f9;
+  text-decoration: none;
 }
 .pm-legend-dot { width: 10px; height: 10px; border-radius: 50%; }
 .pm-legend-num { font-variant-numeric: tabular-nums; font-weight: 650; color: #0f172a; }
@@ -192,6 +220,83 @@
   border-radius: 999px;
   background: linear-gradient(90deg, #2563eb, #38bdf8);
   min-width: 0;
+}
+.pm-funnel-bar.is-hours {
+  background: linear-gradient(90deg, #0f766e, #5eead4);
+}
+
+.pm-dash-custom-dates {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+.pm-dash-custom-dates.hidden { display: none; }
+.pm-date-input {
+  width: 150px;
+  min-height: 32px;
+}
+
+.pm-dash-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.pm-view-all {
+  margin-left: auto;
+  font-size: 12px;
+  font-weight: 600;
+  color: #2563eb;
+}
+.pm-view-all:hover { text-decoration: none; color: #1d4ed8; }
+
+.pm-panel-sub {
+  margin-left: 8px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #64748b;
+}
+
+.pm-trend-wrap {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+.pm-trend-title {
+  font-size: 12px;
+  font-weight: 650;
+  color: #475569;
+  margin-bottom: 8px;
+}
+
+.pm-load {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.pm-load-row {
+  display: grid;
+  grid-template-columns: minmax(72px, 140px) 1fr auto;
+  gap: 10px;
+  align-items: center;
+}
+.pm-load-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: #0f172a;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.pm-load-name:hover { text-decoration: none; color: #2563eb; }
+.pm-load-bars { display: flex; flex-direction: column; gap: 4px; }
+.pm-load-num {
+  font-size: 12px;
+  color: #64748b;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
 }
 
 .pm-dash-list {
@@ -273,15 +378,42 @@
 
 @container pm-dash (max-width: 980px) {
   .pm-dash-grid.is-charts,
-  .pm-dash-grid.is-lists {
+  .pm-dash-grid.is-lists,
+  .pm-dash-grid.is-lists.is-four {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
   .pm-dash-grid.is-single { grid-template-columns: minmax(0, 1fr); }
+  .pm-trend-wrap { grid-template-columns: 1fr; }
 }
 @container pm-dash (max-width: 640px) {
   .pm-dash-grid.is-charts,
-  .pm-dash-grid.is-lists {
+  .pm-dash-grid.is-lists,
+  .pm-dash-grid.is-lists.is-four {
     grid-template-columns: minmax(0, 1fr);
   }
   .pm-dash-panel.is-list { height: 300px; }
+  .pm-load-row { grid-template-columns: 1fr; }
+}
+
+@media print {
+  #header,
+  #navbar,
+  #menu,
+  #sidebar,
+  #apps,
+  #headerCell,
+  #mainNavbar,
+  #featureBar,
+  #actionBar,
+  .pm-dash-filters,
+  .pm-dash-actions,
+  .pm-view-all { display: none !important; }
+  .pm-dash-panel.is-list,
+  .pm-dash-panel.is-list.is-focus { height: auto !important; max-height: none !important; }
+  .pm-dash-panel,
+  .pm-dash-item,
+  .pm-kpi-card { break-inside: avoid; }
+  body,
+  #main,
+  .pm-dashboard { background: #fff !important; }
 }

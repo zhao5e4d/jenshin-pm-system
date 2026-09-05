@@ -43,6 +43,15 @@ protected function printWelcomeBlock(): void
     $alerts = $this->loadModel('jxcore')->getWelcomeAlerts($this->app->user->account);
     $jxDashModule  = !empty($this->config->jenshin->enableLegacyBizMenus) ? 'jxdashboard' : 'jxboard';
     $dashboardLink = common::hasPriv($jxDashModule, 'overview') ? helper::createLink($jxDashModule, 'overview') : '';
+    $overdueDashLink = $dashboardLink;
+    $riskDashLink    = $dashboardLink;
+    if($jxDashModule === 'jxboard' && $dashboardLink)
+    {
+        $overdueDashLink = common::hasPriv('jxboard', 'meeting')
+            ? helper::createLink('jxboard', 'meeting', 'dept=&product=0&status=&health=&period=month&begin=&end=&focus=overdue')
+            : $dashboardLink;
+        $riskDashLink = helper::createLink('jxboard', 'overview', 'dept=&product=0&status=&health=red&period=month&begin=&end=&focus=');
+    }
     $todoLink = '';
     if(common::hasPriv('my', 'calendar') && $this->config->vision != 'lite') $todoLink = helper::createLink('my', 'calendar');
     if(!$todoLink && common::hasPriv('my', 'todo') && $this->config->vision != 'lite') $todoLink = helper::createLink('my', 'todo');
@@ -53,8 +62,8 @@ protected function printWelcomeBlock(): void
     $assignToMe = array();
     $assignToMe['task']         = array('number' => (int)zget($alerts, 'task', 0),          'href' => $todoLink);
     $assignToMe['pendingStage'] = array('number' => (int)zget($alerts, 'pendingStage', 0),  'href' => $workLink);
-    $assignToMe['overdue']      = array('number' => (int)zget($alerts, 'overdue', 0),       'href' => $dashboardLink);
-    $assignToMe['blocker']      = array('number' => (int)zget($alerts, 'blocker', 0),       'href' => $dashboardLink);
+    $assignToMe['overdue']      = array('number' => (int)zget($alerts, 'overdue', 0),       'href' => $overdueDashLink);
+    $assignToMe['blocker']      = array('number' => (int)zget($alerts, 'blocker', 0),       'href' => $riskDashLink);
 
     $reviewList = $this->loadModel('my')->getReviewingList('all');
     $blockedTypes = array('testcase', 'bug', 'testtask', 'case');
