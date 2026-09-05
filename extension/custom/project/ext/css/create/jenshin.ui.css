@@ -4,3 +4,8 @@
 .m-project-create .panel-title .gray-300-outline.rounded-full {
     display: none !important;
 }
+
+/* 保留关联产品，去掉关联计划。 */
+.productsBox .planBox {
+    display: none !important;
+}

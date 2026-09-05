@@ -1,7 +1,7 @@
 <?php
 /**
  * 编辑任务不再提交相关需求，保存后补回原关联，避免误改 story / storyVersion。
- * 批量创建不提供所属模块、相关需求，多项录入里也不列出。
+ * 单任务创建 / 批量创建不提供所属模块；批量创建也不提供相关需求。
  */
 protected function getCustomFields(object $execution, string $action): array
 {
@@ -22,7 +22,8 @@ protected function assignCreateVars(object $execution, int $storyID, int $module
 protected function buildTaskForCreate(int $executionID): object
 {
     $task = parent::buildTaskForCreate($executionID);
-    if(!isset($task->story)) $task->story = 0;
+    if(!isset($task->story))  $task->story  = 0;
+    if(!isset($task->module)) $task->module = 0;
     return $task;
 }
 

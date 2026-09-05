@@ -1,5 +1,6 @@
 <?php
 $lang->execution->overdueTasks = '逾期任务';
+unset($lang->execution->lifeTimeList['ops']);
 $lang->execution->typeList['sprint'] = $lang->executionCommon;
 $lang->execution->createExec         = "添加{$lang->executionCommon}";
 $lang->execution->copyExec           = "复制{$lang->executionCommon}";

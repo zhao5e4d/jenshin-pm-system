@@ -1,6 +1,6 @@
 <?php
 /**
- * 单任务创建：去掉相关需求及测试需求勾选。
+ * 单任务创建：去掉所属模块、相关需求及测试需求勾选。
  */
 namespace zin;
 
@@ -11,7 +11,7 @@ onBeforeBuildNode(function($node)
         $fields = $node->prop('fields');
         if($fields && method_exists($fields, 'remove'))
         {
-            $fields->remove('storyBox,story,storyEstimate,storyDesc,storyPri,testStoryBox');
+            $fields->remove('module,storyBox,story,storyEstimate,storyDesc,storyPri,testStoryBox');
             $node->setProp('fields', $fields);
         }
         return;
@@ -19,5 +19,5 @@ onBeforeBuildNode(function($node)
 
     if(!($node instanceof field)) return;
     $name = (string)$node->prop('name');
-    if(in_array($name, array('storyBox', 'story', 'storyEstimate', 'storyDesc', 'storyPri', 'testStoryBox'), true)) $node->remove();
+    if(in_array($name, array('module', 'storyBox', 'story', 'storyEstimate', 'storyDesc', 'storyPri', 'testStoryBox'), true)) $node->remove();
 });
