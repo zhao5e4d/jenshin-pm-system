@@ -47,6 +47,7 @@ $lang->resource->jxboard->overview  = 'overviewAction';
 $lang->resource->jxboard->dept      = 'deptAction';
 $lang->resource->jxboard->portfolio = 'portfolioAction';
 $lang->resource->jxboard->meeting   = 'meetingAction';
+$lang->resource->jxboard->screen    = 'screenAction';
 
 $lang->resource->jxcore = new stdclass();
 $lang->resource->jxcore->togglecheck  = 'togglecheck';
@@ -84,7 +85,8 @@ $lang->jxboard->indexAction     = '查看看板';
 $lang->jxboard->overviewAction  = '经营总览';
 $lang->jxboard->deptAction      = '部门经营';
 $lang->jxboard->portfolioAction = '项目组合';
-$lang->jxboard->meetingAction   = '会议视图';
+$lang->jxboard->meetingAction   = '例会清单';
+$lang->jxboard->screenAction    = '经营大屏';
 $lang->jxcore->togglecheck  = '完成检查项';
 $lang->jxcore->submitstage  = '提交阶段门';
 $lang->jxcore->approvestage = '审批阶段门';

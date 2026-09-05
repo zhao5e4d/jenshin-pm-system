@@ -131,25 +131,14 @@ class jxboardModel extends model
             $data->byStatus[$statusKey] = ($data->byStatus[$statusKey] ?? 0) + 1;
 
             $deptName = $project->deptName;
-            if(!isset($data->byDept[$deptName]))
-            {
-                $data->byDept[$deptName] = array(
-                    'id' => (int)$project->deptID,
-                    'name' => $deptName,
-                    'count' => 0,
-                    'budget' => 0,
-                    'estimate' => 0,
-                    'consumed' => 0,
-                    'overdue' => 0,
-                    'red' => 0
-                );
-            }
+            if(!isset($data->byDept[$deptName])) $data->byDept[$deptName] = $this->emptyDeptRow((int)$project->deptID, $deptName);
             $data->byDept[$deptName]['count']++;
             $data->byDept[$deptName]['budget']    += (float)$project->budget;
             $data->byDept[$deptName]['estimate']  += $project->estimate;
             $data->byDept[$deptName]['consumed']  += $project->consumed;
             $data->byDept[$deptName]['overdue']   += $project->overdueTasks;
             if($project->health == 'red') $data->byDept[$deptName]['red']++;
+            if($project->health == 'yellow') $data->byDept[$deptName]['yellow']++;
             if((int)$project->deptID === 0) $data->hasUnassignedDept = true;
 
             $productKeys = $project->productIDs ?: array(0);
@@ -165,6 +154,7 @@ class jxboardModel extends model
                 $data->byProduct[$productID]['count']++;
                 $data->byProduct[$productID]['budget'] += (float)$project->budget;
                 if($project->health == 'red') $data->byProduct[$productID]['red']++;
+                $data->byDept[$deptName]['productIDs'][$productID] = 1;
             }
 
             $funnel['wait']   += $stat['wait'];
@@ -191,6 +181,36 @@ class jxboardModel extends model
         $data->certExpiring       = $this->sliceList($allCerts, $filters, 'certs', $topN);
         $data->trends             = $this->fetchTrends($projectIds, $range);
         $data->isEmpty            = false;
+
+        $taskTotal = $funnel['wait'] + $funnel['doing'] + $funnel['done'] + $funnel['closed'];
+        $data->taskDoneRate = $taskTotal > 0 ? round(($funnel['done'] + $funnel['closed']) * 100 / $taskTotal, 1) : 0.0;
+
+        $execByProject = $this->fetchExecutionStats($projectIds);
+        $byExecution   = array('wait' => 0, 'doing' => 0, 'done' => 0);
+        foreach($decorated as $project)
+        {
+            $exec = $execByProject[(int)$project->id] ?? $this->emptyExecStat();
+            $deptName = $project->deptName;
+            if(!isset($data->byDept[$deptName])) continue;
+
+            $wait  = (int)$exec['wait'];
+            $doing = (int)$exec['doing'] + (int)$exec['suspended'];
+            $done  = (int)$exec['done'] + (int)$exec['closed'];
+            $data->byDept[$deptName]['execWait']  += $wait;
+            $data->byDept[$deptName]['execDoing'] += $doing;
+            $data->byDept[$deptName]['execDone']  += $done;
+            $data->byDept[$deptName]['execTotal'] += $wait + $doing + $done;
+            $byExecution['wait']  += $wait;
+            $byExecution['doing'] += $doing;
+            $byExecution['done']  += $done;
+        }
+        foreach($data->byDept as $name => $stat)
+        {
+            $data->byDept[$name]['products'] = count($stat['productIDs'] ?? array());
+            unset($data->byDept[$name]['productIDs']);
+        }
+        $data->byExecution    = $byExecution;
+        $data->executionTotal = $byExecution['wait'] + $byExecution['doing'] + $byExecution['done'];
         return $data;
     }
 
@@ -214,6 +234,9 @@ class jxboardModel extends model
         $data->certCount         = 0;
         $data->listLimit         = (int)($this->config->jxboard->topN ?? 10);
         $data->byStatus          = array('wait' => 0, 'doing' => 0, 'suspended' => 0, 'closed' => 0);
+        $data->byExecution       = array('wait' => 0, 'doing' => 0, 'done' => 0);
+        $data->executionTotal    = 0;
+        $data->taskDoneRate      = 0.0;
         $data->byDept            = array();
         $data->byProduct         = array();
         $data->taskFunnel        = array('wait' => 0, 'doing' => 0, 'done' => 0, 'closed' => 0);
@@ -488,12 +511,63 @@ class jxboardModel extends model
             ->fetchAll('id');
     }
 
+    protected function emptyDeptRow(int $id, string $name): array
+    {
+        return array(
+            'id'         => $id,
+            'name'       => $name,
+            'count'      => 0,
+            'budget'     => 0,
+            'estimate'   => 0,
+            'consumed'   => 0,
+            'overdue'    => 0,
+            'red'        => 0,
+            'yellow'     => 0,
+            'execWait'   => 0,
+            'execDoing'  => 0,
+            'execDone'   => 0,
+            'execTotal'  => 0,
+            'products'   => 0,
+            'productIDs' => array()
+        );
+    }
+
+    protected function emptyExecStat(): array
+    {
+        return array('wait' => 0, 'doing' => 0, 'suspended' => 0, 'done' => 0, 'closed' => 0, 'total' => 0);
+    }
+
     protected function emptyTaskStat(): array
     {
         return array(
             'wait' => 0, 'doing' => 0, 'done' => 0, 'pause' => 0, 'cancel' => 0, 'closed' => 0,
             'estimate' => 0.0, 'consumed' => 0.0, 'remain' => 0.0, 'total' => 0
         );
+    }
+
+    protected function fetchExecutionStats(array $projectIds): array
+    {
+        $stats = array();
+        if(!$projectIds) return $stats;
+
+        $rows = $this->dao->select('project, status, COUNT(id) AS `count`')
+            ->from(TABLE_EXECUTION)
+            ->where('type')->in('sprint,stage,kanban')
+            ->andWhere('deleted')->eq('0')
+            ->andWhere('project')->in($projectIds)
+            ->groupBy('project, status')
+            ->fetchAll();
+
+        foreach($rows as $row)
+        {
+            $projectID = (int)$row->project;
+            if(!isset($stats[$projectID])) $stats[$projectID] = $this->emptyExecStat();
+            $status = (string)$row->status;
+            $count  = (int)$row->count;
+            if(isset($stats[$projectID][$status])) $stats[$projectID][$status] += $count;
+            $stats[$projectID]['total'] += $count;
+        }
+        return $stats;
     }
 
     protected function fetchTaskStats(array $projectIds): array

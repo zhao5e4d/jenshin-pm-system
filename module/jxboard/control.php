@@ -45,6 +45,11 @@ class jxboard extends control
         $this->renderBoard('meeting', $dept, $product, $status, $health, $period, $begin, $end, $focus);
     }
 
+    public function screen(string $dept = '', int $product = 0, string $status = '', string $health = '', string $period = 'week', string $begin = '', string $end = '', string $focus = '')
+    {
+        $this->renderBoard('screen', $dept, $product, $status, $health, $period, $begin, $end, $focus);
+    }
+
     protected function filterQuery(array $filters): string
     {
         return sprintf(
@@ -90,7 +95,7 @@ class jxboard extends control
             'custom'   => $this->lang->jxboard->periodCustom
         );
 
-        foreach(array('overview', 'dept', 'portfolio', 'meeting') as $method)
+        foreach(array('overview', 'dept', 'portfolio', 'meeting', 'screen') as $method)
         {
             $this->lang->jxboard->menu->{$method}['link'] = "{$this->lang->jxboard->{$method}}|jxboard|{$method}|{$query}";
         }
@@ -104,7 +109,7 @@ class jxboard extends control
         $this->view->statusItems = $statusItems;
         $this->view->healthItems = $healthItems;
         $this->view->periodItems = $periodItems;
-        $this->display('jxboard', 'board');
+        $this->display('jxboard', $viewName == 'screen' ? 'screen' : 'board');
     }
 
     protected function exportMeetingCsv(string $dept, int $product, string $status, string $health, string $period, string $begin, string $end, string $focus): void
