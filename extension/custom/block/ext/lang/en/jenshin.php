@@ -1,4 +1,10 @@
 <?php
+$lang->block->welcome->assignList = array();
+$lang->block->welcome->assignList['task']         = 'Open Todos';
+$lang->block->welcome->assignList['pendingStage'] = 'Open Tasks';
+$lang->block->welcome->assignList['overdue']      = 'Overdue Projects';
+$lang->block->welcome->assignList['blocker']      = 'At-Risk Projects';
+
 $lang->block->teamachievement->createdTasks = 'Created Tasks';
 $lang->block->teamachievement->runCases     = 'Created Tasks';
 

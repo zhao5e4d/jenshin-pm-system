@@ -23,6 +23,21 @@ foreach(array('index', 'overview', 'dept', 'portfolio', 'meeting') as $jxMethod)
     $jxBoardOrder += 5;
 }
 
+/* 菜单已关的测试 / 构建 / 代码 / 发布权限包不再出现在分组页。 */
+foreach(array('projectqa', 'executionqa', 'executionbuild', 'repo', 'release', 'projectrelease') as $jxHideSubset)
+{
+    if(isset($config->group->subset->$jxHideSubset)) unset($config->group->subset->$jxHideSubset);
+}
+
+foreach(array(
+    'browseRelease', 'manageRelease', 'importRelease',
+    'deleteRelease', 'releaseNotify', 'application',
+    'browseProjectRelease', 'manageProjectRelease', 'projectReleaseNotify'
+) as $jxHidePackage)
+{
+    if(isset($config->group->package->$jxHidePackage)) unset($config->group->package->$jxHidePackage);
+}
+
 /*
  * 禅道把 product-browse（需求列表页）归在「浏览需求」权限包，
  * 同时又让「浏览产品 / 白名单」强制依赖它。保存时 processDepends 会把

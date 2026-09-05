@@ -23,37 +23,34 @@ $jxOtherCell = function(string $className, string $label, $value)
 
 $replaced = array();
 
-if($archive)
+$items = array(
+    $lang->jxproduct->model        => $archive->model ?? '',
+    $lang->jxproduct->category     => $archive->category ?? '',
+    $lang->jxproduct->certNo       => $archive->certNo ?? '',
+    $lang->jxproduct->certValidTo  => $archive->certValidTo ?? '',
+    $lang->jxproduct->tenderCode   => $archive->tenderCode ?? '',
+    $lang->jxproduct->manufacturer => $archive->manufacturer ?? '',
+    $lang->jxproduct->specs        => $archive->specs ?? '',
+    $lang->jxproduct->patents      => $archive->patents ?? ''
+);
+
+$cells = array();
+foreach($items as $label => $value)
 {
-    $items = array(
-        $lang->jxproduct->model        => $archive->model ?? '',
-        $lang->jxproduct->category     => $archive->category ?? '',
-        $lang->jxproduct->certNo       => $archive->certNo ?? '',
-        $lang->jxproduct->certValidTo  => $archive->certValidTo ?? '',
-        $lang->jxproduct->tenderCode   => $archive->tenderCode ?? '',
-        $lang->jxproduct->manufacturer => $archive->manufacturer ?? '',
-        $lang->jxproduct->specs        => $archive->specs ?? '',
-        $lang->jxproduct->patents      => $archive->patents ?? ''
-    );
-
-    $cells = array();
-    foreach($items as $label => $value)
-    {
-        $cells[] = div
-        (
-            setClass('w-1/4 item mb-3'),
-            span(setClass('text-gray'), $label),
-            span(setClass('ml-2'), $value !== '' && $value !== null ? $value : '-')
-        );
-    }
-
-    $replaced[] = panel
+    $cells[] = div
     (
-        setClass('mb-4 jx-archive-box'),
-        set::title($lang->jxproduct->common),
-        div(setClass('flex flex-wrap pt-2'), $cells)
+        setClass('w-1/4 item mb-3'),
+        span(setClass('text-gray'), $label),
+        span(setClass('ml-2'), $value !== '' && $value !== null ? $value : '-')
     );
 }
+
+$replaced[] = panel
+(
+    setClass('mb-4 jx-archive-box'),
+    set::title($lang->jxproduct->common),
+    div(setClass('flex flex-wrap pt-2'), $cells)
+);
 
 $replaced[] = panel
 (

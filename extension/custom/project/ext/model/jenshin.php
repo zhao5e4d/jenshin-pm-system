@@ -53,6 +53,10 @@ public function buildActionList(object $project): array
         if($name === 'group' && !common::hasPriv('project', 'team')) continue;
         if($name === 'perm' && !common::hasPriv('project', 'group')) continue;
         if($name === 'whitelist' && !common::hasPriv('project', 'whitelist')) continue;
+        if(is_string($action) && strpos($action, 'more:') === 0 && !common::hasPriv('project', 'whitelist'))
+        {
+            $action = preg_replace('/,whitelist|,whitelist$/', '', $action);
+        }
         $filtered[] = $action;
     }
     return $filtered;

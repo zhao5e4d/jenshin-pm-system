@@ -26,6 +26,10 @@ $lang->jxproduct->categoryList['一类'] = '一类';
 $lang->jxproduct->categoryList['二类'] = '二类';
 $lang->jxproduct->categoryList['三类'] = '三类';
 
+$lang->jxproduct->errorSaveArchive = '产品档案保存失败，请重试或联系管理员。';
+$lang->jxproduct->certExpiring     = '临期';
+$lang->jxproduct->certExpired      = '已过期';
+
 $lang->jxproduct->browseAction = '浏览产品档案';
 $lang->jxproduct->createAction = '新建产品档案';
 $lang->jxproduct->editAction   = '编辑产品档案';

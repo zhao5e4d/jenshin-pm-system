@@ -121,13 +121,16 @@ $lang->navGroup->jxboard        = 'jxboard';
 $lang->navGroup->jxcore         = 'jxdashboard';
 $lang->navGroup->jxhospital     = 'jxadmission';
 
+/* 产品详情：需求 / 计划 / 发布 / 路线图 / 矩阵。 */
+if(function_exists('jxHideProductMenus')) jxHideProductMenus($lang);
+
 /* 项目/执行详情二级菜单：测试 / 构建 / 发布。setMenu 还会再裁一次（含 design）。 */
 if(function_exists('jxHideProjectMenus') && !empty($config->jenshin->hiddenProjectMenus))
 {
     jxHideProjectMenus($lang, $config->jenshin->hiddenProjectMenus);
 }
 
-/* 工作台「贡献」「待处理」：Bug / 用例 / 测试单。 */
+/* 工作台「贡献」「待处理」：Bug / 用例 / 测试单 / 需求。 */
 if(function_exists('jxHideMySubMenus'))
 {
     if(!empty($config->jenshin->hiddenContributeMenus)) jxHideMySubMenus($lang, 'contribute', $config->jenshin->hiddenContributeMenus);

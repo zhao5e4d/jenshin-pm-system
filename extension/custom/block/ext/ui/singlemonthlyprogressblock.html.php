@@ -31,7 +31,7 @@ blockPanel
         cell
         (
             setClass('chart line-chart ' . ($longBlock ? 'py-2' : 'py-1 w-full')),
-            set::width($longBlock ? '1/4' : '100%'),
+            set::width($longBlock ? '1/3' : '100%'),
             echarts
             (
                 set::title(array('text' => $lang->block->monthlyprogress->doneStoryEstimateTrendChart, 'textStyle' => array('fontSize' => '12'))),
@@ -55,7 +55,7 @@ blockPanel
         cell
         (
             setClass('chart line-chart ' . ($longBlock ? 'py-2' : 'py-1 w-full')),
-            set::width($longBlock ? '1/4' : '100%'),
+            set::width($longBlock ? '1/3' : '100%'),
             echarts
             (
                 set::title(array('text' => $lang->block->monthlyprogress->storyTrendChart, 'textStyle' => array('fontSize' => '12'))),
@@ -91,7 +91,7 @@ blockPanel
         cell
         (
             setClass('chart line-chart ' . ($longBlock ? 'py-2' : 'py-1 w-full')),
-            set::width($longBlock ? '1/4' : '100%'),
+            set::width($longBlock ? '1/3' : '100%'),
             echarts
             (
                 set::title(array('text' => $lang->block->monthlyprogress->bugTrendChart, 'textStyle' => array('fontSize' => '12'))),
@@ -118,34 +118,6 @@ blockPanel
                             'type' => 'line',
                             'name' => $lang->block->productstatistic->done,
                             'data' => array_values($fixedBugCount),
-                            'emphasis' => array('label' => array('show' => true))
-                        )
-                    )
-                )
-            )
-        ),
-        cell
-        (
-            setClass('chart line-chart ' . ($longBlock ? 'py-2' : 'py-1 w-full')),
-            set::width($longBlock ? '1/4' : '100%'),
-            echarts
-            (
-                set::title(array('text' => $lang->block->releasestatistic->monthly, 'textStyle' => array('fontSize' => '12'))),
-                set::color(array('#2B80FF')),
-                set::width('100%'),
-                set::height(200),
-                set::grid(array('left' => '10px', 'top' => '60px', 'right' => '0', 'bottom' => '0', 'containLabel' => true)),
-                set::xAxis(array('type' => 'category', 'data' => array_keys($releaseCount), 'splitLine' => array('show' => false), 'axisTick' => array('alignWithLabel' => true, 'interval' => 0), 'axisLabel' => array('fontSize' => $longBlock ? '8' : '10'))),
-                set::yAxis(array('type' => 'value', 'name' => "({$lang->block->projectstatistic->unit})", 'splitLine' => array('show' => false), 'axisLine' => array('show' => true, 'color' => '#DDD'), 'axisLabel' => array('showMaxLabel' => true, 'interval' => 'auto'))),
-                set::series
-                (
-                    array
-                    (
-                        array
-                        (
-                            'type' => 'line',
-                            'name' => $lang->product->releases,
-                            'data' => array_values($releaseCount),
                             'emphasis' => array('label' => array('show' => true))
                         )
                     )

@@ -47,7 +47,10 @@ $config->jenshin->blockedModules = array(
     'repobranchrule', 'reporeviewflow', 'design'
 );
 
-$config->jenshin->blockedFeatures = 'otherDevOps,qaTestsuite,qaAutomated,qaCaselib,otherAI,productRoadmap,productTrack,productUR,productER,myScore';
+$config->jenshin->blockedFeatures = 'otherDevOps,qaTestsuite,qaAutomated,qaCaselib,otherAI,productRoadmap,product_roadmap,productTrack,product_track,productUR,productER,myScore';
+$jxBlockedFeatures = array_filter(array_map('trim', explode(',', $config->jenshin->blockedFeatures)));
+if(!isset($config->hiddenFeature) || !is_array($config->hiddenFeature)) $config->hiddenFeature = array();
+$config->hiddenFeature = array_values(array_unique(array_merge($config->hiddenFeature, $jxBlockedFeatures)));
 
 /* 创建项目默认 Scrum，跳过「选择项目管理方式」弹窗，并锁定模型不可切换。 */
 $config->jenshin->defaultProjectModel = 'scrum';
@@ -59,6 +62,9 @@ $config->executionCommonList['zh-cn'][0] = '阶段';
 
 /* 项目/执行详情二级菜单中隐藏的项。超级管理员直链仍可用于排障。 */
 $config->jenshin->hiddenProjectMenus = array('qa', 'build', 'release');
+
+/* 产品详情二级菜单：需求 / 计划 / 发布 / 路线图 / 矩阵。仪表盘、关联项目、文档、设置保留。 */
+$config->jenshin->hiddenProductMenus = array('epic', 'requirement', 'story', 'plan', 'release', 'roadmap', 'track');
 
 /* 阶段任务综合看板不展示 Bug 泳道 / Bug看板。改 false 可恢复。 */
 $config->jenshin->hideBugKanban = true;
@@ -75,9 +81,9 @@ if(!function_exists('jxHideBugKanban'))
     }
 }
 
-/* 工作台「贡献」「待处理」二级菜单中隐藏的项（测试相关）。直链仍可用于排障。 */
-$config->jenshin->hiddenContributeMenus = array('bug', 'testcase', 'testtask');
-$config->jenshin->hiddenWorkMenus       = array('bug', 'testcase', 'testtask');
+/* 工作台「贡献」「待处理」二级菜单中隐藏的项。直链仍可用于排障。 */
+$config->jenshin->hiddenContributeMenus = array('bug', 'testcase', 'testtask', 'story');
+$config->jenshin->hiddenWorkMenus       = array('bug', 'testcase', 'testtask', 'story');
 
 if(!function_exists('jxStripDividerMenus'))
 {
@@ -91,6 +97,32 @@ if(!function_exists('jxStripDividerMenus'))
         {
             $dividerMenu = str_replace(',' . $menuKey . ',', ',', $dividerMenu);
         }
+    }
+}
+
+if(!function_exists('jxHideProductMenus'))
+{
+    /**
+     * 从产品详情导航中移除指定二级菜单。
+     */
+    function jxHideProductMenus($lang): void
+    {
+        global $config;
+        if(empty($lang) || empty($lang->product->menu) || empty($config->jenshin->hiddenProductMenus)) return;
+
+        $menuKeys = $config->jenshin->hiddenProductMenus;
+        foreach($menuKeys as $menuKey)
+        {
+            if(isset($lang->product->menu->$menuKey)) unset($lang->product->menu->$menuKey);
+        }
+        if(!empty($lang->product->menuOrder) && is_array($lang->product->menuOrder))
+        {
+            foreach($lang->product->menuOrder as $order => $name)
+            {
+                if(in_array($name, $menuKeys, true)) unset($lang->product->menuOrder[$order]);
+            }
+        }
+        if(!empty($lang->product->dividerMenu)) jxStripDividerMenus($lang->product->dividerMenu, $menuKeys);
     }
 }
 

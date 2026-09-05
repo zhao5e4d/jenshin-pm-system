@@ -57,6 +57,16 @@ protected function printWelcomeBlock(): void
     $assignToMe['blocker']      = array('number' => (int)zget($alerts, 'blocker', 0),       'href' => $dashboardLink);
 
     $reviewList = $this->loadModel('my')->getReviewingList('all');
+    $blockedTypes = array('testcase', 'bug', 'testtask', 'case');
+    if(!empty($this->config->jenshin->blockedModules) && is_array($this->config->jenshin->blockedModules))
+    {
+        $blockedTypes = array_values(array_unique(array_merge($blockedTypes, $this->config->jenshin->blockedModules)));
+    }
+    $reviewList = array_values(array_filter($reviewList, function($item) use ($blockedTypes)
+    {
+        $type = isset($item->type) ? (string)$item->type : '';
+        return $type !== '' && !in_array($type, $blockedTypes, true);
+    }));
     $reviewByMe = array();
     $reviewByMe['reviewByMe'] = array(
         'number' => count($reviewList),
@@ -156,7 +166,7 @@ protected function printMonthlyProgressBlock()
         {
             foreach($monthCreatedStory as $story)
             {
-                if($date == "{$story['year']}-{$story['month']}") $doneStoryCount[$date] = $story['value'];
+                if($date == "{$story['year']}-{$story['month']}") $createStoryCount[$date] = $story['value'];
             }
         }
 
@@ -164,7 +174,7 @@ protected function printMonthlyProgressBlock()
         {
             foreach($monthFinishedStory as $story)
             {
-                if($date == "{$story['year']}-{$story['month']}") $createStoryCount[$date] = $story['value'];
+                if($date == "{$story['year']}-{$story['month']}") $doneStoryCount[$date] = $story['value'];
             }
         }
 
@@ -215,10 +225,9 @@ protected function printSingleMonthlyProgressBlock(): void
     }
 
     $this->loadModel('metric');
-    $monthStroyScaleGroup     = $this->metric->getResultByCodeWithArray('scale_of_monthly_finished_story_in_product',  array('product' => $productID, 'year' => join(',', $years), 'month' => join(',', $months)), 'cron');
-    $monthCreatedStroyGroup   = $this->metric->getResultByCodeWithArray('count_of_monthly_created_story_in_product',   array('product' => $productID, 'year' => join(',', $years), 'month' => join(',', $months)), 'cron');
-    $monthFinishedStoryGroup  = $this->metric->getResultByCodeWithArray('count_of_monthly_finished_story_in_product',  array('product' => $productID, 'year' => join(',', $years), 'month' => join(',', $months)), 'cron');
-    $monthCreatedReleaseGroup = $this->metric->getResultByCodeWithArray('count_of_monthly_created_release_in_product', array('product' => $productID, 'year' => join(',', $years), 'month' => join(',', $months)), 'cron');
+    $monthStroyScaleGroup    = $this->metric->getResultByCodeWithArray('scale_of_monthly_finished_story_in_product', array('product' => $productID, 'year' => join(',', $years), 'month' => join(',', $months)), 'cron');
+    $monthCreatedStroyGroup  = $this->metric->getResultByCodeWithArray('count_of_monthly_created_story_in_product',  array('product' => $productID, 'year' => join(',', $years), 'month' => join(',', $months)), 'cron');
+    $monthFinishedStoryGroup = $this->metric->getResultByCodeWithArray('count_of_monthly_finished_story_in_product', array('product' => $productID, 'year' => join(',', $years), 'month' => join(',', $months)), 'cron');
 
     $productIds      = $productID ? array($productID) : array();
     $createdMonthly  = $this->jxCountTasksByProductMonthly($productIds, 'created', $dates);
@@ -229,7 +238,6 @@ protected function printSingleMonthlyProgressBlock(): void
     $createStoryCount  = array();
     $fixedBugCount     = array();
     $createBugCount    = array();
-    $releaseCount      = array();
     foreach($dates as $date)
     {
         $doneStoryEstimate[$date] = 0;
@@ -237,7 +245,6 @@ protected function printSingleMonthlyProgressBlock(): void
         $createStoryCount[$date]  = 0;
         $fixedBugCount[$date]     = (int)($finishedMonthly[$productID][$date] ?? 0);
         $createBugCount[$date]    = (int)($createdMonthly[$productID][$date] ?? 0);
-        $releaseCount[$date]      = 0;
 
         if(!empty($monthStroyScaleGroup))
         {
@@ -260,13 +267,6 @@ protected function printSingleMonthlyProgressBlock(): void
                 if($date == "{$data['year']}-{$data['month']}") $doneStoryCount[$date] = $data['value'];
             }
         }
-        if(!empty($monthCreatedReleaseGroup))
-        {
-            foreach($monthCreatedReleaseGroup as $data)
-            {
-                if($date == "{$data['year']}-{$data['month']}") $releaseCount[$date] = $data['value'];
-            }
-        }
     }
 
     $this->view->months            = array();
@@ -275,7 +275,6 @@ protected function printSingleMonthlyProgressBlock(): void
     $this->view->createStoryCount  = $createStoryCount;
     $this->view->fixedBugCount     = $fixedBugCount;
     $this->view->createBugCount    = $createBugCount;
-    $this->view->releaseCount      = $releaseCount;
 }
 
 /**

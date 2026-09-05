@@ -13,6 +13,19 @@ protected function getCustomFields(object $execution, string $action): array
     return array($customFields, $checkedFields);
 }
 
+protected function assignCreateVars(object $execution, int $storyID, int $moduleID, int $taskID, int $todoID, int $bugID, array $output, string $cardPosition)
+{
+    parent::assignCreateVars($execution, $storyID, $moduleID, $taskID, $todoID, $bugID, $output, $cardPosition);
+    if(isset($this->view->features) && is_array($this->view->features)) $this->view->features['story'] = false;
+}
+
+protected function buildTaskForCreate(int $executionID): object
+{
+    $task = parent::buildTaskForCreate($executionID);
+    if(!isset($task->story)) $task->story = 0;
+    return $task;
+}
+
 protected function buildTaskForEdit(object $task): object|false
 {
     $jxOldTask = $this->task->getByID($task->id);

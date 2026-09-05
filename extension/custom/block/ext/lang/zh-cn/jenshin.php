@@ -26,10 +26,10 @@ $lang->block->welcome->reviewList = array();
 $lang->block->welcome->reviewList['reviewByMe'] = '待我审批数';
 
 $lang->block->welcome->assignList = array();
-$lang->block->welcome->assignList['task']         = '待办任务';
-$lang->block->welcome->assignList['pendingStage'] = '待处理';
-$lang->block->welcome->assignList['overdue']      = '逾期事项';
-$lang->block->welcome->assignList['blocker']      = '阻塞事项';
+$lang->block->welcome->assignList['task']         = '待办日程';
+$lang->block->welcome->assignList['pendingStage'] = '待处理任务';
+$lang->block->welcome->assignList['overdue']      = '逾期项目';
+$lang->block->welcome->assignList['blocker']      = '风险项目';
 
 $lang->block->summary->welcome      = '健忻已陪伴您%s： %s今日期待优秀的您来处理！';
 $lang->block->summary->noWork       = '您暂无待处理事项，';

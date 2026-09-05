@@ -21,6 +21,20 @@ else
     $fields['line']['options'] = $lineOptions;
 }
 
+$app->loadLang('jxproduct');
+if(!isset($fields['jxCategory']))
+{
+    $fields['jxCategory'] = array('title' => $lang->jxproduct->category, 'control' => 'select', 'width' => '120px', 'required' => false, 'options' => $lang->jxproduct->categoryList);
+}
+if(!isset($fields['jxCertNo']))
+{
+    $fields['jxCertNo'] = array('title' => $lang->jxproduct->certNo, 'control' => 'text', 'width' => '160px', 'required' => false, 'options' => array());
+}
+if(!isset($fields['jxCertValidTo']))
+{
+    $fields['jxCertValidTo'] = array('title' => $lang->jxproduct->certValidTo, 'control' => 'date', 'width' => '128px', 'required' => false, 'options' => array());
+}
+
 if(!is_array($lines)) $lines = array();
 if(empty($lines[0]) && $lineOptions) $lines[0] = $lineOptions;
 if(!empty($products))
@@ -30,6 +44,7 @@ if(!empty($products))
         $programID = isset($product->program) ? (int)$product->program : 0;
         if(empty($lines[$programID]) && $lineOptions) $lines[$programID] = $lineOptions;
         if(isset($product->line)) $product->line = $product->line ? (string)$product->line : '';
+        if(!empty($product->jxCertValidTo) && ($product->jxCertValidTo === '0000-00-00' || strpos((string)$product->jxCertValidTo, '<') !== false)) $product->jxCertValidTo = '';
     }
 }
 
@@ -58,7 +73,12 @@ if(isset($items['acl']))
 }
 
 unset($customFields['QD'], $customFields['RD'], $customFields['program']);
-$customFields = array('line' => $lang->product->belongingLine) + $customFields;
+$customFields = array(
+    'line'          => $lang->product->belongingLine,
+    'jxCategory'    => $lang->jxproduct->category,
+    'jxCertNo'      => $lang->jxproduct->certNo,
+    'jxCertValidTo' => $lang->jxproduct->certValidTo
+) + $customFields;
 
 $showList = array();
 foreach(explode(',', (string)$showFields) as $fieldName)
@@ -68,6 +88,10 @@ foreach(explode(',', (string)$showFields) as $fieldName)
     $showList[] = $fieldName;
 }
 if(!in_array('line', $showList, true)) array_unshift($showList, 'line');
+foreach(array('jxCategory', 'jxCertNo', 'jxCertValidTo') as $jxField)
+{
+    if(!in_array($jxField, $showList, true)) $showList[] = $jxField;
+}
 
 formBatchPanel
 (

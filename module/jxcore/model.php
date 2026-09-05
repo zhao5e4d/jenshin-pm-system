@@ -216,6 +216,45 @@ class jxcoreModel extends model
         return $product;
     }
 
+    /**
+     * 按产品 ID 批量读取档案行。
+     *
+     * @param  array $productIds
+     * @access public
+     * @return array
+     */
+    public function getProductArchives(array $productIds): array
+    {
+        $productIds = array_values(array_filter(array_map('intval', $productIds)));
+        if(!$productIds) return array();
+        $this->ensureSchema();
+        return $this->dao->select('*')->from(TABLE_JX_PRODUCT)->where('product')->in($productIds)->fetchAll('product');
+    }
+
+    /**
+     * 只更新提交的档案字段，其余沿用已有值。
+     *
+     * @param  int   $productID
+     * @param  array $patch
+     * @access public
+     * @return int
+     */
+    public function saveProductArchivePatch(int $productID, array $patch): int
+    {
+        if($productID <= 0 || !$patch) return 0;
+        $archive = $this->getProductArchive($productID);
+        $data    = new stdclass();
+        foreach(array('model', 'category', 'line', 'certNo', 'certValidTo', 'specs', 'udi', 'manufacturer', 'patents', 'tenderCode') as $field)
+        {
+            $data->$field = ($archive && isset($archive->$field)) ? $archive->$field : '';
+        }
+        foreach($patch as $field => $value)
+        {
+            if(property_exists($data, $field)) $data->$field = $value;
+        }
+        return $this->saveProductArchive($productID, $data);
+    }
+
     public function saveProductArchive(int $productID, object $data): int
     {
         $this->ensureSchema();
@@ -227,10 +266,12 @@ class jxcoreModel extends model
         if($exist)
         {
             $this->dao->update(TABLE_JX_PRODUCT)->data($row)->where('id')->eq($exist->id)->exec();
+            if(dao::isError()) return 0;
             return (int)$exist->id;
         }
         $row->product = $productID;
         $this->dao->insert(TABLE_JX_PRODUCT)->data($row)->exec();
+        if(dao::isError()) return 0;
         return (int)$this->dao->lastInsertID();
     }
 
@@ -946,8 +987,9 @@ class jxcoreModel extends model
     /**
      * Welcome-block alerts scoped to the current user.
      * task: undone todos on 日程.
-     * pendingStage: open assigned items on 待处理 (my-work tasks).
-     * overdue/blocker: medical matters I own or PM.
+     * pendingStage: open assigned tasks on 待处理.
+     * overdue: delayed projects I PM or belong to (same口径 as jxboard).
+     * blocker: red-health projects I PM or belong to.
      *
      * @param  string $account
      * @access public
@@ -955,45 +997,11 @@ class jxcoreModel extends model
      */
     public function getWelcomeAlerts(string $account): array
     {
-        $this->ensureSchema();
         $alerts = array('pendingStage' => 0, 'overdue' => 0, 'blocker' => 0, 'task' => 0);
         if($account === '') return $alerts;
 
-        $today = helper::today();
-
-        $ownerProjects = array();
-        foreach(array(TABLE_JX_REGISTRATION, TABLE_JX_MARKETACCESS, TABLE_JX_ADMISSION) as $table)
-        {
-            $pairs = $this->dao->select('project')->from($table)
-                ->where('deleted')->eq(0)
-                ->andWhere('owner')->eq($account)
-                ->andWhere('project')->ne(0)
-                ->fetchPairs('project', 'project');
-            if($pairs) $ownerProjects += $pairs;
-        }
-
-        $pmProjects = $this->dao->select('id')->from(TABLE_PROJECT)
-            ->where('deleted')->eq(0)
-            ->andWhere('type')->eq('project')
-            ->andWhere('PM')->eq($account)
-            ->fetchPairs('id', 'id');
-        $myProjects = $ownerProjects + (array)$pmProjects;
-
-        if($myProjects)
-        {
-            $rows = $this->dao->select('t1.health, t1.blocker, t2.end, t2.status AS projectStatus')
-                ->from(TABLE_JX_PROJECT)->alias('t1')
-                ->leftJoin(TABLE_PROJECT)->alias('t2')->on('t1.project = t2.id')
-                ->where('t1.deleted')->eq(0)
-                ->andWhere('t2.deleted')->eq(0)
-                ->andWhere('t1.project')->in($myProjects)
-                ->fetchAll();
-            foreach($rows as $row)
-            {
-                if($row->end && $row->end < $today && !in_array($row->projectStatus, array('closed', 'done'))) $alerts['overdue']++;
-                if($row->health == 'red' || !empty($row->blocker)) $alerts['blocker']++;
-            }
-        }
+        $today      = helper::today();
+        $redOverdue = (int)($this->config->jxboard->redOverdueTasks ?? 3);
 
         $todoQuery = $this->dao->select('id')->from(TABLE_TODO)
             ->where('deleted')->eq('0')
@@ -1013,6 +1021,48 @@ class jxcoreModel extends model
             ->andWhere('t1.status')->notin(array('closed', 'cancel'));
         if(!empty($this->config->vision)) $workQuery->andWhere('t1.vision')->eq($this->config->vision);
         $alerts['pendingStage'] = (int)$workQuery->count();
+
+        $pmProjects = $this->dao->select('id')->from(TABLE_PROJECT)
+            ->where('deleted')->eq(0)
+            ->andWhere('type')->eq('project')
+            ->andWhere('PM')->eq($account)
+            ->fetchPairs('id', 'id');
+        $teamProjects = $this->dao->select('root')->from(TABLE_TEAM)
+            ->where('type')->eq('project')
+            ->andWhere('account')->eq($account)
+            ->fetchPairs('root', 'root');
+        $myProjects = array_filter(array_unique(array_map('intval', array_merge((array)$pmProjects, (array)$teamProjects))));
+        if(!$this->app->user->admin && isset($this->app->user->view->projects) && $this->app->user->view->projects !== '')
+        {
+            $viewIds = array_filter(array_map('intval', explode(',', (string)$this->app->user->view->projects)));
+            $myProjects = array_values(array_intersect($myProjects, $viewIds));
+        }
+        if(!$myProjects) return $alerts;
+
+        $projects = $this->dao->select('id, end, status')->from(TABLE_PROJECT)
+            ->where('id')->in($myProjects)
+            ->andWhere('deleted')->eq('0')
+            ->andWhere('type')->eq('project')
+            ->fetchAll('id');
+        $overdueByProject = $this->dao->select('project, COUNT(id) AS `count`')->from(TABLE_TASK)
+            ->where('deleted')->eq('0')
+            ->andWhere('isParent')->eq('0')
+            ->andWhere('project')->in($myProjects)
+            ->andWhere('deadline')->ne('0000-00-00')
+            ->andWhere('deadline')->lt($today)
+            ->andWhere('status')->in('wait,doing,pause')
+            ->groupBy('project')
+            ->fetchPairs('project', 'count');
+
+        foreach($projects as $project)
+        {
+            $closed = in_array($project->status, array('closed', 'done'), true);
+            $hasEnd = !empty($project->end) && $project->end !== '0000-00-00';
+            $delay  = ($hasEnd && !$closed && $project->end < $today);
+            $overdueCount = (int)($overdueByProject[(int)$project->id] ?? 0);
+            if($delay) $alerts['overdue']++;
+            if(!$closed && ($delay || $overdueCount >= $redOverdue)) $alerts['blocker']++;
+        }
 
         return $alerts;
     }

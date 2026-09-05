@@ -1,4 +1,5 @@
 <?php
+global $config;
 if(!isset($lang->jxproduct))      $lang->jxproduct      = new stdclass();
 if(!isset($lang->jxregistration)) $lang->jxregistration = new stdclass();
 if(!isset($lang->jxmarketaccess)) $lang->jxmarketaccess = new stdclass();
@@ -89,9 +90,33 @@ $lang->jxcore->submitstage  = '提交阶段门';
 $lang->jxcore->approvestage = '审批阶段门';
 $lang->jxcore->addcost      = '登记费用';
 
-$blocked = array('qa','bug','testcase','testtask','testsuite','testreport','caselib','repo','git','gitlab','gogs','gitea','gitfox','jenkins','pipeline','codescan','ppm','ci','compile','sonarqube','zahost','zanode','build','release','projectrelease','projectbuild','branch','space','artifact','design');
+$blocked = !empty($config->jenshin->blockedModules) && is_array($config->jenshin->blockedModules)
+    ? $config->jenshin->blockedModules
+    : array('qa','bug','testcase','testtask','testsuite','testreport','caselib','repo','git','gitlab','gogs','gitea','gitfox','jenkins','pipeline','codescan','ppm','ci','compile','sonarqube','zahost','zanode','build','release','projectrelease','projectbuild','branch','space','artifact','design');
 foreach($blocked as $mod)
 {
     if(isset($lang->resource->$mod)) unset($lang->resource->$mod);
 }
-if(isset($lang->resource->execution->importBug)) unset($lang->resource->execution->importBug);
+if(isset($lang->resource->execution))
+{
+    foreach(array('importBug', 'bug', 'testcase', 'testtask', 'testreport', 'build') as $jxMethod)
+    {
+        if(isset($lang->resource->execution->$jxMethod)) unset($lang->resource->execution->$jxMethod);
+    }
+}
+if(isset($lang->resource->project))
+{
+    foreach(array('bug', 'testcase', 'testtask', 'testreport', 'build', 'release') as $jxMethod)
+    {
+        if(isset($lang->resource->project->$jxMethod)) unset($lang->resource->project->$jxMethod);
+    }
+}
+
+/* 现网不开放事项菜单时，权限组也不列出对应权限点，避免勾了没有入口。 */
+if(empty($config->jenshin->enableLegacyBizMenus))
+{
+    foreach(array('jxproduct', 'jxregistration', 'jxmarketaccess', 'jxadmission', 'jxdashboard', 'jxcore') as $jxMod)
+    {
+        if(isset($lang->resource->$jxMod)) unset($lang->resource->$jxMod);
+    }
+}
