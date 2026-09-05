@@ -1,4 +1,6 @@
 <?php
+$lang->block->experience = 'Try now';
+
 $lang->block->welcome->assignList = array();
 $lang->block->welcome->assignList['task']         = 'Open Todos';
 $lang->block->welcome->assignList['pendingStage'] = 'Open Tasks';

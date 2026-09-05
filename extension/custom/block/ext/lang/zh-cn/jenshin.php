@@ -19,6 +19,8 @@ $lang->block->themes['green']      = '叶兰绿';
 $lang->block->themes['red']        = '赤诚红';
 $lang->block->themes['blackberry'] = '黑莓黑';
 
+$lang->block->experience = '立即体验';
+
 $lang->block->welcome->reviewByMe = '待我审批';
 $lang->block->welcome->assignToMe = '需关注';
 

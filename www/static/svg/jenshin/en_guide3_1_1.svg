@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="800" height="460" viewBox="0 0 800 460" fill="none" xmlns="http://www.w3.org/2000/svg">
+
+  <rect width="800" height="460" fill="#FCFDFE"/>
+  <defs>
+    <linearGradient id="jxBg3" x1="0" y1="0" x2="480" y2="460" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#1E1850"/><stop offset="1" stop-color="#322877"/>
+    </linearGradient>
+  </defs>
+  <rect width="480" height="460" fill="url(#jxBg3)"/>
+  <text x="36" y="48" fill="#D7D0FF" font-family="Segoe UI, sans-serif" font-size="13">Stage tasks</text><text x="36" y="76" fill="#FFFFFF" font-family="Segoe UI, sans-serif" font-size="18" font-weight="700">Finish work inside the stage</text>
+  <rect x="36" y="100" width="408" height="272" rx="14" fill="#FFFFFF" fill-opacity=".1"/>
+  <text x="52" y="128" fill="#B8ACFE" font-family="Segoe UI, sans-serif" font-size="12">Stage V1.0</text>
+  <rect x="340" y="110" width="80" height="24" rx="12" fill="#6C5CE7"/>
+  <text x="352" y="127" fill="#FFFFFF" font-family="Segoe UI, sans-serif" font-size="12">New task</text>
+  <rect x="52" y="148" width="376" height="56" rx="10" fill="#FFFFFF" fill-opacity=".08"/>
+  <text x="68" y="170" fill="#FFFFFF" font-family="Segoe UI, sans-serif" font-size="13">Cockpit and budget approval loop</text><text x="68" y="190" fill="#B8ACFE" font-family="Segoe UI, sans-serif" font-size="12">Doing    Assigned to me    8h est.</text>
+  <rect x="52" y="214" width="376" height="56" rx="10" fill="#FFFFFF" fill-opacity=".08"/>
+  <text x="68" y="236" fill="#FFFFFF" font-family="Segoe UI, sans-serif" font-size="13">Check product archive fields</text><text x="68" y="256" fill="#B8ACFE" font-family="Segoe UI, sans-serif" font-size="12">Wait    Start when ready    4h est.</text>
+  <rect x="52" y="280" width="376" height="56" rx="10" fill="#FFFFFF" fill-opacity=".08"/>
+  <text x="68" y="302" fill="#FFFFFF" font-family="Segoe UI, sans-serif" font-size="13">File meeting notes in Docs</text><text x="68" y="322" fill="#86EFAC" font-family="Segoe UI, sans-serif" font-size="12">Done    Log effort, then close</text>
+  <rect x="56" y="404" width="268" height="28" rx="14" fill="#6C5CE7"/>
+  <text x="76" y="423" fill="#FFFFFF" font-family="Segoe UI, sans-serif" font-size="12">Assign, start, finish; back to workbench</text>
+  <circle cx="216" cy="444" r="4" fill="#FFFFFF" fill-opacity=".35"/>
+  <circle cx="232" cy="444" r="4" fill="#FFFFFF" fill-opacity=".35"/>
+  <circle cx="248" cy="444" r="4" fill="#FFFFFF"/>
+  <circle cx="264" cy="444" r="4" fill="#FFFFFF" fill-opacity=".35"/>
+  <text x="508" y="72" fill="#0E0B23" font-family="Segoe UI, sans-serif" font-size="20" font-weight="700">Finish work inside the stage</text><text x="508" y="104" fill="#5E626D" font-family="Segoe UI, sans-serif" font-size="13">Assign, start, complete; progress returns here.</text>
+  <circle cx="516" cy="150" r="7" fill="#6C5CE7"/><path d="M513.2 150.1l1.8 1.8 4-4" stroke="#fff" stroke-width="1.4" fill="none" stroke-linecap="round"/>
+  <text x="532" y="155" fill="#3C4353" font-family="Segoe UI, sans-serif" font-size="13">Create and assign tasks in a stage</text>
+  <circle cx="516" cy="190" r="7" fill="#6C5CE7"/><path d="M513.2 190.1l1.8 1.8 4-4" stroke="#fff" stroke-width="1.4" fill="none" stroke-linecap="round"/>
+  <text x="532" y="195" fill="#3C4353" font-family="Segoe UI, sans-serif" font-size="13">Log effort when you start or finish</text>
+  <circle cx="516" cy="230" r="7" fill="#6C5CE7"/><path d="M513.2 230.1l1.8 1.8 4-4" stroke="#fff" stroke-width="1.4" fill="none" stroke-linecap="round"/>
+  <text x="532" y="235" fill="#3C4353" font-family="Segoe UI, sans-serif" font-size="13">Workbench opens tasks assigned to you</text>
+  <circle cx="516" cy="270" r="7" fill="#6C5CE7"/><path d="M513.2 270.1l1.8 1.8 4-4" stroke="#fff" stroke-width="1.4" fill="none" stroke-linecap="round"/>
+  <text x="532" y="275" fill="#3C4353" font-family="Segoe UI, sans-serif" font-size="13">Top bar Review shows pending items</text>
+  <circle cx="516" cy="310" r="7" fill="#6C5CE7"/><path d="M513.2 310.1l1.8 1.8 4-4" stroke="#fff" stroke-width="1.4" fill="none" stroke-linecap="round"/>
+  <text x="532" y="315" fill="#3C4353" font-family="Segoe UI, sans-serif" font-size="13">Put working files in Docs</text>
+  <circle cx="516" cy="350" r="7" fill="#6C5CE7"/><path d="M513.2 350.1l1.8 1.8 4-4" stroke="#fff" stroke-width="1.4" fill="none" stroke-linecap="round"/>
+  <text x="532" y="355" fill="#3C4353" font-family="Segoe UI, sans-serif" font-size="13">Use the board for overdue, not lists</text>
+
+</svg>

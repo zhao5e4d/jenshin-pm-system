@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="800" height="460" viewBox="0 0 800 460" fill="none" xmlns="http://www.w3.org/2000/svg">
+
+  <rect width="800" height="460" fill="#FCFDFE"/>
+  <defs>
+    <linearGradient id="jxBg3" x1="0" y1="0" x2="480" y2="460" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#1E1850"/><stop offset="1" stop-color="#322877"/>
+    </linearGradient>
+  </defs>
+  <rect width="480" height="460" fill="url(#jxBg3)"/>
+  <text x="36" y="48" fill="#D7D0FF" font-family="Microsoft YaHei, PingFang SC, sans-serif" font-size="13">阶段任务</text><text x="36" y="76" fill="#FFFFFF" font-family="Microsoft YaHei, PingFang SC, sans-serif" font-size="18" font-weight="700">日常在阶段里把任务做完</text>
+  <rect x="36" y="100" width="408" height="272" rx="14" fill="#FFFFFF" fill-opacity=".1"/>
+  <text x="52" y="128" fill="#B8ACFE" font-family="Microsoft YaHei, PingFang SC, sans-serif" font-size="12">阶段 V1.0</text>
+  <rect x="340" y="110" width="80" height="24" rx="12" fill="#6C5CE7"/>
+  <text x="354" y="127" fill="#FFFFFF" font-family="Microsoft YaHei, PingFang SC, sans-serif" font-size="12">建任务</text>
+  <rect x="52" y="148" width="376" height="56" rx="10" fill="#FFFFFF" fill-opacity=".08"/>
+  <text x="68" y="170" fill="#FFFFFF" font-family="Microsoft YaHei, PingFang SC, sans-serif" font-size="13">驾驶舱与预算审批闭环</text><text x="68" y="190" fill="#B8ACFE" font-family="Microsoft YaHei, PingFang SC, sans-serif" font-size="12">进行中    指派给我    预计 8h</text>
+  <rect x="52" y="214" width="376" height="56" rx="10" fill="#FFFFFF" fill-opacity=".08"/>
+  <text x="68" y="236" fill="#FFFFFF" font-family="Microsoft YaHei, PingFang SC, sans-serif" font-size="13">产品档案字段核对</text><text x="68" y="256" fill="#B8ACFE" font-family="Microsoft YaHei, PingFang SC, sans-serif" font-size="12">未开始    可点开始    预计 4h</text>
+  <rect x="52" y="280" width="376" height="56" rx="10" fill="#FFFFFF" fill-opacity=".08"/>
+  <text x="68" y="302" fill="#FFFFFF" font-family="Microsoft YaHei, PingFang SC, sans-serif" font-size="13">会议纪要归档到文档空间</text><text x="68" y="322" fill="#86EFAC" font-family="Microsoft YaHei, PingFang SC, sans-serif" font-size="12">已完成    填写消耗后关闭</text>
+  <rect x="56" y="404" width="248" height="28" rx="14" fill="#6C5CE7"/>
+  <text x="76" y="423" fill="#FFFFFF" font-family="Microsoft YaHei, PingFang SC, sans-serif" font-size="12">指派、开始、完成，回到工作台</text>
+  <circle cx="216" cy="444" r="4" fill="#FFFFFF" fill-opacity=".35"/>
+  <circle cx="232" cy="444" r="4" fill="#FFFFFF" fill-opacity=".35"/>
+  <circle cx="248" cy="444" r="4" fill="#FFFFFF"/>
+  <circle cx="264" cy="444" r="4" fill="#FFFFFF" fill-opacity=".35"/>
+  <text x="508" y="72" fill="#0E0B23" font-family="Microsoft YaHei, PingFang SC, sans-serif" font-size="20" font-weight="700">日常在阶段里把任务做完</text><text x="508" y="104" fill="#5E626D" font-family="Microsoft YaHei, PingFang SC, sans-serif" font-size="13">指派、开始、完成，进度回到工作台。</text>
+  <circle cx="516" cy="150" r="7" fill="#6C5CE7"/><path d="M513.2 150.1l1.8 1.8 4-4" stroke="#fff" stroke-width="1.4" fill="none" stroke-linecap="round"/>
+  <text x="532" y="155" fill="#3C4353" font-family="Microsoft YaHei, PingFang SC, sans-serif" font-size="13">在阶段里建任务并指派</text>
+  <circle cx="516" cy="190" r="7" fill="#6C5CE7"/><path d="M513.2 190.1l1.8 1.8 4-4" stroke="#fff" stroke-width="1.4" fill="none" stroke-linecap="round"/>
+  <text x="532" y="195" fill="#3C4353" font-family="Microsoft YaHei, PingFang SC, sans-serif" font-size="13">开始、完成时填写消耗</text>
+  <circle cx="516" cy="230" r="7" fill="#6C5CE7"/><path d="M513.2 230.1l1.8 1.8 4-4" stroke="#fff" stroke-width="1.4" fill="none" stroke-linecap="round"/>
+  <text x="532" y="235" fill="#3C4353" font-family="Microsoft YaHei, PingFang SC, sans-serif" font-size="13">工作台进「待处理任务」</text>
+  <circle cx="516" cy="270" r="7" fill="#6C5CE7"/><path d="M513.2 270.1l1.8 1.8 4-4" stroke="#fff" stroke-width="1.4" fill="none" stroke-linecap="round"/>
+  <text x="532" y="275" fill="#3C4353" font-family="Microsoft YaHei, PingFang SC, sans-serif" font-size="13">顶栏审批看待审事项</text>
+  <circle cx="516" cy="310" r="7" fill="#6C5CE7"/><path d="M513.2 310.1l1.8 1.8 4-4" stroke="#fff" stroke-width="1.4" fill="none" stroke-linecap="round"/>
+  <text x="532" y="315" fill="#3C4353" font-family="Microsoft YaHei, PingFang SC, sans-serif" font-size="13">过程资料放到文档空间</text>
+  <circle cx="516" cy="350" r="7" fill="#6C5CE7"/><path d="M513.2 350.1l1.8 1.8 4-4" stroke="#fff" stroke-width="1.4" fill="none" stroke-linecap="round"/>
+  <text x="532" y="355" fill="#3C4353" font-family="Microsoft YaHei, PingFang SC, sans-serif" font-size="13">看板看逾期，不用翻列表</text>
+
+</svg>

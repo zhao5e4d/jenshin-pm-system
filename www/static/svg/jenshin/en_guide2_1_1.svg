@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="800" height="460" viewBox="0 0 800 460" fill="none" xmlns="http://www.w3.org/2000/svg">
+
+  <rect width="800" height="460" fill="#FCFDFE"/>
+  <defs>
+    <linearGradient id="jxBg2" x1="0" y1="0" x2="480" y2="460" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#171338"/><stop offset="1" stop-color="#4A39B4"/>
+    </linearGradient>
+  </defs>
+  <rect width="480" height="460" fill="url(#jxBg2)"/>
+  <circle cx="40" cy="60" r="80" fill="#2DD4BF" fill-opacity=".12"/>
+  <text x="36" y="48" fill="#D7D0FF" font-family="Segoe UI, sans-serif" font-size="13">Products</text><text x="36" y="76" fill="#FFFFFF" font-family="Segoe UI, sans-serif" font-size="18" font-weight="700">Archive first, then a project</text>
+  <rect x="36" y="100" width="408" height="196" rx="14" fill="#FFFFFF" fill-opacity=".1"/>
+  <text x="52" y="126" fill="#B8ACFE" font-family="Segoe UI, sans-serif" font-size="12">Product list</text><text x="52" y="154" fill="#FFFFFF" font-family="Segoe UI, sans-serif" font-size="13">JX-WS80    Class II    Cert 2026</text>
+  <rect x="320" y="140" width="52" height="18" rx="9" fill="#FBBF24"/>
+  <text x="328" y="153" fill="#0E0B23" font-family="Segoe UI, sans-serif" font-size="11" font-weight="700">Soon</text><text x="52" y="182" fill="#FFFFFF" font-family="Segoe UI, sans-serif" font-size="13">JX-BB18    Class III    Cert 2025</text><text x="52" y="210" fill="#D7D0FF" font-family="Segoe UI, sans-serif" font-size="12">Model · class · cert No. · expiry</text><text x="52" y="236" fill="#D7D0FF" font-family="Segoe UI, sans-serif" font-size="12">Expires in 90 days: orange “Soon”</text><text x="52" y="270" fill="#B8ACFE" font-family="Segoe UI, sans-serif" font-size="12">Clear files keep certs and progress aligned</text>
+  <rect x="36" y="308" width="196" height="72" rx="14" fill="#FFFFFF" fill-opacity=".12"/>
+  <text x="52" y="336" fill="#2DD4BF" font-family="Segoe UI, sans-serif" font-size="12">Create project</text><text x="52" y="362" fill="#FFFFFF" font-family="Segoe UI, sans-serif" font-size="13">Product  /  Project type</text>
+  <rect x="248" y="308" width="196" height="72" rx="14" fill="#FFFFFF" fill-opacity=".12"/>
+  <text x="264" y="336" fill="#9384FB" font-family="Segoe UI, sans-serif" font-size="12">Add a stage</text><text x="264" y="362" fill="#FFFFFF" font-family="Segoe UI, sans-serif" font-size="13">Short  /  Long  /  Ops</text>
+  <rect x="56" y="404" width="268" height="28" rx="14" fill="#6C5CE7"/>
+  <text x="76" y="423" fill="#FFFFFF" font-family="Segoe UI, sans-serif" font-size="12">Clear archives keep projects on track</text>
+  <circle cx="216" cy="444" r="4" fill="#FFFFFF" fill-opacity=".35"/>
+  <circle cx="232" cy="444" r="4" fill="#FFFFFF"/>
+  <circle cx="248" cy="444" r="4" fill="#FFFFFF" fill-opacity=".35"/>
+  <circle cx="264" cy="444" r="4" fill="#FFFFFF" fill-opacity=".35"/>
+  <text x="508" y="72" fill="#0E0B23" font-family="Segoe UI, sans-serif" font-size="18" font-weight="700">Archive first, then project and stage</text><text x="508" y="104" fill="#5E626D" font-family="Segoe UI, sans-serif" font-size="13">Clear product files keep certs and progress aligned.</text>
+  <circle cx="516" cy="150" r="7" fill="#6C5CE7"/><path d="M513.2 150.1l1.8 1.8 4-4" stroke="#fff" stroke-width="1.4" fill="none" stroke-linecap="round"/>
+  <text x="532" y="155" fill="#3C4353" font-family="Segoe UI, sans-serif" font-size="13">File: model, class, cert, expiry</text>
+  <circle cx="516" cy="190" r="7" fill="#6C5CE7"/><path d="M513.2 190.1l1.8 1.8 4-4" stroke="#fff" stroke-width="1.4" fill="none" stroke-linecap="round"/>
+  <text x="532" y="195" fill="#3C4353" font-family="Segoe UI, sans-serif" font-size="13">Certs due in 90 days show “Soon”</text>
+  <circle cx="516" cy="230" r="7" fill="#6C5CE7"/><path d="M513.2 230.1l1.8 1.8 4-4" stroke="#fff" stroke-width="1.4" fill="none" stroke-linecap="round"/>
+  <text x="532" y="235" fill="#3C4353" font-family="Segoe UI, sans-serif" font-size="13">Create: product or project type</text>
+  <circle cx="516" cy="270" r="7" fill="#6C5CE7"/><path d="M513.2 270.1l1.8 1.8 4-4" stroke="#fff" stroke-width="1.4" fill="none" stroke-linecap="round"/>
+  <text x="532" y="275" fill="#3C4353" font-family="Segoe UI, sans-serif" font-size="13">Link an archived product when you can</text>
+  <circle cx="516" cy="310" r="7" fill="#6C5CE7"/><path d="M513.2 310.1l1.8 1.8 4-4" stroke="#fff" stroke-width="1.4" fill="none" stroke-linecap="round"/>
+  <text x="532" y="315" fill="#3C4353" font-family="Segoe UI, sans-serif" font-size="13">Add stages: short / long / ops</text>
+  <circle cx="516" cy="350" r="7" fill="#6C5CE7"/><path d="M513.2 350.1l1.8 1.8 4-4" stroke="#fff" stroke-width="1.4" fill="none" stroke-linecap="round"/>
+  <text x="532" y="355" fill="#3C4353" font-family="Segoe UI, sans-serif" font-size="13">Stage Tasks lists every stage</text>
+
+</svg>

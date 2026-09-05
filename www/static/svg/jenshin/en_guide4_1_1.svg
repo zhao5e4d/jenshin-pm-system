@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="800" height="460" viewBox="0 0 800 460" fill="none" xmlns="http://www.w3.org/2000/svg">
+
+  <rect width="800" height="460" fill="#FCFDFE"/>
+  <defs>
+    <linearGradient id="jxBg4" x1="0" y1="0" x2="480" y2="460" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#221C4F"/><stop offset="1" stop-color="#5B49D6"/>
+    </linearGradient>
+  </defs>
+  <rect width="480" height="460" fill="url(#jxBg4)"/>
+  <text x="36" y="48" fill="#D7D0FF" font-family="Segoe UI, sans-serif" font-size="13">Start</text><text x="36" y="76" fill="#FFFFFF" font-family="Segoe UI, sans-serif" font-size="18" font-weight="700">Three steps to get a project moving</text>
+  <rect x="36" y="104" width="408" height="80" rx="14" fill="#FFFFFF" fill-opacity=".12"/>
+  <circle cx="68" cy="144" r="16" fill="#6C5CE7"/>
+  <text x="63" y="149" fill="#FFFFFF" font-family="Segoe UI, sans-serif" font-size="16" font-weight="700">1</text>
+  <text x="96" y="136" fill="#FFFFFF" font-family="Segoe UI, sans-serif" font-size="15" font-weight="700">Create or confirm the product file</text><text x="96" y="160" fill="#D7D0FF" font-family="Segoe UI, sans-serif" font-size="12">Model, certificate, and expiry first</text>
+  <rect x="36" y="196" width="408" height="80" rx="14" fill="#FFFFFF" fill-opacity=".12"/>
+  <circle cx="68" cy="236" r="16" fill="#6C5CE7"/>
+  <text x="63" y="241" fill="#FFFFFF" font-family="Segoe UI, sans-serif" font-size="16" font-weight="700">2</text>
+  <text x="96" y="228" fill="#FFFFFF" font-family="Segoe UI, sans-serif" font-size="15" font-weight="700">Create a project and add stages</text><text x="96" y="252" fill="#D7D0FF" font-family="Segoe UI, sans-serif" font-size="12">Link the archived product, then split stages</text>
+  <rect x="36" y="288" width="408" height="80" rx="14" fill="#FFFFFF" fill-opacity=".12"/>
+  <circle cx="68" cy="328" r="16" fill="#2DD4BF"/>
+  <text x="63" y="333" fill="#0E0B23" font-family="Segoe UI, sans-serif" font-size="16" font-weight="700">3</text>
+  <text x="96" y="320" fill="#FFFFFF" font-family="Segoe UI, sans-serif" font-size="15" font-weight="700">Drive tasks, watch risk on the board</text><text x="96" y="344" fill="#D7D0FF" font-family="Segoe UI, sans-serif" font-size="12">Assign and finish; overdue and health return</text>
+  <rect x="56" y="404" width="280" height="28" rx="14" fill="#6C5CE7"/>
+  <text x="76" y="423" fill="#FFFFFF" font-family="Segoe UI, sans-serif" font-size="12">Archive  →  project  →  drive tasks</text>
+  <circle cx="216" cy="444" r="4" fill="#FFFFFF" fill-opacity=".35"/>
+  <circle cx="232" cy="444" r="4" fill="#FFFFFF" fill-opacity=".35"/>
+  <circle cx="248" cy="444" r="4" fill="#FFFFFF" fill-opacity=".35"/>
+  <circle cx="264" cy="444" r="4" fill="#FFFFFF"/>
+  <text x="508" y="72" fill="#0E0B23" font-family="Segoe UI, sans-serif" font-size="20" font-weight="700">Three steps, ready to use</text><text x="508" y="104" fill="#5E626D" font-family="Segoe UI, sans-serif" font-size="13">From archive to progress, back on the workbench.</text>
+  <circle cx="516" cy="150" r="7" fill="#6C5CE7"/><path d="M513.2 150.1l1.8 1.8 4-4" stroke="#fff" stroke-width="1.4" fill="none" stroke-linecap="round"/>
+  <text x="532" y="155" fill="#3C4353" font-family="Segoe UI, sans-serif" font-size="13">Products: archive, then link a project</text>
+  <circle cx="516" cy="190" r="7" fill="#6C5CE7"/><path d="M513.2 190.1l1.8 1.8 4-4" stroke="#fff" stroke-width="1.4" fill="none" stroke-linecap="round"/>
+  <text x="532" y="195" fill="#3C4353" font-family="Segoe UI, sans-serif" font-size="13">Projects: create and link a product</text>
+  <circle cx="516" cy="230" r="7" fill="#6C5CE7"/><path d="M513.2 230.1l1.8 1.8 4-4" stroke="#fff" stroke-width="1.4" fill="none" stroke-linecap="round"/>
+  <text x="532" y="235" fill="#3C4353" font-family="Segoe UI, sans-serif" font-size="13">Stages: assign and finish tasks</text>
+  <circle cx="516" cy="270" r="7" fill="#6C5CE7"/><path d="M513.2 270.1l1.8 1.8 4-4" stroke="#fff" stroke-width="1.4" fill="none" stroke-linecap="round"/>
+  <text x="532" y="275" fill="#3C4353" font-family="Segoe UI, sans-serif" font-size="13">Workbench: attention at a glance</text>
+  <circle cx="516" cy="310" r="7" fill="#6C5CE7"/><path d="M513.2 310.1l1.8 1.8 4-4" stroke="#fff" stroke-width="1.4" fill="none" stroke-linecap="round"/>
+  <text x="532" y="315" fill="#3C4353" font-family="Segoe UI, sans-serif" font-size="13">Four board views for health</text>
+  <circle cx="516" cy="350" r="7" fill="#6C5CE7"/><path d="M513.2 350.1l1.8 1.8 4-4" stroke="#fff" stroke-width="1.4" fill="none" stroke-linecap="round"/>
+  <text x="532" y="355" fill="#3C4353" font-family="Segoe UI, sans-serif" font-size="13">Product list shows certs due soon</text>
+
+</svg>

@@ -35,6 +35,8 @@ $config->jenshin->langs = array(
 $config->langs = $config->jenshin->langs;
 
 /* 首页 1.0 引导：extension/custom/misc/ext/config/jenshin.php，配图 www/static/svg/jenshin/ */
+/* 点「立即体验」记已读；未进权限表，登录用户都要能调。 */
+$config->logonMethods[] = 'misc.ajaxdismissfeaturenotice';
 
 /* 默认萱萱紫：与当前靛紫玻璃语言同一套色阶。 */
 if(isset($config->default)) $config->default->theme = 'purple';

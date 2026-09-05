@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="800" height="460" viewBox="0 0 800 460" fill="none" xmlns="http://www.w3.org/2000/svg">
+
+  <rect width="800" height="460" fill="#FCFDFE"/>
+  <defs>
+    <linearGradient id="jxBg" x1="0" y1="0" x2="480" y2="460" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#1E1850"/><stop offset="1" stop-color="#4A39B4"/>
+    </linearGradient>
+    <linearGradient id="jxCard" x1="36" y1="72" x2="444" y2="360" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFFFFF" stop-opacity=".16"/><stop offset="1" stop-color="#FFFFFF" stop-opacity=".06"/>
+    </linearGradient>
+  </defs>
+  <rect width="480" height="460" fill="url(#jxBg)"/>
+  <circle cx="420" cy="40" r="90" fill="#6C5CE7" fill-opacity=".28"/>
+  <circle cx="60" cy="400" r="70" fill="#2DD4BF" fill-opacity=".16"/>
+  <rect x="36" y="28" width="408" height="36" rx="10" fill="#FFFFFF" fill-opacity=".08"/>
+  <circle cx="54" cy="46" r="8" fill="#2DD4BF"/>
+  <text x="70" y="51" fill="#F4F3FF" font-family="Microsoft YaHei, PingFang SC, sans-serif" font-size="14" font-weight="700">健忻医疗项目</text><text x="250" y="51" fill="#D7D0FF" font-family="Microsoft YaHei, PingFang SC, sans-serif" font-size="12">工作台  1.0</text>
+  <rect x="36" y="80" width="408" height="72" rx="14" fill="url(#jxCard)" stroke="#FFFFFF" stroke-opacity=".18"/>
+  <text x="56" y="108" fill="#FFFFFF" font-family="Microsoft YaHei, PingFang SC, sans-serif" font-size="18" font-weight="700">欢迎使用健忻 1.0</text><text x="56" y="134" fill="#D7D0FF" font-family="Microsoft YaHei, PingFang SC, sans-serif" font-size="13">先看需关注，再进具体项目</text>
+  <rect x="36" y="164" width="196" height="68" rx="12" fill="#FFFFFF" fill-opacity=".12"/>
+  <text x="52" y="188" fill="#B8ACFE" font-family="Microsoft YaHei, PingFang SC, sans-serif" font-size="12">待办日程</text><text x="52" y="218" fill="#FFFFFF" font-family="Microsoft YaHei, PingFang SC, sans-serif" font-size="24" font-weight="700">2</text>
+  <rect x="248" y="164" width="196" height="68" rx="12" fill="#FFFFFF" fill-opacity=".12"/>
+  <text x="264" y="188" fill="#B8ACFE" font-family="Microsoft YaHei, PingFang SC, sans-serif" font-size="12">待处理任务</text><text x="264" y="218" fill="#FFFFFF" font-family="Microsoft YaHei, PingFang SC, sans-serif" font-size="24" font-weight="700">3</text>
+  <rect x="36" y="240" width="196" height="68" rx="12" fill="#FFFFFF" fill-opacity=".12"/>
+  <text x="52" y="264" fill="#B8ACFE" font-family="Microsoft YaHei, PingFang SC, sans-serif" font-size="12">逾期项目</text><text x="52" y="294" fill="#FFFFFF" font-family="Microsoft YaHei, PingFang SC, sans-serif" font-size="24" font-weight="700">1</text>
+  <rect x="248" y="240" width="196" height="68" rx="12" fill="#FFFFFF" fill-opacity=".12"/>
+  <text x="264" y="264" fill="#B8ACFE" font-family="Microsoft YaHei, PingFang SC, sans-serif" font-size="12">风险项目</text><text x="264" y="294" fill="#FFFFFF" font-family="Microsoft YaHei, PingFang SC, sans-serif" font-size="24" font-weight="700">1</text>
+  <rect x="36" y="320" width="408" height="72" rx="12" fill="#FFFFFF" fill-opacity=".1"/>
+  <rect x="52" y="336" width="8" height="8" rx="4" fill="#2DD4BF"/>
+  <text x="68" y="345" fill="#F4F3FF" font-family="Microsoft YaHei, PingFang SC, sans-serif" font-size="12">待处理任务  驾驶舱与预算审批</text>
+  <rect x="52" y="356" width="8" height="8" rx="4" fill="#FBBF24"/>
+  <text x="68" y="365" fill="#F4F3FF" font-family="Microsoft YaHei, PingFang SC, sans-serif" font-size="12">逾期项目  实验室管理系统</text>
+  <rect x="52" y="376" width="8" height="8" rx="4" fill="#FB7185"/>
+  <text x="68" y="385" fill="#F4F3FF" font-family="Microsoft YaHei, PingFang SC, sans-serif" font-size="12">证照临期  有效期不足 90 天</text>
+  <rect x="56" y="404" width="232" height="28" rx="14" fill="#6C5CE7"/>
+  <text x="76" y="423" fill="#FFFFFF" font-family="Microsoft YaHei, PingFang SC, sans-serif" font-size="12">工作台一眼看到该做什么</text>
+  <circle cx="216" cy="444" r="4" fill="#FFFFFF"/>
+  <circle cx="232" cy="444" r="4" fill="#FFFFFF" fill-opacity=".35"/>
+  <circle cx="248" cy="444" r="4" fill="#FFFFFF" fill-opacity=".35"/>
+  <circle cx="264" cy="444" r="4" fill="#FFFFFF" fill-opacity=".35"/>
+  <text x="508" y="72" fill="#0E0B23" font-family="Microsoft YaHei, PingFang SC, sans-serif" font-size="20" font-weight="700">健忻 1.0，医疗项目管理</text><text x="508" y="104" fill="#5E626D" font-family="Microsoft YaHei, PingFang SC, sans-serif" font-size="13">产品、项目、阶段任务和看板，集中在一个工作台。</text>
+  <circle cx="516" cy="142" r="7" fill="#6C5CE7"/><path d="M513.2 142.1l1.8 1.8 4-4" stroke="#fff" stroke-width="1.4" fill="none" stroke-linecap="round"/>
+  <text x="532" y="147" fill="#3C4353" font-family="Microsoft YaHei, PingFang SC, sans-serif" font-size="13">工作台：看待办、逾期与风险</text>
+  <circle cx="516" cy="176" r="7" fill="#6C5CE7"/><path d="M513.2 176.1l1.8 1.8 4-4" stroke="#fff" stroke-width="1.4" fill="none" stroke-linecap="round"/>
+  <text x="532" y="181" fill="#3C4353" font-family="Microsoft YaHei, PingFang SC, sans-serif" font-size="13">产品组合：维护档案与临期</text>
+  <circle cx="516" cy="210" r="7" fill="#6C5CE7"/><path d="M513.2 210.1l1.8 1.8 4-4" stroke="#fff" stroke-width="1.4" fill="none" stroke-linecap="round"/>
+  <text x="532" y="215" fill="#3C4353" font-family="Microsoft YaHei, PingFang SC, sans-serif" font-size="13">项目管理：创建并关联产品</text>
+  <circle cx="516" cy="244" r="7" fill="#6C5CE7"/><path d="M513.2 244.1l1.8 1.8 4-4" stroke="#fff" stroke-width="1.4" fill="none" stroke-linecap="round"/>
+  <text x="532" y="249" fill="#3C4353" font-family="Microsoft YaHei, PingFang SC, sans-serif" font-size="13">阶段任务：建任务并推进</text>
+  <circle cx="516" cy="278" r="7" fill="#6C5CE7"/><path d="M513.2 278.1l1.8 1.8 4-4" stroke="#fff" stroke-width="1.4" fill="none" stroke-linecap="round"/>
+  <text x="532" y="283" fill="#3C4353" font-family="Microsoft YaHei, PingFang SC, sans-serif" font-size="13">数据看板：健康度与逾期</text>
+  <circle cx="516" cy="312" r="7" fill="#6C5CE7"/><path d="M513.2 312.1l1.8 1.8 4-4" stroke="#fff" stroke-width="1.4" fill="none" stroke-linecap="round"/>
+  <text x="532" y="317" fill="#3C4353" font-family="Microsoft YaHei, PingFang SC, sans-serif" font-size="13">文档空间：归档过程资料</text>
+  <circle cx="516" cy="346" r="7" fill="#6C5CE7"/><path d="M513.2 346.1l1.8 1.8 4-4" stroke="#fff" stroke-width="1.4" fill="none" stroke-linecap="round"/>
+  <text x="532" y="351" fill="#3C4353" font-family="Microsoft YaHei, PingFang SC, sans-serif" font-size="13">组织部门：查看同事归属</text>
+
+</svg>
