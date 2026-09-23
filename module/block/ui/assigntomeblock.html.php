@@ -25,11 +25,11 @@ foreach($hasViewPriv as $type => $bool)
     if($type != 'todo' && empty($data)) unset($hasViewPriv[$type]);
 }
 
-$index = 1;
-$count = count($hasViewPriv);
+$index    = 1;
+$count    = count($hasViewPriv);
+$selected = isset($hasViewPriv['task']) ? 'task' : key($hasViewPriv);
 foreach($hasViewPriv as $type => $bool)
 {
-    $selected = key($hasViewPriv);
     if(($longBlock && $count > 5 && $index > 5) || (!$longBlock && $count > 1 && $index > 1))
     {
         $moreMenus[] = array('text' => $type == 'review' ? $lang->my->audit : zget($lang->block->availableBlocks, $type), 'data-toggle' => 'tab', 'href' => "#assigntome{$type}Tab{$blockNavCode}", 'data-on' => 'click', 'data-call' => 'clickItems', 'data-params' => 'event');
@@ -160,7 +160,6 @@ foreach($hasViewPriv as $type => $bool)
 
     $config->block->review->dtable->fieldList['product']['map'] = $products;
 
-    $selected  = key($hasViewPriv);
     $contents[] = div
     (
         setClass("assigntome-{$type} tab-pane " . ($type == $selected ? 'active' : '')),
