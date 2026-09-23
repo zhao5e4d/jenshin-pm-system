@@ -57,6 +57,19 @@ $(function()
         return false;
     });
 
+    $(document).off('click.jxBoardMember').on('click.jxBoardMember', '.pm-member-head', function()
+    {
+        $(this).closest('.pm-member').toggleClass('is-open');
+    });
+    $(document).off('click.jxBoardMemberAll').on('click.jxBoardMemberAll', '.pm-member-toggle-all', function(event)
+    {
+        event.preventDefault();
+        event.stopPropagation();
+        const open = this.getAttribute('data-action') === 'expand';
+        $(this).closest('.pm-member-panel').find('.pm-member').toggleClass('is-open', open);
+        return false;
+    });
+
     const focus = document.querySelector('.pm-dash-panel.is-focus');
     if(focus && typeof focus.scrollIntoView === 'function')
     {

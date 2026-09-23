@@ -207,7 +207,7 @@ $needDeptView = !$isEmpty && $viewName == 'dept';
 $needLoad     = !$isEmpty && ($viewName == 'overview' || $viewName == 'dept');
 $needTrend    = !$isEmpty && $viewName == 'overview';
 
-$statusPanel = $productPanel = $overduePanel = $duePanel = $funnelPanel = $riskPanel = $certPanel = $portfolioPanel = $deptFullPanel = $loadPanel = $trendPanel = $midGrid = $meetingActions = null;
+$statusPanel = $productPanel = $overduePanel = $duePanel = $funnelPanel = $riskPanel = $certPanel = $portfolioPanel = $deptFullPanel = $loadPanel = $trendPanel = $midGrid = $meetingActions = $memberPanel = null;
 
 if($viewName == 'meeting')
 {
@@ -523,6 +523,7 @@ if($needDeptView)
         $deptID = (string)($stat['id'] ?? '0');
         $deptRows[] = h::tr
         (
+            setClass($deptID === $deptVal ? 'is-current-dept' : ''),
             h::td(a(set::href($boardLink($viewName, array('dept' => $deptID, 'focus' => ''))), $name)),
             h::td($stat['count']),
             h::td(number_format((float)$stat['budget'], 1)),
@@ -556,6 +557,131 @@ if($needDeptView)
     );
 }
 
+if($viewName == 'dept' && isset($memberTasks))
+{
+    if(!empty($memberTasks->needDept))
+    {
+        $memberBody = div
+        (
+            setClass('pm-panel-empty'),
+            div(setClass('pm-panel-empty-title'), $lang->jxboard->memberNeedDept),
+            div(setClass('pm-dash-empty-desc'), $lang->jxboard->memberNeedDeptTip)
+        );
+    }
+    elseif(empty($memberTasks->members))
+    {
+        $memberBody = $emptyBox($lang->jxboard->emptyMember);
+    }
+    else
+    {
+        $opened = false;
+        $memberBlocks = array();
+        foreach($memberTasks->members as $member)
+        {
+            $unfinished = (int)$member->wait + (int)$member->doing;
+            $open = !$opened && $unfinished > 0;
+            if($open) $opened = true;
+
+            $taskRows = array();
+            foreach($member->tasks as $task)
+            {
+                $statusKey = (string)$task->status;
+                $deadline  = $task->deadline !== '' ? $task->deadline : '—';
+                $finished  = $task->finishedDate !== '' ? $task->finishedDate : '—';
+                $taskRows[] = h::tr
+                (
+                    h::td(a(set::href(createLink('task', 'view', "taskID={$task->id}")), $task->name)),
+                    h::td($task->projectName),
+                    h::td($task->executionName !== '' ? $task->executionName : '—'),
+                    h::td(zget($lang->task->statusList, $statusKey, $statusKey)),
+                    h::td(setClass($task->overdue ? 'is-overdue' : ''), $deadline),
+                    h::td(number_format((float)$task->consumed, 1) . ' / ' . number_format((float)$task->estimate, 1) . ' / ' . number_format((float)$task->left, 1)),
+                    h::td($finished)
+                );
+            }
+
+            $overdueText = (int)$member->overdue > 0
+                ? span(setClass('is-overdue'), $lang->jxboard->colOverdue . ' ' . (int)$member->overdue)
+                : span($lang->jxboard->colOverdue . ' 0');
+
+            $memberBlocks[] = div
+            (
+                setClass('pm-member' . ($open ? ' is-open' : '')),
+                div
+                (
+                    setClass('pm-member-head'),
+                    span(setClass('pm-member-caret')),
+                    span(setClass('pm-member-name'), $member->realname),
+                    span
+                    (
+                        setClass('pm-member-meta'),
+                        span(sprintf($lang->jxboard->taskCount, (int)$member->total)),
+                        span(zget($lang->jxboard->funnelList, 'wait', 'wait') . ' ' . (int)$member->wait),
+                        span(zget($lang->jxboard->funnelList, 'doing', 'doing') . ' ' . (int)$member->doing),
+                        span(zget($lang->jxboard->funnelList, 'done', 'done') . ' ' . (int)$member->done),
+                        $overdueText
+                    ),
+                    div
+                    (
+                        setClass('pm-progress pm-member-rate'),
+                        div
+                        (
+                            setClass('pm-progress-track'),
+                            span(setClass('pm-progress-bar' . ((int)$member->overdue > 0 ? ' is-red' : '')), setStyle(array('width' => (float)$member->doneRate . '%')))
+                        ),
+                        span(setClass('pm-progress-num'), $member->doneRate . '%')
+                    ),
+                    span(setClass('pm-member-hours'), number_format((float)$member->consumed, 1) . ' / ' . number_format((float)$member->estimate, 1))
+                ),
+                div
+                (
+                    setClass('pm-member-body'),
+                    $taskRows ? div
+                    (
+                        setClass('pm-table-wrap'),
+                        h::table
+                        (
+                            setClass('table bordered'),
+                            h::thead(h::tr(
+                                h::th($lang->jxboard->colName),
+                                h::th($lang->jxboard->colProject),
+                                h::th($lang->jxboard->colStage),
+                                h::th($lang->jxboard->status),
+                                h::th($lang->jxboard->colDeadline),
+                                h::th($lang->jxboard->colHourSplit),
+                                h::th($lang->jxboard->colFinished)
+                            )),
+                            h::tbody($taskRows)
+                        )
+                    ) : $emptyBox($lang->jxboard->emptyMemberTasks)
+                )
+            );
+        }
+
+        $memberBody = div(setClass('pm-member-list'), $memberBlocks);
+    }
+
+    $memberTools = empty($memberTasks->members) ? null : span
+    (
+        setClass('pm-member-tools'),
+        a(setClass('pm-member-toggle-all'), set::href('#'), setData('action', 'expand'), $lang->jxboard->expandAll),
+        a(setClass('pm-member-toggle-all'), set::href('#'), setData('action', 'collapse'), $lang->jxboard->collapseAll)
+    );
+
+    $memberPanel = div
+    (
+        setClass('pm-dash-panel is-wide pm-member-panel mt-4'),
+        h::h4
+        (
+            $lang->jxboard->memberTasks,
+            !empty($memberTasks->members) ? span(setClass('pm-panel-count'), count($memberTasks->members)) : null,
+            empty($memberTasks->needDept) ? span(setClass('pm-panel-sub'), sprintf($lang->jxboard->memberPeriodHint, $memberTasks->begin, $memberTasks->end)) : null,
+            $memberTools
+        ),
+        $memberBody
+    );
+}
+
 if($viewName == 'overview' && !$isEmpty)
 {
     $midGrid = div
@@ -586,7 +712,8 @@ div
     $isEmpty ? null : $midGrid,
     (!$isEmpty && $viewName == 'dept') ? $loadPanel : null,
     (!$isEmpty && ($viewName == 'portfolio' || $viewName == 'meeting' || $viewName == 'overview')) ? $portfolioPanel : null,
-    (!$isEmpty && $viewName == 'dept') ? $deptFullPanel : null
+    (!$isEmpty && $viewName == 'dept') ? $deptFullPanel : null,
+    $viewName == 'dept' ? $memberPanel : null
 );
 
 render();

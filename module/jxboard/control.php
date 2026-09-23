@@ -109,6 +109,7 @@ class jxboard extends control
         $this->view->statusItems = $statusItems;
         $this->view->healthItems = $healthItems;
         $this->view->periodItems = $periodItems;
+        if($viewName == 'dept') $this->view->memberTasks = $this->jxboard->getDeptMemberTasks($filters);
         $this->display('jxboard', $viewName == 'screen' ? 'screen' : 'board');
     }
 

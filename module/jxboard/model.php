@@ -756,4 +756,216 @@ class jxboardModel extends model
         $project->health  = $health;
         $project->blocker = $blocker;
     }
+
+    /**
+     * 部门经营：按员工平铺阶段任务。
+     * 未完成任务全部计入；已完成/已关闭只计入当前周期内完成的。
+     */
+    public function getDeptMemberTasks(array $filters): object
+    {
+        $filters = $this->normalizeFilters($filters);
+        $this->app->loadLang('jxboard');
+
+        $today = date('Y-m-d');
+        $range = $this->resolvePeriod($filters, $today);
+        $data  = $this->emptyMemberTasks($filters, $range);
+
+        if($filters['dept'] === '')
+        {
+            $data->needDept = true;
+            return $data;
+        }
+
+        $deptUnassigned = ($filters['dept'] === '0' || $filters['dept'] === 'unassigned');
+        if($deptUnassigned)
+        {
+            $data->deptName = $this->lang->jxboard->unassigned;
+        }
+        else
+        {
+            $data->deptName = (string)$this->dao->select('name')->from(TABLE_DEPT)
+                ->where('id')->eq((int)$filters['dept'])
+                ->fetch('name');
+        }
+
+        $users = $this->dao->select('account, realname')->from(TABLE_USER)
+            ->where('deleted')->eq('0')
+            ->andWhere('account')->ne('')
+            ->beginIF($deptUnassigned)->andWhere('dept')->eq(0)->fi()
+            ->beginIF(!$deptUnassigned)->andWhere('dept')->eq((int)$filters['dept'])->fi()
+            ->orderBy('realname_asc, account_asc')
+            ->fetchAll('account');
+        if(!$users) return $data;
+
+        $members = array();
+        foreach($users as $account => $user)
+        {
+            $members[$account] = $this->emptyMemberRow((string)$account, (string)($user->realname ?: $account));
+        }
+
+        $accounts = array_keys($members);
+        $begin    = $range['begin'];
+        $endNext  = date('Y-m-d', strtotime($range['end'] . ' +1 day'));
+        $openSql  = "t1.status IN ('wait','doing','pause')";
+        $doneSql  = "t1.status IN ('done','closed') AND t1.finishedDate >= '{$begin}' AND t1.finishedDate < '{$endNext}'";
+        $seen     = array();
+
+        $singleRows = $this->dao->select("t1.id, t1.name, t1.project, t1.execution, t1.status, t1.estimate, t1.consumed, t1.`left`, t1.deadline, t1.finishedDate, t2.name AS projectName, t3.name AS executionName, IF(t1.status IN ('done','closed') AND t1.finishedBy != '', t1.finishedBy, t1.assignedTo) AS owner")
+            ->from(TABLE_TASK)->alias('t1')
+            ->leftJoin(TABLE_PROJECT)->alias('t2')->on('t1.project = t2.id')
+            ->leftJoin(TABLE_EXECUTION)->alias('t3')->on('t1.execution = t3.id')
+            ->where('t1.deleted')->eq('0')
+            ->andWhere('t1.isParent')->eq('0')
+            ->andWhere("(t1.mode IS NULL OR t1.mode = '' OR t1.mode NOT IN ('multi','linear'))")
+            ->andWhere('t2.deleted')->eq('0')
+            ->andWhere('t2.type')->eq('project')
+            ->andWhere('t2.vision')->eq($this->config->vision)
+            ->andWhere("(t1.execution = 0 OR t3.deleted = '0')")
+            ->andWhere("({$openSql} OR ({$doneSql}))")
+            ->andWhere("IF(t1.status IN ('done','closed') AND t1.finishedBy != '', t1.finishedBy, t1.assignedTo)")->in($accounts)
+            ->beginIF(!$this->app->user->admin)->andWhere('t1.project')->in($this->app->user->view->projects)->fi()
+            ->fetchAll();
+
+        foreach($singleRows as $row) $this->pushMemberTask($members, $seen, $row, $today);
+
+        $teamOpen = "tt.status IN ('wait','doing','pause','')";
+        $teamDone = "tt.status IN ('done','closed') AND t1.finishedDate >= '{$begin}' AND t1.finishedDate < '{$endNext}'";
+        $teamRows = $this->dao->select('t1.id, t1.name, t1.project, t1.execution, tt.status, tt.estimate, tt.consumed, tt.`left`, t1.deadline, t1.finishedDate, tt.account AS owner, t2.name AS projectName, t3.name AS executionName')
+            ->from(TABLE_TASK)->alias('t1')
+            ->leftJoin(TABLE_TASKTEAM)->alias('tt')->on('tt.task = t1.id')
+            ->leftJoin(TABLE_PROJECT)->alias('t2')->on('t1.project = t2.id')
+            ->leftJoin(TABLE_EXECUTION)->alias('t3')->on('t1.execution = t3.id')
+            ->where('t1.deleted')->eq('0')
+            ->andWhere('t1.isParent')->eq('0')
+            ->andWhere('t1.mode')->in('multi,linear')
+            ->andWhere('tt.account')->in($accounts)
+            ->andWhere('t2.deleted')->eq('0')
+            ->andWhere('t2.type')->eq('project')
+            ->andWhere('t2.vision')->eq($this->config->vision)
+            ->andWhere("(t1.execution = 0 OR t3.deleted = '0')")
+            ->andWhere("({$teamOpen} OR ({$teamDone}))")
+            ->beginIF(!$this->app->user->admin)->andWhere('t1.project')->in($this->app->user->view->projects)->fi()
+            ->fetchAll();
+
+        foreach($teamRows as $row) $this->pushMemberTask($members, $seen, $row, $today);
+
+        foreach($members as $account => $member)
+        {
+            usort($member->tasks, array($this, 'compareMemberTasks'));
+            $member->doneRate = $member->total > 0 ? round($member->done * 100 / $member->total, 1) : 0.0;
+            $member->estimate = round($member->estimate, 1);
+            $member->consumed = round($member->consumed, 1);
+            $member->left     = round($member->left, 1);
+            $members[$account] = $member;
+        }
+
+        uasort($members, function($a, $b)
+        {
+            if($a->overdue !== $b->overdue) return $b->overdue <=> $a->overdue;
+            $openA = $a->wait + $a->doing;
+            $openB = $b->wait + $b->doing;
+            if($openA !== $openB) return $openB <=> $openA;
+            return strcmp($a->realname, $b->realname);
+        });
+
+        $data->members = array_values($members);
+        return $data;
+    }
+
+    protected function emptyMemberTasks(array $filters, array $range): object
+    {
+        $data = new stdclass();
+        $data->needDept = false;
+        $data->dept     = (string)($filters['dept'] ?? '');
+        $data->deptName = '';
+        $data->begin    = (string)($range['begin'] ?? '');
+        $data->end      = (string)($range['end'] ?? '');
+        $data->members  = array();
+        return $data;
+    }
+
+    protected function emptyMemberRow(string $account, string $realname): object
+    {
+        $row = new stdclass();
+        $row->account  = $account;
+        $row->realname = $realname;
+        $row->total    = 0;
+        $row->wait     = 0;
+        $row->doing    = 0;
+        $row->done     = 0;
+        $row->overdue  = 0;
+        $row->estimate = 0.0;
+        $row->consumed = 0.0;
+        $row->left     = 0.0;
+        $row->doneRate = 0.0;
+        $row->tasks    = array();
+        return $row;
+    }
+
+    protected function pushMemberTask(array &$members, array &$seen, object $row, string $today): void
+    {
+        $owner = (string)($row->owner ?? '');
+        if($owner === '' || !isset($members[$owner])) return;
+
+        $taskID = (int)$row->id;
+        $key    = $owner . ':' . $taskID;
+        if(isset($seen[$key])) return;
+        $seen[$key] = 1;
+
+        $status = (string)($row->status ?? '');
+        if($status === '') $status = 'wait';
+        if($status === 'cancel') return;
+
+        $deadline = substr((string)($row->deadline ?? ''), 0, 10);
+        if($deadline === '0000-00-00') $deadline = '';
+        $finished = substr((string)($row->finishedDate ?? ''), 0, 10);
+        if($finished === '0000-00-00') $finished = '';
+
+        $open    = in_array($status, array('wait', 'doing', 'pause'), true);
+        $overdue = $open && $deadline !== '' && $deadline < $today;
+
+        $task = new stdclass();
+        $task->id            = $taskID;
+        $task->name          = (string)$row->name;
+        $task->project       = (int)$row->project;
+        $task->projectName   = (string)($row->projectName ?? '');
+        $task->execution     = (int)$row->execution;
+        $task->executionName = (string)($row->executionName ?? '');
+        $task->status        = $status;
+        $task->deadline      = $deadline;
+        $task->finishedDate  = $finished;
+        $task->overdue       = $overdue;
+        $task->estimate      = round((float)$row->estimate, 1);
+        $task->consumed      = round((float)$row->consumed, 1);
+        $task->left          = round((float)$row->left, 1);
+
+        $member = $members[$owner];
+        $member->tasks[] = $task;
+        $member->total++;
+        $member->estimate += $task->estimate;
+        $member->consumed += $task->consumed;
+        $member->left     += $task->left;
+        if($overdue) $member->overdue++;
+        if($status === 'wait') $member->wait++;
+        elseif(in_array($status, array('doing', 'pause'), true)) $member->doing++;
+        elseif(in_array($status, array('done', 'closed'), true)) $member->done++;
+    }
+
+    protected function compareMemberTasks(object $a, object $b): int
+    {
+        if($a->overdue !== $b->overdue) return $a->overdue ? -1 : 1;
+
+        $rank = array('doing' => 1, 'pause' => 1, 'wait' => 2, 'done' => 3, 'closed' => 3);
+        $rankA = $rank[$a->status] ?? 9;
+        $rankB = $rank[$b->status] ?? 9;
+        if($rankA !== $rankB) return $rankA <=> $rankB;
+
+        if(in_array($a->status, array('done', 'closed'), true))
+        {
+            return strcmp((string)$b->finishedDate, (string)$a->finishedDate);
+        }
+        if($a->deadline === $b->deadline) return 0;
+        if($a->deadline === '' || $b->deadline === '') return $a->deadline === '' ? 1 : -1;
+        return strcmp((string)$a->deadline, (string)$b->deadline);
+    }
 }

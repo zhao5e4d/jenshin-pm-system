@@ -376,6 +376,57 @@ a.pm-legend-row:hover {
 .pm-dash-panel .table td,
 .pm-dash-panel .table th { white-space: nowrap; }
 
+.pm-dash-panel .table tr.is-current-dept td { background: #eef2ff; }
+
+.pm-member-tools {
+  margin-left: auto;
+  display: flex;
+  gap: 12px;
+  font-size: 12px;
+  font-weight: 500;
+}
+.pm-member-tools a { color: #2563eb; }
+.pm-member-tools a:hover { text-decoration: none; color: #1d4ed8; }
+.pm-member {
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  margin-top: 8px;
+  background: #fff;
+  overflow: hidden;
+}
+.pm-member-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  cursor: pointer;
+}
+.pm-member-head:hover { background: #f8fafc; }
+.pm-member-caret { width: 1em; color: #64748b; flex: none; }
+.pm-member-caret::before { content: '▸'; }
+.pm-member.is-open .pm-member-caret::before { content: '▾'; }
+.pm-member-name { font-weight: 650; min-width: 4em; color: #0f172a; }
+.pm-member-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  flex: 1;
+  min-width: 0;
+  color: #64748b;
+  font-size: 12px;
+}
+.pm-member-meta .is-overdue,
+.pm-member-body td.is-overdue { color: #dc2626; font-weight: 650; }
+.pm-member-rate { width: 132px; flex: none; }
+.pm-member-hours {
+  font-variant-numeric: tabular-nums;
+  color: #334155;
+  font-size: 12px;
+  white-space: nowrap;
+}
+.pm-member-body { display: none; padding: 0 12px 12px; }
+.pm-member.is-open .pm-member-body { display: block; }
+
 @container pm-dash (max-width: 980px) {
   .pm-dash-grid.is-charts,
   .pm-dash-grid.is-lists,
@@ -393,6 +444,8 @@ a.pm-legend-row:hover {
   }
   .pm-dash-panel.is-list { height: 300px; }
   .pm-load-row { grid-template-columns: 1fr; }
+  .pm-member-head { flex-wrap: wrap; }
+  .pm-member-rate { width: 100%; }
 }
 
 @media print {
@@ -410,6 +463,8 @@ a.pm-legend-row:hover {
   .pm-view-all { display: none !important; }
   .pm-dash-panel.is-list,
   .pm-dash-panel.is-list.is-focus { height: auto !important; max-height: none !important; }
+  .pm-member-body { display: block !important; }
+  .pm-member-tools { display: none !important; }
   .pm-dash-panel,
   .pm-dash-item,
   .pm-kpi-card { break-inside: avoid; }
