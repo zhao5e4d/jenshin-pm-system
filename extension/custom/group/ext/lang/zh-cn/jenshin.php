@@ -49,6 +49,13 @@ $lang->resource->jxboard->portfolio = 'portfolioAction';
 $lang->resource->jxboard->meeting   = 'meetingAction';
 $lang->resource->jxboard->screen    = 'screenAction';
 
+$lang->resource->jxcollab = new stdclass();
+$lang->resource->jxcollab->create   = 'createAction';
+$lang->resource->jxcollab->edit     = 'editAction';
+$lang->resource->jxcollab->view     = 'viewAction';
+$lang->resource->jxcollab->feedback = 'feedbackAction';
+$lang->resource->jxcollab->cancel   = 'cancelAction';
+
 $lang->resource->jxcore = new stdclass();
 $lang->resource->jxcore->togglecheck  = 'togglecheck';
 $lang->resource->jxcore->submitstage  = 'submitstage';
@@ -87,6 +94,13 @@ $lang->jxboard->deptAction      = '部门经营';
 $lang->jxboard->portfolioAction = '项目组合';
 $lang->jxboard->meetingAction   = '例会清单';
 $lang->jxboard->screenAction    = '经营大屏';
+if(!isset($lang->jxcollab)) $lang->jxcollab = new stdclass();
+$lang->jxcollab->createAction   = '发起协同';
+$lang->jxcollab->editAction     = '编辑协同单';
+$lang->jxcollab->viewAction     = '查看协同单';
+$lang->jxcollab->feedbackAction = '填写协同反馈';
+$lang->jxcollab->cancelAction   = '取消协同';
+
 $lang->jxcore->togglecheck  = '完成检查项';
 $lang->jxcore->submitstage  = '提交阶段门';
 $lang->jxcore->approvestage = '审批阶段门';

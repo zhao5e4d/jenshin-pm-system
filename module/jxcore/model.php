@@ -18,7 +18,7 @@ class jxcoreModel extends model
 
         try
         {
-            if(!$this->dbh->tableExist(TABLE_JX_SCHEMA)) $this->runInstallSql();
+            if($this->missTable()) $this->runInstallSql();
         }
         catch(Throwable $e)
         {
@@ -26,6 +26,7 @@ class jxcoreModel extends model
         }
         $this->enableExecutionOnLinkedProjects();
         $this->syncArchiveLinesToProduct();
+        $this->grantCollabPrivs();
         $done = true;
         return true;
     }
@@ -130,6 +131,69 @@ class jxcoreModel extends model
             $this->dao->insert(TABLE_JX_SCHEMA)->data($mark)->exec();
         }
         catch(Throwable $e) { }
+    }
+
+    /**
+     * 把任务协同权限写进现有分组。项目相关分组给全套，guest 只给查看和反馈。
+     *
+     * @access protected
+     * @return void
+     */
+    protected function grantCollabPrivs(): void
+    {
+        try
+        {
+            if(!$this->dbh->tableExist(TABLE_JX_SCHEMA) || !$this->dbh->tableExist(TABLE_GROUPPRIV)) return;
+            $applied = $this->dao->select('id')->from(TABLE_JX_SCHEMA)->where('code')->eq('jxcollab-privs')->fetch();
+            if($applied) return;
+
+            $full = array('view', 'create', 'edit', 'feedback', 'cancel');
+            $read = array('view', 'feedback');
+            $groups = $this->dao->select('id, role')->from(TABLE_GROUP)->fetchAll();
+            foreach($groups as $group)
+            {
+                $methods = (($group->role ?? '') === 'guest') ? $read : $full;
+                foreach($methods as $method)
+                {
+                    $existed = $this->dao->select('method')->from(TABLE_GROUPPRIV)
+                        ->where('`group`')->eq((int)$group->id)
+                        ->andWhere('module')->eq('jxcollab')
+                        ->andWhere('method')->eq($method)
+                        ->fetch();
+                    if($existed) continue;
+
+                    $row = new stdclass();
+                    $row->group  = (int)$group->id;
+                    $row->module = 'jxcollab';
+                    $row->method = $method;
+                    $this->dao->insert(TABLE_GROUPPRIV)->data($row)->exec();
+                    dao::$errors = array();
+                }
+            }
+
+            $mark = new stdclass();
+            $mark->code        = 'jxcollab-privs';
+            $mark->version     = '1.1.0';
+            $mark->appliedDate = helper::now();
+            $this->dao->insert(TABLE_JX_SCHEMA)->data($mark)->exec();
+        }
+        catch(Throwable $e) { }
+    }
+
+    /**
+     * 判断是否有 jx 表尚未建出。老库升级时新增的表也走这里补建。
+     * Check whether any jx table is missing.
+     *
+     * @access public
+     * @return bool
+     */
+    public function missTable(): bool
+    {
+        foreach(array(TABLE_JX_SCHEMA, TABLE_JX_COLLAB, TABLE_JX_COLLABMEMBER) as $table)
+        {
+            if(!$this->dbh->tableExist($table)) return true;
+        }
+        return false;
     }
 
     /**

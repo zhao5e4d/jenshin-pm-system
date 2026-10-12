@@ -248,6 +248,44 @@ CREATE TABLE IF NOT EXISTS `zt_jx_admission` (
   KEY `hospital` (`hospital`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+CREATE TABLE IF NOT EXISTS `zt_jx_collab` (
+  `id` int unsigned NOT NULL AUTO_INCREMENT,
+  `project` int unsigned NOT NULL DEFAULT 0,
+  `execution` int unsigned NOT NULL DEFAULT 0,
+  `task` int unsigned NOT NULL DEFAULT 0,
+  `type` varchar(20) NOT NULL DEFAULT 'verify',
+  `title` varchar(255) NOT NULL DEFAULT '',
+  `desc` text DEFAULT NULL,
+  `deadline` date DEFAULT NULL,
+  `status` varchar(20) NOT NULL DEFAULT 'doing',
+  `result` varchar(20) NOT NULL DEFAULT '',
+  `openedBy` varchar(30) NOT NULL DEFAULT '',
+  `openedDate` datetime DEFAULT NULL,
+  `closedBy` varchar(30) NOT NULL DEFAULT '',
+  `closedDate` datetime DEFAULT NULL,
+  `closedReason` varchar(20) NOT NULL DEFAULT '',
+  `deleted` tinyint unsigned NOT NULL DEFAULT 0,
+  PRIMARY KEY (`id`),
+  KEY `task` (`task`),
+  KEY `project` (`project`),
+  KEY `status` (`status`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS `zt_jx_collabmember` (
+  `id` int unsigned NOT NULL AUTO_INCREMENT,
+  `collab` int unsigned NOT NULL DEFAULT 0,
+  `account` varchar(30) NOT NULL DEFAULT '',
+  `attitude` varchar(30) NOT NULL DEFAULT '',
+  `content` text DEFAULT NULL,
+  `extra` text DEFAULT NULL,
+  `settled` tinyint unsigned NOT NULL DEFAULT 0,
+  `todo` int unsigned NOT NULL DEFAULT 0,
+  `feedbackDate` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `collabAccount` (`collab`, `account`),
+  KEY `account` (`account`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 INSERT IGNORE INTO `zt_jx_template` (`id`, `code`, `name`, `bizType`, `needApprove`, `desc`) VALUES
 (1, 'registration', '产品注册阶段门', 'registration', 1, '路径锁定—型检—临床—体系考核—递交—发补—取证归档'),
 (2, 'marketaccess', '市场准入阶段门', 'marketaccess', 1, '标讯—资质产能—成本报价—申报投标—中选签约—分量配送'),

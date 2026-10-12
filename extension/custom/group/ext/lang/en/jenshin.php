@@ -1,5 +1,21 @@
 <?php
 global $config;
+
+if(!isset($lang->resource)) $lang->resource = new stdclass();
+$lang->resource->jxcollab = new stdclass();
+$lang->resource->jxcollab->create   = 'createAction';
+$lang->resource->jxcollab->edit     = 'editAction';
+$lang->resource->jxcollab->view     = 'viewAction';
+$lang->resource->jxcollab->feedback = 'feedbackAction';
+$lang->resource->jxcollab->cancel   = 'cancelAction';
+
+if(!isset($lang->jxcollab)) $lang->jxcollab = new stdclass();
+$lang->jxcollab->createAction   = 'Start Collaboration';
+$lang->jxcollab->editAction     = 'Edit Collaboration';
+$lang->jxcollab->viewAction     = 'View Collaboration';
+$lang->jxcollab->feedbackAction = 'Submit Collaboration Feedback';
+$lang->jxcollab->cancelAction   = 'Cancel Collaboration';
+
 $blocked = !empty($config->jenshin->blockedModules) && is_array($config->jenshin->blockedModules)
     ? $config->jenshin->blockedModules
     : array();

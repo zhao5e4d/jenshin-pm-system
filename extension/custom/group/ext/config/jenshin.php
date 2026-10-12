@@ -23,6 +23,33 @@ foreach(array('index', 'overview', 'dept', 'portfolio', 'meeting', 'screen') as 
     $jxBoardOrder += 5;
 }
 
+/* 任务协同的权限点挂在「任务」权限包里，跟着任务权限一起分配。 */
+if(isset($config->group->package->browseTask))
+{
+    $config->group->package->browseTask->privs['jxcollab-view'] = array(
+        'edition'   => 'open,biz,max,ipd',
+        'vision'    => 'rnd,lite,or',
+        'order'     => 200,
+        'depend'    => array(),
+        'recommend' => array('jxcollab-create', 'jxcollab-feedback')
+    );
+}
+if(isset($config->group->package->manageTask))
+{
+    $jxCollabOrder = 200;
+    foreach(array('create', 'edit', 'feedback', 'cancel') as $jxMethod)
+    {
+        $config->group->package->manageTask->privs['jxcollab-' . $jxMethod] = array(
+            'edition'   => 'open,biz,max,ipd',
+            'vision'    => 'rnd,lite,or',
+            'order'     => $jxCollabOrder,
+            'depend'    => array('jxcollab-view'),
+            'recommend' => array()
+        );
+        $jxCollabOrder += 5;
+    }
+}
+
 /* 菜单已关的测试 / 构建 / 代码 / 发布权限包不再出现在分组页。 */
 foreach(array('projectqa', 'executionqa', 'executionbuild', 'repo', 'release', 'projectrelease') as $jxHideSubset)
 {

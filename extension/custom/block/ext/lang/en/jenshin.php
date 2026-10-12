@@ -10,6 +10,9 @@ $lang->block->welcome->assignList['blocker']      = 'At-Risk Projects';
 $lang->block->teamachievement->createdTasks = 'Created Tasks';
 $lang->block->teamachievement->runCases     = 'Created Tasks';
 
+/* 工作台「指派给我」里任务协同页签的名字。 */
+$lang->block->availableBlocks['jxcollab'] = 'My Feedback';
+
 global $config;
 if(empty($config->jenshin->enableHelp))
 {

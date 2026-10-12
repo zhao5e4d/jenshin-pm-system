@@ -16,12 +16,16 @@
 | zt_jx_marketaccess | 市场准入事项 | product、project |
 | zt_jx_hospital | 医院档案 | — |
 | zt_jx_admission | 推广入院事项 | product、project、hospital |
+| zt_jx_collab | 任务协同单 | task → zt_task.id；project / execution → zt_project.id |
+| zt_jx_collabmember | 协同人反馈 | collab → zt_jx_collab.id；todo → zt_todo.id |
 
 ## 状态
 
 事项 status：wait / doing / blocked / done  
 阶段 status：wait / doing / submitted / approved / rejected / done  
-健康度 health：green / yellow / red
+健康度 health：green / yellow / red  
+协同单 status：doing / closed / canceled；result：空 / pass / fail / done  
+协同人 settled：1 表示已给出最终反馈，全员 settled 后协同单自动关闭
 
 ## 指标
 

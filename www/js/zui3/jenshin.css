@@ -1038,17 +1038,20 @@ a {
 }
 
 /* Plain buttons sit on glass panels, so they get a translucent shell too.
-   .ghost is excluded: it is reused inside the dark header chip. */
-.btn.btn-default:not(.ghost):not(.btn-link),
-.btn.white:not(.ghost) {
+   .ghost is excluded: it is reused inside the dark header chip.
+   Solid skins (secondary, danger, …) are excluded too: zin adds btn-default
+   to every link button, and the shell would cover their fill while the skin
+   keeps light text, leaving only the colored ring. */
+.btn.btn-default:not(.ghost):not(.btn-link):not(.primary):not(.secondary):not(.success):not(.warning):not(.danger):not(.important):not(.special),
+.btn.white:not(.ghost):not(.primary):not(.secondary):not(.success):not(.warning):not(.danger):not(.important):not(.special) {
   background-color: rgba(255, 255, 255, .74);
   border-color: var(--btn-border-color);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
 }
 
-.btn.btn-default:not(.ghost):not(.btn-link):hover,
-.btn.white:not(.ghost):hover {
+.btn.btn-default:not(.ghost):not(.btn-link):not(.primary):not(.secondary):not(.success):not(.warning):not(.danger):not(.important):not(.special):hover,
+.btn.white:not(.ghost):not(.primary):not(.secondary):not(.success):not(.warning):not(.danger):not(.important):not(.special):hover {
   background-color: rgba(255, 255, 255, .94);
   border-color: rgba(var(--color-primary-500-rgb), .32);
   color: var(--color-primary-700);

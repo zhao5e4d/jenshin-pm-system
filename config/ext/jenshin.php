@@ -274,6 +274,18 @@ if(isset($filter))
     if(!isset($filter->jxsso->login)) $filter->jxsso->login = new stdclass();
     if(!isset($filter->jxsso->login->get)) $filter->jxsso->login->get = array();
     $filter->jxsso->login->get['token'] = 'reg::any';
+
+    if(!isset($filter->jxcollab)) $filter->jxcollab = new stdclass();
+    foreach(array('create', 'edit', 'view', 'feedback', 'cancel') as $jxMethod)
+    {
+        if(!isset($filter->jxcollab->$jxMethod)) $filter->jxcollab->$jxMethod = new stdclass();
+        if(!isset($filter->jxcollab->$jxMethod->get)) $filter->jxcollab->$jxMethod->get = array();
+    }
+    $filter->jxcollab->create->get['taskID']     = 'int';
+    $filter->jxcollab->edit->get['collabID']     = 'int';
+    $filter->jxcollab->view->get['collabID']     = 'int';
+    $filter->jxcollab->feedback->get['collabID'] = 'int';
+    $filter->jxcollab->cancel->get['collabID']   = 'int';
 }
 
 if(!defined('TABLE_JX_PRODUCT'))       define('TABLE_JX_PRODUCT',       '`' . $config->db->prefix . 'jx_product`');
@@ -290,6 +302,8 @@ if(!defined('TABLE_JX_MARKETACCESS'))  define('TABLE_JX_MARKETACCESS',  '`' . $c
 if(!defined('TABLE_JX_HOSPITAL'))      define('TABLE_JX_HOSPITAL',      '`' . $config->db->prefix . 'jx_hospital`');
 if(!defined('TABLE_JX_ADMISSION'))     define('TABLE_JX_ADMISSION',     '`' . $config->db->prefix . 'jx_admission`');
 if(!defined('TABLE_JX_SCHEMA'))        define('TABLE_JX_SCHEMA',        '`' . $config->db->prefix . 'jx_schema`');
+if(!defined('TABLE_JX_COLLAB'))        define('TABLE_JX_COLLAB',        '`' . $config->db->prefix . 'jx_collab`');
+if(!defined('TABLE_JX_COLLABMEMBER'))  define('TABLE_JX_COLLABMEMBER',  '`' . $config->db->prefix . 'jx_collabmember`');
 
 $config->objectTables['jxproduct']      = TABLE_JX_PRODUCT;
 $config->objectTables['jxproject']      = TABLE_JX_PROJECT;
@@ -301,3 +315,4 @@ $config->objectTables['jxstage']        = TABLE_JX_STAGE;
 $config->objectTables['jxcost']         = TABLE_JX_COST;
 $config->objectTables['jxdashboard']    = TABLE_JX_PROJECT;
 $config->objectTables['jxboard']        = TABLE_PROJECT;
+$config->objectTables['jxcollab']       = TABLE_JX_COLLAB;
