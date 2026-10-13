@@ -12,6 +12,8 @@ $lang->jxcollab->saveFeedback = '保存反馈';
 $lang->jxcollab->cancel   = '取消协同';
 $lang->jxcollab->members  = '协同人';
 $lang->jxcollab->member   = '协同人';
+$lang->jxcollab->files         = '附件';
+$lang->jxcollab->feedbackFiles = '附件';
 
 $lang->jxcollab->id           = '编号';
 $lang->jxcollab->task         = '所属任务';
@@ -33,8 +35,8 @@ $lang->jxcollab->progress     = '反馈进度';
 
 $lang->jxcollab->typeList = array(
     'verify'     => '核验确认',
-    'review'     => '评审',
-    'accept'     => '验收',
+    'review'     => '方案评审',
+    'accept'     => '结果验收',
     'consult'    => '意见征询',
     'coordinate' => '问题协调'
 );

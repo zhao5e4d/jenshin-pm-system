@@ -61,6 +61,11 @@ formPanel
         )
     ),
     formRow(formGroup(set::label($lang->jxcollab->desc), textarea(set::name('desc'), set::rows(3), set::value($isEdit ? (string)$collab->desc : '')))),
+    formRow(formGroup
+    (
+        set::label($lang->jxcollab->files),
+        fileSelector($isEdit && !empty($collab->files) ? set::defaultFiles(array_values($collab->files)) : null)
+    )),
     formRow(div(setClass('text-gray pl-2'), span(setID('jxCollabTypeTip'), zget($lang->jxcollab->typeDesc, $currentType, ''))))
 );
 

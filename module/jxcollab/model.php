@@ -39,6 +39,7 @@ class jxcollabModel extends model
         if(!$collab) return false;
 
         $collab->members = $this->getMembers($collabID);
+        $collab->files   = $this->loadModel('file')->getByObject('jxcollab', $collabID);
         $collab->taskName = (string)$this->dao->select('name')->from(TABLE_TASK)->where('id')->eq((int)$collab->task)->fetch('name');
         return $collab;
     }
@@ -57,7 +58,12 @@ class jxcollabModel extends model
             ->where('collab')->eq($collabID)
             ->orderBy('id')
             ->fetchAll('id');
-        foreach($members as $member) $member->extra = $this->decodeExtra($member->extra);
+        $fileGroups = $members ? $this->loadModel('file')->groupByObjectID('jxcollabfeedback', array_keys($members)) : array();
+        foreach($members as $member)
+        {
+            $member->extra = $this->decodeExtra($member->extra);
+            $member->files = zget($fileGroups, $member->id, array());
+        }
         return $members;
     }
 
@@ -83,10 +89,21 @@ class jxcollabModel extends model
             ->where('collab')->in(array_keys($collabs))
             ->orderBy('id')
             ->fetchGroup('collab', 'id');
+
+        $memberIDs = array();
+        foreach($members as $collabMembers) foreach($collabMembers as $member) $memberIDs[] = (int)$member->id;
+        $collabFiles = $this->loadModel('file')->groupByObjectID('jxcollab', array_keys($collabs));
+        $memberFiles = $memberIDs ? $this->file->groupByObjectID('jxcollabfeedback', $memberIDs) : array();
+
         foreach($collabs as $collab)
         {
+            $collab->files   = zget($collabFiles, $collab->id, array());
             $collab->members = zget($members, $collab->id, array());
-            foreach($collab->members as $member) $member->extra = $this->decodeExtra($member->extra);
+            foreach($collab->members as $member)
+            {
+                $member->extra = $this->decodeExtra($member->extra);
+                $member->files = zget($memberFiles, $member->id, array());
+            }
         }
         return $collabs;
     }
@@ -263,6 +280,7 @@ class jxcollabModel extends model
 
         $collabID = (int)$this->dao->lastInsertID();
         $collab->id = $collabID;
+        $this->loadModel('file')->saveUpload('jxcollab', $collabID);
         $this->addMembers($collab, $task, $accounts);
 
         $this->loadModel('action')->create('jxcollab', $collabID, 'opened');
@@ -340,6 +358,7 @@ class jxcollabModel extends model
             ->fetch();
         if(!$member) return false;
 
+        $member->files = $this->loadModel('file')->getByObject('jxcollabfeedback', (int)$member->id);
         $typeConfig = $this->getTypeConfig($collab->type);
         $attitude   = (string)$data->attitude;
         if(!empty($typeConfig['hideAttitude'])) $attitude = (string)key($typeConfig['attitudes']);
@@ -358,6 +377,7 @@ class jxcollabModel extends model
             ->exec();
         if(dao::isError()) return false;
 
+        $this->loadModel('file')->processFileDiffsForObject('jxcollabfeedback', $member, $data);
         if(!empty($typeConfig['attitudes'][$attitude]['settled']) && $member->todo) $this->finishTodo((int)$member->todo);
 
         $this->loadModel('action')->create('jxcollab', (int)$collab->id, 'jxcollabfeedback', (string)$data->content, zget($this->lang->jxcollab->attitudeList, $attitude, $attitude));

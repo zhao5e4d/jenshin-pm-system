@@ -27,6 +27,7 @@ foreach($collab->members as $rowMember)
         h::td(zget($users, $rowMember->account, $rowMember->account)),
         h::td($rowMember->attitude ? span(setClass('label ' . ($rowMember->settled ? 'primary-pale' : 'warning-pale')), zget($lang->jxcollab->attitudeList, $rowMember->attitude, $rowMember->attitude)) : span(setClass('text-gray'), $lang->jxcollab->waiting)),
         h::td((string)$rowMember->content . ($extraText ? ' ' . implode('；', $extraText) : '')),
+        h::td(!empty($rowMember->files) ? fileList(set::files($rowMember->files), set::fieldset(false), set::padding(false)) : ''),
         h::td(helper::isZeroDate((string)$rowMember->feedbackDate) ? '' : substr((string)$rowMember->feedbackDate, 0, 16))
     );
 }
@@ -51,20 +52,30 @@ if($collab->status == 'doing' && !empty($canManage))
     );
 }
 
-panel
+modalHeader
+(
+    setClass('pr-8'),
+    set::title($collab->title),
+    set::titleClass('font-bold'),
+    to::suffix
+    (
+        div
+        (
+            setClass('flex items-center gap-2 ml-3'),
+            span(setClass('label gray'), zget($lang->jxcollab->typeList, $collab->type, $collab->type)),
+            span(setClass('label ' . zget($statusClass, $collab->status, '')), zget($lang->jxcollab->statusList, $collab->status, $collab->status)),
+            $collab->result ? span(setClass('label ' . zget($resultClass, $collab->result, '')), zget($lang->jxcollab->resultList, $collab->result, $collab->result)) : null,
+            span(setClass('text-gray'), sprintf($lang->jxcollab->listSummary, $settled, count($collab->members)))
+        )
+    )
+);
+
+div
 (
     setID('jxCollabDetail'),
     set('data-jx-collab-id', (int)$collab->id),
     set('data-jx-read-url', createLink('jxcollab', 'view', "collabID={$collab->id}")),
     set('data-jx-collab-unread', !empty($isMember) && !empty($member) && (empty($member->readDate) || helper::isZeroDate((string)$member->readDate)) ? '1' : '0'),
-    set::title($collab->title),
-    to::titleSuffix
-    (
-        span(setClass('label gray ml-2'), zget($lang->jxcollab->typeList, $collab->type, $collab->type)),
-        span(setClass('label ml-2 ' . zget($statusClass, $collab->status, '')), zget($lang->jxcollab->statusList, $collab->status, $collab->status)),
-        $collab->result ? span(setClass('label ml-2 ' . zget($resultClass, $collab->result, '')), zget($lang->jxcollab->resultList, $collab->result, $collab->result)) : null,
-        span(setClass('ml-2 text-gray'), sprintf($lang->jxcollab->listSummary, $settled, count($collab->members)))
-    ),
     tableData
     (
         item(set::name($lang->jxcollab->task), $collab->taskName),
@@ -72,14 +83,21 @@ panel
         item(set::name($lang->jxcollab->deadline), helper::isZeroDate((string)$collab->deadline) ? '-' : $collab->deadline),
         item(set::name($lang->jxcollab->desc), (string)$collab->desc === '' ? '-' : $collab->desc)
     ),
+    !empty($collab->files) ? div
+    (
+        setClass('mt-4'),
+        div(setClass('font-bold mb-2'), $lang->jxcollab->files),
+        fileList(set::files($collab->files), set::fieldset(false), set::padding(false))
+    ) : null,
     h::table
     (
-        setClass('table bordered mt-3'),
+        setClass('table bordered mt-4'),
         h::thead(h::tr
         (
             h::th(set::width('140px'), $lang->jxcollab->member),
             h::th(set::width('120px'), $lang->jxcollab->attitude),
             h::th(zget($lang->jxcollab->contentLabel, $collab->type, $lang->jxcollab->content)),
+            h::th(set::width('220px'), $lang->jxcollab->feedbackFiles),
             h::th(set::width('140px'), $lang->jxcollab->feedbackDate)
         )),
         h::tbody($rows)
@@ -111,6 +129,7 @@ if($collab->status == 'doing' && !empty($isMember) && !empty($member))
 
     formPanel
     (
+        setClass('panel-form mt-4'),
         set::title($lang->jxcollab->feedback),
         set::submitBtnText($lang->jxcollab->saveFeedback),
         set::url(createLink('jxcollab', 'feedback', "collabID={$collab->id}")),
@@ -127,6 +146,11 @@ if($collab->status == 'doing' && !empty($isMember) && !empty($member))
             textarea(set::name('content'), set::rows(4), set::value((string)$member->content))
         )),
         $extraGroups,
+        formRow(formGroup
+        (
+            set::label($lang->jxcollab->feedbackFiles),
+            fileSelector(!empty($member->files) ? set::defaultFiles(array_values($member->files)) : null)
+        )),
         formRow(div(setClass('text-gray pl-2'), $lang->jxcollab->feedbackTip))
     );
 }

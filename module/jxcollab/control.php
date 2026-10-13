@@ -76,6 +76,7 @@ class jxcollab extends control
 
             $this->jxcollab->removeMembers($collabID, $accounts);
             if($task) $this->jxcollab->addMembers($collab, $task, $accounts);
+            $this->loadModel('file')->processFileDiffsForObject('jxcollab', $collab, $data);
             $this->loadModel('action')->create('jxcollab', $collabID, 'edited');
 
             $collab = $this->jxcollab->getByID($collabID);

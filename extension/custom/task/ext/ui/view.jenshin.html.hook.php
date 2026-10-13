@@ -51,6 +51,7 @@ $jxBuildCollabCard = function($collab) use ($lang, $jxControl, $jxUsers)
                 ? span(setClass('label ' . ($member->settled ? 'primary-pale' : 'warning-pale')), zget($lang->jxcollab->attitudeList, $member->attitude, $member->attitude))
                 : span(setClass('text-gray'), $lang->jxcollab->waiting)),
             h::td(setClass('break-all'), (string)$member->content . ($extraText ? ' ' . implode('；', $extraText) : '')),
+            h::td(!empty($member->files) ? fileList(set::files($member->files), set::fieldset(false), set::padding(false)) : ''),
             h::td(setClass('w-32 text-gray'), helper::isZeroDate((string)$member->feedbackDate) ? '' : substr((string)$member->feedbackDate, 0, 16))
         );
     }
@@ -75,7 +76,25 @@ $jxBuildCollabCard = function($collab) use ($lang, $jxControl, $jxUsers)
             div(setClass('flex-auto')),
             span(setClass('text-gray'), sprintf($lang->jxcollab->listSummary, $settled, count($collab->members)))
         ),
-        $rows ? h::table(setClass('table bordered'), h::tbody($rows)) : null
+        !empty($collab->files) ? div
+        (
+            setClass('mb-2'),
+            div(setClass('text-gray mb-1'), $lang->jxcollab->files),
+            fileList(set::files($collab->files), set::fieldset(false), set::padding(false))
+        ) : null,
+        $rows ? h::table
+        (
+            setClass('table bordered'),
+            h::thead(h::tr
+            (
+                h::th(setClass('w-32'), $lang->jxcollab->member),
+                h::th(setClass('w-24'), $lang->jxcollab->attitude),
+                h::th(zget($lang->jxcollab->contentLabel, $collab->type, $lang->jxcollab->content)),
+                h::th($lang->jxcollab->feedbackFiles),
+                h::th(setClass('w-32'), $lang->jxcollab->feedbackDate)
+            )),
+            h::tbody($rows)
+        ) : null
     );
 };
 

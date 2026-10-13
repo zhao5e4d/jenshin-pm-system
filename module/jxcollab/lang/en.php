@@ -12,6 +12,8 @@ $lang->jxcollab->saveFeedback = 'Save Feedback';
 $lang->jxcollab->cancel   = 'Cancel Collaboration';
 $lang->jxcollab->members  = 'Collaborators';
 $lang->jxcollab->member   = 'Collaborator';
+$lang->jxcollab->files         = 'Files';
+$lang->jxcollab->feedbackFiles = 'Files';
 
 $lang->jxcollab->id           = 'ID';
 $lang->jxcollab->task         = 'Task';
@@ -33,8 +35,8 @@ $lang->jxcollab->progress     = 'Progress';
 
 $lang->jxcollab->typeList = array(
     'verify'     => 'Verification',
-    'review'     => 'Review',
-    'accept'     => 'Acceptance',
+    'review'     => 'Solution Review',
+    'accept'     => 'Result Acceptance',
     'consult'    => 'Consultation',
     'coordinate' => 'Coordination'
 );

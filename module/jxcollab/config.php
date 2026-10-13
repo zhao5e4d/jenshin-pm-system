@@ -78,3 +78,5 @@ $config->jxcollab->form->create = array(
     'members'  => array('required' => false, 'type' => 'array',  'default' => array())
 );
 $config->jxcollab->form->edit = $config->jxcollab->form->create;
+$config->jxcollab->form->edit['deleteFiles'] = array('type' => 'array', 'required' => false, 'default' => array());
+$config->jxcollab->form->edit['renameFiles'] = array('type' => 'array', 'required' => false, 'default' => array());

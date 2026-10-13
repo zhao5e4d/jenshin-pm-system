@@ -53,6 +53,11 @@ formPanel
         textarea(set::name('content'), set::rows(4), set::value((string)$member->content))
     )),
     $extraGroups,
+    formRow(formGroup
+    (
+        set::label($lang->jxcollab->feedbackFiles),
+        fileSelector(!empty($member->files) ? set::defaultFiles(array_values($member->files)) : null)
+    )),
     formRow(div(setClass('text-gray pl-2'), $lang->jxcollab->feedbackTip))
 );
 

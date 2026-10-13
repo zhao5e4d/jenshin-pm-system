@@ -69,7 +69,7 @@ try
     check($collab->markRead(1), 'current collaborator can mark item read');
     $firstRead = $dbh->query("SELECT readDate FROM `$memberTable` WHERE collab=1 AND account='jx-read-test-a'")->fetchColumn();
     check(!empty($firstRead) && $collab->getMyPendingList()[1]->isUnread === false, 'read status is persisted');
-    check(!empty($collab->getMembers(1)[1]->readDate), 'detail member data includes read timestamp');
+    check(!empty(array_values($collab->getMembers(1))[0]->readDate), 'detail member data includes read timestamp');
     check($collab->markRead(1) && $firstRead === $dbh->query("SELECT readDate FROM `$memberTable` WHERE collab=1 AND account='jx-read-test-a'")->fetchColumn(), 'repeated read preserves timestamp');
     check($collab->getMyPendingCount() === 55, 'reading does not reduce pending count');
     $app->user->account = 'jx-read-test-b';
