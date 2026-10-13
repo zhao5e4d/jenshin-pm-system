@@ -1,4 +1,6 @@
 <?php
+$lang->block->availableBlocks['jxcollab'] = 'Collaboration';
+
 $lang->block->experience = 'Try now';
 
 $lang->block->welcome->assignList = array();

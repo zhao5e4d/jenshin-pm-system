@@ -2,7 +2,7 @@
 declare(strict_types=1);
 /**
 * The assigntome view file of block module of ZenTaoPMS.
-* 健忻改动：在页签里插入「待我反馈」（任务协同），放在任务之后。其余保持上游逻辑。
+* 健忻改动：协同事项、阅读提示及待处理总数。
 * @copyright   Copyright 2009-2023 禅道软件（青岛）集团有限公司(ZenTao Software (Qingdao) Co., Ltd. www.zentao.net)
 * @license     ZPL(https://zpl.pub/page/zplv12.html) or AGPL(https://www.gnu.org/licenses/agpl-3.0.en.html)
 * @author      Yuting Wang <wangyuting@easycorp.ltd>
@@ -20,7 +20,12 @@ $blockNavCode = 'nav-' . uniqid();
 
 /* 健忻：任务协同里等我表态的协同单，没有就不出页签。 */
 $this->app->loadLang('jxcollab');
+jsVar('jxCollabNewItemLabel', $lang->jxcollab->newItem);
 $jxcollabs = common::hasPriv('jxcollab', 'view') ? $this->loadModel('jxcollab')->getMyPendingList('', 50) : array();
+$jxTabCounts = array(
+    'todo' => common::hasPriv('todo', 'view') ? $this->block->getJxPendingTodoCount() : 0,
+    'jxcollab' => common::hasPriv('jxcollab', 'view') ? $this->jxcollab->getMyPendingCount() : 0
+);
 if(!empty($jxcollabs))
 {
     $reordered = array();
@@ -46,9 +51,10 @@ $count    = count($hasViewPriv);
 $selected = isset($hasViewPriv['task']) ? 'task' : key($hasViewPriv);
 foreach($hasViewPriv as $type => $bool)
 {
+    $tabCount = (int)zget($jxTabCounts, $type, 0);
     if(($longBlock && $count > 5 && $index > 5) || (!$longBlock && $count > 1 && $index > 1))
     {
-        $moreMenus[] = array('text' => $type == 'review' ? $lang->my->audit : zget($lang->block->availableBlocks, $type), 'data-toggle' => 'tab', 'href' => "#assigntome{$type}Tab{$blockNavCode}", 'data-on' => 'click', 'data-call' => 'clickItems', 'data-params' => 'event');
+        $moreMenus[] = array('text' => $type == 'review' ? $lang->my->audit : zget($lang->block->availableBlocks, $type), 'badge' => $tabCount ? array('text' => $tabCount, 'class' => 'jx-pending-count label primary-pale rounded-full size-sm ml-1') : null, 'data-toggle' => 'tab', 'href' => "#assigntome{$type}Tab{$blockNavCode}", 'data-on' => 'click', 'data-call' => 'clickItems', 'data-params' => 'event');
     }
     else
     {
@@ -63,7 +69,8 @@ foreach($hasViewPriv as $type => $bool)
                 set('data-on', 'click'),
                 set('data-call', 'clickItems'),
                 set('data-params', 'event'),
-                $type == 'review' ? $lang->my->audit : zget($lang->block->availableBlocks, $type)
+                $type == 'review' ? $lang->my->audit : zget($lang->block->availableBlocks, $type),
+                $tabCount ? span(setClass('jx-pending-count label primary-pale rounded-full size-sm ml-1'), (string)$tabCount) : null
             )
         );
     }
@@ -187,7 +194,7 @@ foreach($hasViewPriv as $type => $bool)
             set::bordered(false),
             $type == 'todo'  || $type == 'task' ? set::fixedLeftWidth('0.44') : '',
             set::horzScrollbarPos('inside'),
-            set::onRenderCell(jsRaw('window.renderCell')),
+            set::onRenderCell(jsRaw($type == 'jxcollab' ? 'window.renderJxCollabCell' : 'window.renderCell')),
             set::cols(array_values($config->block->{$configType}->dtable->fieldList)),
             set::data(array_values($data)),
             $type == 'bug' ? set::priList($lang->{$type}->priList) : null,
@@ -214,7 +221,9 @@ blockPanel
     (
         '.block-assigntome .panel-heading .panel-title {overflow: hidden; text-overflow: clip; white-space: nowrap;}',
         '.block-assigntome .nav > .nav-item > a {padding: 0 16px; border-radius: 4px; height: 28px; color: var(--color-gray-700); overflow: hidden; text-overflow: clip; white-space: nowrap;}',
-        '.block-assigntome .nav > .nav-item > a.active {font-weight: bold; color: var(--color-gray-900); background: var(--color-primary-50)}'
+        '.block-assigntome .nav > .nav-item > a.active {font-weight: bold; color: var(--color-gray-900); background: var(--color-primary-50)}',
+        '.block-assigntome .jx-pending-count {display: inline-flex; align-items: center; justify-content: center; min-width: 18px; flex-shrink: 0;}',
+        '.block-assigntome .jx-collab-unread {display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: var(--color-danger-500, #ef4444); margin-left: 6px; flex-shrink: 0;}'
     )
 );
 

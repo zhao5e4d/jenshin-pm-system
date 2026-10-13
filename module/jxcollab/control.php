@@ -100,7 +100,11 @@ class jxcollab extends control
     public function view(int $collabID)
     {
         $collab = $this->jxcollab->getByID($collabID);
-        if(empty($collab)) return print($this->lang->jxcollab->notFound);
+        if(empty($collab))
+        {
+            if($_POST) return $this->send(array('result' => 'fail', 'message' => $this->lang->jxcollab->notFound));
+            return print($this->lang->jxcollab->notFound);
+        }
 
         $account  = (string)$this->app->user->account;
         $isMember = false;
@@ -110,6 +114,13 @@ class jxcollab extends control
             if($member->account != $account) continue;
             $isMember = true;
             $mine     = $member;
+        }
+
+        if($_POST)
+        {
+            if(!$isMember || $this->post->action != 'markRead') return $this->send(array('result' => 'fail', 'message' => $this->lang->jxcollab->readDenied));
+            if(!$this->jxcollab->markRead($collabID)) return $this->send(array('result' => 'fail', 'message' => $this->lang->jxcollab->readFailed));
+            return $this->send(array('result' => 'success', 'collabID' => $collabID));
         }
 
         $this->view->title      = $collab->title;

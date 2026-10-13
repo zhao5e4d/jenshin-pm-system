@@ -1,7 +1,7 @@
 <?php
 if(isset($config->block->projectstatistic->items['bug'])) unset($config->block->projectstatistic->items['bug']);
 
-/* 工作台「指派给我」增加「待我反馈」页签，列任务协同里等我表态的协同单。 */
+/* 工作台「我的待处理」的协同事项，列任务协同里等我表态的协同单。 */
 global $lang, $app;
 $app->loadLang('jxcollab');
 

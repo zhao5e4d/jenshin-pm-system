@@ -281,6 +281,7 @@ CREATE TABLE IF NOT EXISTS `zt_jx_collabmember` (
   `settled` tinyint unsigned NOT NULL DEFAULT 0,
   `todo` int unsigned NOT NULL DEFAULT 0,
   `feedbackDate` datetime DEFAULT NULL,
+  `readDate` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `collabAccount` (`collab`, `account`),
   KEY `account` (`account`)

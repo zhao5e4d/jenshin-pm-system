@@ -266,42 +266,54 @@ if($needTrend)
 {
     $trends = $board->trends ?? null;
     $buckets = $trends && !empty($trends->buckets) ? $trends->buckets : array();
-    $taskMax = 0;
-    $hourMax = 0;
-    foreach($buckets as $bucket)
-    {
-        $taskMax = max($taskMax, (int)$bucket['tasks']);
-        $hourMax = max($hourMax, (float)$bucket['hours']);
-    }
-    $taskRows = array();
-    $hourRows = array();
-    foreach($buckets as $bucket)
-    {
-        $taskPct = $taskMax > 0 ? max(6, (int)round((int)$bucket['tasks'] * 100 / $taskMax)) : 0;
-        $hourPct = $hourMax > 0 ? max(6, (int)round((float)$bucket['hours'] * 100 / $hourMax)) : 0;
-        if((int)$bucket['tasks'] === 0) $taskPct = 0;
-        if((float)$bucket['hours'] <= 0) $hourPct = 0;
-        $taskRows[] = div
-        (
-            setClass('pm-funnel-row'),
-            div(setClass('pm-funnel-meta'), span($bucket['label']), span((int)$bucket['tasks'])),
-            div(setClass('pm-funnel-track'), span(setClass('pm-funnel-bar'), setStyle(array('width' => $taskPct . '%'))))
-        );
-        $hourRows[] = div
-        (
-            setClass('pm-funnel-row'),
-            div(setClass('pm-funnel-meta'), span($bucket['label']), span(number_format((float)$bucket['hours'], 1))),
-            div(setClass('pm-funnel-track'), span(setClass('pm-funnel-bar is-hours'), setStyle(array('width' => $hourPct . '%'))))
-        );
-    }
     $rangeLabel = ($trends && $trends->begin && $trends->end) ? ($trends->begin . ' ~ ' . $trends->end) : '';
+    /* 只创建最终会挂到面板上的节点。未挂接的 zin 节点会进全局渲染，堆在筛选栏下面。 */
+    if(!empty($trends->hasData))
+    {
+        $taskMax = 0;
+        $hourMax = 0;
+        foreach($buckets as $bucket)
+        {
+            $taskMax = max($taskMax, (int)$bucket['tasks']);
+            $hourMax = max($hourMax, (float)$bucket['hours']);
+        }
+        $taskRows = array();
+        $hourRows = array();
+        foreach($buckets as $bucket)
+        {
+            $taskPct = $taskMax > 0 ? max(6, (int)round((int)$bucket['tasks'] * 100 / $taskMax)) : 0;
+            $hourPct = $hourMax > 0 ? max(6, (int)round((float)$bucket['hours'] * 100 / $hourMax)) : 0;
+            if((int)$bucket['tasks'] === 0) $taskPct = 0;
+            if((float)$bucket['hours'] <= 0) $hourPct = 0;
+            $taskRows[] = div
+            (
+                setClass('pm-funnel-row'),
+                div(setClass('pm-funnel-meta'), span($bucket['label']), span((int)$bucket['tasks'])),
+                div(setClass('pm-funnel-track'), span(setClass('pm-funnel-bar'), setStyle(array('width' => $taskPct . '%'))))
+            );
+            $hourRows[] = div
+            (
+                setClass('pm-funnel-row'),
+                div(setClass('pm-funnel-meta'), span($bucket['label']), span(number_format((float)$bucket['hours'], 1))),
+                div(setClass('pm-funnel-track'), span(setClass('pm-funnel-bar is-hours'), setStyle(array('width' => $hourPct . '%'))))
+            );
+        }
+        $trendBody = div
+        (
+            setClass('pm-trend-wrap'),
+            div(setClass('pm-trend-col'), div(setClass('pm-trend-title'), $lang->jxboard->trendTasks), div(setClass('pm-funnel'), $taskRows)),
+            div(setClass('pm-trend-col'), div(setClass('pm-trend-title'), $lang->jxboard->trendHours), div(setClass('pm-funnel'), $hourRows))
+        );
+    }
+    else
+    {
+        $trendBody = $emptyBox($lang->jxboard->emptyTrend);
+    }
     $trendPanel = div
     (
         setClass('pm-dash-panel is-wide is-chart mt-4'),
         h::h4($lang->jxboard->trend, $rangeLabel ? span(setClass('pm-panel-sub'), $rangeLabel) : null),
-        !empty($trends->hasData)
-            ? div(setClass('pm-trend-wrap'), div(setClass('pm-trend-col'), div(setClass('pm-trend-title'), $lang->jxboard->trendTasks), div(setClass('pm-funnel'), $taskRows)), div(setClass('pm-trend-col'), div(setClass('pm-trend-title'), $lang->jxboard->trendHours), div(setClass('pm-funnel'), $hourRows)))
-            : $emptyBox($lang->jxboard->emptyTrend)
+        $trendBody
     );
 }
 

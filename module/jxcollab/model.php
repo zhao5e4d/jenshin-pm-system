@@ -53,7 +53,7 @@ class jxcollabModel extends model
     public function getMembers(int $collabID): array
     {
         /* content / extra 是 text 字段，fetchAll 默认会把 text 排除，这里必须显式列出。 */
-        $members = $this->dao->select('id, collab, account, attitude, content, extra, settled, todo, feedbackDate')->from(TABLE_JX_COLLABMEMBER)
+        $members = $this->dao->select('id, collab, account, attitude, content, extra, settled, todo, feedbackDate, readDate')->from(TABLE_JX_COLLABMEMBER)
             ->where('collab')->eq($collabID)
             ->orderBy('id')
             ->fetchAll('id');
@@ -146,7 +146,7 @@ class jxcollabModel extends model
     }
 
     /**
-     * 我还没给出最终反馈的协同单，工作台「待我反馈」和待办用。
+     * 我还没给出最终反馈的协同单，工作台「协同事项」和待办用。
      *
      * @param  string $account
      * @param  int    $limit
@@ -159,7 +159,33 @@ class jxcollabModel extends model
         if(empty($account)) $account = (string)$this->app->user->account;
         if(empty($account)) return array();
 
-        $collabs = $this->dao->select('t1.id, t1.project, t1.task, t1.type, t1.title, t1.deadline, t1.status, t1.openedBy, t2.attitude, t2.settled, t3.name as taskName, t4.name as projectName')
+        $collabs = $this->getMyPendingQuery($account, 't1.id, t1.project, t1.task, t1.type, t1.title, t1.deadline, t1.status, t1.openedBy, t2.attitude, t2.settled, t2.readDate, t3.name as taskName, t4.name as projectName')
+            ->orderBy('t1.deadline,t1.id_desc')
+            ->beginIF($limit > 0)->limit($limit)->fi()
+            ->fetchAll('id');
+
+        foreach($collabs as $collab)
+        {
+            $collab->typeName = zget($this->lang->jxcollab->typeList, $collab->type, $collab->type);
+            $collab->isUnread = empty($collab->readDate) || helper::isZeroDate((string)$collab->readDate);
+        }
+        return $collabs;
+    }
+
+    /**
+     * 工作台数量统计与列表共用筛选条件，不受展示条数限制。
+     */
+    public function getMyPendingCount(string $account = ''): int
+    {
+        if(!$this->ensureSchema()) return 0;
+        if(empty($account)) $account = (string)$this->app->user->account;
+        if(empty($account)) return 0;
+        return (int)$this->getMyPendingQuery($account, 'COUNT(DISTINCT t1.id) AS total')->fetch('total');
+    }
+
+    protected function getMyPendingQuery(string $account, string $fields): dao
+    {
+        return $this->dao->select($fields)
             ->from(TABLE_JX_COLLAB)->alias('t1')
             ->leftJoin(TABLE_JX_COLLABMEMBER)->alias('t2')->on('t1.id = t2.collab')
             ->leftJoin(TABLE_TASK)->alias('t3')->on('t1.task = t3.id')
@@ -167,13 +193,39 @@ class jxcollabModel extends model
             ->where('t1.deleted')->eq('0')
             ->andWhere('t1.status')->eq('doing')
             ->andWhere('t2.account')->eq($account)
-            ->andWhere('t2.settled')->eq('0')
-            ->orderBy('t1.deadline,t1.id_desc')
-            ->beginIF($limit > 0)->limit($limit)->fi()
-            ->fetchAll('id');
+            ->andWhere('t2.settled')->eq('0');
+    }
 
-        foreach($collabs as $collab) $collab->typeName = zget($this->lang->jxcollab->typeList, $collab->type, $collab->type);
-        return $collabs;
+    /**
+     * 仅标记当前登录协同人已读，重复查看不覆盖首次阅读时间。
+     */
+    public function markRead(int $collabID): bool
+    {
+        if(!$this->ensureSchema()) return false;
+        $account = (string)$this->app->user->account;
+        if($account === '') return false;
+        $throwError = $this->app->throwError;
+        $this->app->throwError = true;
+        try
+        {
+            $member = $this->dao->select('id, readDate')->from(TABLE_JX_COLLABMEMBER)
+                ->where('collab')->eq($collabID)->andWhere('account')->eq($account)->fetch();
+            if(!$member) return false;
+            if(!empty($member->readDate) && !helper::isZeroDate((string)$member->readDate)) return true;
+
+            $this->dao->update(TABLE_JX_COLLABMEMBER)->set('readDate')->eq(helper::now())
+                ->where('id')->eq((int)$member->id)->andWhere('account')->eq($account)
+                ->andWhere('(readDate IS NULL OR readDate')->eq('0000-00-00 00:00:00')->markRight(1)->exec();
+            return !dao::isError();
+        }
+        catch(Throwable $e)
+        {
+            return false;
+        }
+        finally
+        {
+            $this->app->throwError = $throwError;
+        }
     }
 
     /**

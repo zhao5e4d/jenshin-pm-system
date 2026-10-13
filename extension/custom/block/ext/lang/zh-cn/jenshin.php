@@ -110,5 +110,5 @@ $lang->block->productstatistic->newExecution     = '最新' . $lang->executionCo
 $lang->project->overdueTasks = '逾期任务';
 
 /* 工作台「指派给我」里任务协同页签的名字。 */
-$lang->block->availableBlocks['jxcollab'] = '待我反馈';
+$lang->block->availableBlocks['jxcollab'] = '协同事项';
 

@@ -53,6 +53,10 @@ if($collab->status == 'doing' && !empty($canManage))
 
 panel
 (
+    setID('jxCollabDetail'),
+    set('data-jx-collab-id', (int)$collab->id),
+    set('data-jx-read-url', createLink('jxcollab', 'view', "collabID={$collab->id}")),
+    set('data-jx-collab-unread', !empty($isMember) && !empty($member) && (empty($member->readDate) || helper::isZeroDate((string)$member->readDate)) ? '1' : '0'),
     set::title($collab->title),
     to::titleSuffix
     (

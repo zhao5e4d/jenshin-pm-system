@@ -24,11 +24,30 @@ class jxcoreModel extends model
         {
             try { $this->runInstallSql(); } catch(Throwable $ignored) { return false; }
         }
+        if(!$this->ensureCollabReadSchema()) return false;
         $this->enableExecutionOnLinkedProjects();
         $this->syncArchiveLinesToProduct();
         $this->grantCollabPrivs();
         $done = true;
         return true;
+    }
+
+    /**
+     * 为已有协同人表补充阅读时间；已有记录保持未读，可重复执行。
+     */
+    protected function ensureCollabReadSchema(): bool
+    {
+        try
+        {
+            $table = trim(TABLE_JX_COLLABMEMBER, '`');
+            $column = $this->dbh->query("SHOW COLUMNS FROM `$table` LIKE 'readDate'")->fetch();
+            if(!$column) $this->dbh->exec("ALTER TABLE `$table` ADD COLUMN `readDate` datetime DEFAULT NULL AFTER `feedbackDate`");
+            return true;
+        }
+        catch(Throwable $e)
+        {
+            return false;
+        }
     }
 
     /**

@@ -27,6 +27,8 @@
 协同单 status：doing / closed / canceled；result：空 / pass / fail / done  
 协同人 settled：1 表示已给出最终反馈，全员 settled 后协同单自动关闭
 
+协同人 readDate：本人首次查看协同单详情的时间，NULL 表示未读；按协同单和账号独立保存，阅读不改变反馈状态或待处理数量。旧库由 jxcore 自动补充此字段，已有记录默认未读。
+
 ## 指标
 
 - 进度 = 已完成阶段 / 阶段总数
